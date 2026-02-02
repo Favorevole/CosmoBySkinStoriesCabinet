@@ -1,0 +1,208 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== ENUMS ====================
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  BLOCKED
+}
+
+enum ApplicationStatus {
+  NEW
+  ASSIGNED
+  RESPONSE_GIVEN
+  APPROVED
+  SENT_TO_CLIENT
+  DECLINED
+}
+
+enum SkinType {
+  DRY
+  OILY
+  COMBINATION
+  NORMAL
+}
+
+enum ApplicationSource {
+  TELEGRAM
+  WEB
+}
+
+enum UserRole {
+  CLIENT
+  DOCTOR
+  ADMIN
+}
+
+// ==================== MODELS ====================
+
+model Client {
+  id               Int           @id @default(autoincrement())
+  telegramId       BigInt?       @unique @map("telegram_id")
+  telegramUsername String?       @map("telegram_username")
+  fullName         String?       @map("full_name")
+  email            String?
+  phone            String?
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+
+  applications     Application[]
+
+  @@index([telegramId])
+  @@map("clients")
+}
+
+model Doctor {
+  id               Int              @id @default(autoincrement())
+  telegramId       BigInt           @unique @map("telegram_id")
+  telegramUsername String?          @map("telegram_username")
+  fullName         String           @map("full_name")
+  specialization   String?
+  status           UserStatus       @default(PENDING)
+  isAvailable      Boolean          @default(true) @map("is_available")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+
+  applications     Application[]
+  recommendations  Recommendation[]
+
+  @@index([telegramId])
+  @@index([status])
+  @@index([isAvailable])
+  @@map("doctors")
+}
+
+model Admin {
+  id               Int        @id @default(autoincrement())
+  telegramId       BigInt     @unique @map("telegram_id")
+  telegramUsername String?    @map("telegram_username")
+  fullName         String     @map("full_name")
+  status           UserStatus @default(ACTIVE)
+  createdAt        DateTime   @default(now()) @map("created_at")
+  updatedAt        DateTime   @updatedAt @map("updated_at")
+
+  @@index([telegramId])
+  @@map("admins")
+}
+
+model Application {
+  id                Int               @id @default(autoincrement())
+  clientId          Int               @map("client_id")
+  doctorId          Int?              @map("doctor_id")
+
+  // Questionnaire data
+  age               Int
+  skinType          SkinType          @map("skin_type")
+  mainProblems      String            @map("main_problems") @db.Text
+  additionalComment String?           @map("additional_comment") @db.Text
+
+  // Status
+  status            ApplicationStatus @default(NEW)
+  declineReason     String?           @map("decline_reason") @db.Text
+
+  // Source tracking
+  source            ApplicationSource @default(TELEGRAM)
+
+  // Timestamps
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+  assignedAt        DateTime?         @map("assigned_at")
+  completedAt       DateTime?         @map("completed_at")
+  sentToClientAt    DateTime?         @map("sent_to_client_at")
+
+  // Relations
+  client            Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  doctor            Doctor?           @relation(fields: [doctorId], references: [id], onDelete: SetNull)
+  photos            Photo[]
+  recommendation    Recommendation?
+  statusHistory     StatusHistory[]
+
+  @@index([clientId])
+  @@index([doctorId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("applications")
+}
+
+model Photo {
+  id             Int         @id @default(autoincrement())
+  applicationId  Int         @map("application_id")
+  fileName       String      @map("file_name")
+  mimeType       String      @map("mime_type")
+  fileSize       Int         @map("file_size")
+  data           Bytes
+  sortOrder      Int         @default(0) @map("sort_order")
+  telegramFileId String?     @map("telegram_file_id")
+  createdAt      DateTime    @default(now()) @map("created_at")
+
+  application    Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@map("photos")
+}
+
+model Recommendation {
+  id              Int         @id @default(autoincrement())
+  applicationId   Int         @unique @map("application_id")
+  doctorId        Int         @map("doctor_id")
+
+  // Content
+  text            String      @db.Text
+  links           Json?       // Array of {title: string, url: string}
+
+  // Admin editing
+  originalText    String?     @map("original_text") @db.Text
+  editedByAdminId Int?        @map("edited_by_admin_id")
+  editedByAdminAt DateTime?   @map("edited_by_admin_at")
+
+  // Timestamps
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  doctor          Doctor      @relation(fields: [doctorId], references: [id])
+
+  @@index([applicationId])
+  @@index([doctorId])
+  @@map("recommendations")
+}
+
+model StatusHistory {
+  id            Int                @id @default(autoincrement())
+  applicationId Int                @map("application_id")
+  fromStatus    ApplicationStatus? @map("from_status")
+  toStatus      ApplicationStatus  @map("to_status")
+  comment       String?            @db.Text
+  changedById   Int?               @map("changed_by_id")
+  changedByRole UserRole?          @map("changed_by_role")
+  createdAt     DateTime           @default(now()) @map("created_at")
+
+  application   Application        @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@index([createdAt])
+  @@map("status_history")
+}
+
+model AuthCode {
+  id         Int      @id @default(autoincrement())
+  telegramId BigInt   @map("telegram_id")
+  code       String
+  expiresAt  DateTime @map("expires_at")
+  used       Boolean  @default(false)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([telegramId])
+  @@index([code])
+  @@index([expiresAt])
+  @@map("auth_codes")
+}
