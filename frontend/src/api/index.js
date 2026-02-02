@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   timeout: 30000
 });
 
@@ -55,8 +55,10 @@ export const approveApplication = (id) =>
 export const getApplicationHistory = (id) =>
   api.get(`/applications/${id}/history`);
 
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
+
 export const getPhotoUrl = (applicationId, photoId) =>
-  `/api/applications/${applicationId}/photos/${photoId}`;
+  `${API_BASE}/applications/${applicationId}/photos/${photoId}`;
 
 // Doctors
 export const getDoctors = () =>
