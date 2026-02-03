@@ -107,53 +107,72 @@ export async function handleViewApplication(ctx) {
 
     await ctx.answerCbQuery();
 
-    // Send photos if available
-    if (application.photos.length > 0) {
-      try {
-        await ctx.editMessageText(message, {
-          parse_mode: 'Markdown',
-          ...applicationViewKeyboard(applicationId)
-        });
+    const photoCount = application.photos.length;
 
-        // Send first photo
-        const photo = application.photos[0];
-        if (photo.telegramFileId) {
-          await ctx.replyWithPhoto(photo.telegramFileId, {
-            caption: `Фото 1/${application.photos.length}`,
-            ...viewPhotosKeyboard(applicationId, 0, application.photos.length)
-          });
-        } else {
-          await ctx.replyWithPhoto(
-            { source: photo.data },
-            {
-              caption: `Фото 1/${application.photos.length}`,
-              ...viewPhotosKeyboard(applicationId, 0, application.photos.length)
-            }
-          );
-        }
-      } catch (e) {
-        await ctx.reply(message, {
-          parse_mode: 'Markdown',
-          ...applicationViewKeyboard(applicationId)
-        });
-      }
-    } else {
-      try {
-        await ctx.editMessageText(message, {
-          parse_mode: 'Markdown',
-          ...applicationViewKeyboard(applicationId)
-        });
-      } catch (e) {
-        await ctx.reply(message, {
-          parse_mode: 'Markdown',
-          ...applicationViewKeyboard(applicationId)
-        });
-      }
+    try {
+      await ctx.editMessageText(message, {
+        parse_mode: 'Markdown',
+        ...applicationViewKeyboard(applicationId, photoCount)
+      });
+    } catch (e) {
+      await ctx.reply(message, {
+        parse_mode: 'Markdown',
+        ...applicationViewKeyboard(applicationId, photoCount)
+      });
     }
 
   } catch (error) {
     console.error('[DOCTOR_BOT] Error viewing application:', error);
     await ctx.answerCbQuery('Ошибка');
+  }
+}
+
+export async function handleShowPhotos(ctx) {
+  const telegramId = ctx.from.id;
+  const applicationId = parseInt(ctx.callbackQuery.data.split('_').pop());
+
+  try {
+    const doctor = await getDoctorByTelegramId(telegramId);
+
+    if (!doctor || doctor.status !== 'ACTIVE') {
+      await ctx.answerCbQuery('Нет доступа');
+      return;
+    }
+
+    const application = await getApplicationById(applicationId);
+
+    if (!application || application.doctorId !== doctor.id) {
+      await ctx.answerCbQuery('Заявка не найдена');
+      return;
+    }
+
+    if (application.photos.length === 0) {
+      await ctx.answerCbQuery('Нет фотографий');
+      return;
+    }
+
+    await ctx.answerCbQuery('Отправляю фотографии...');
+
+    // Send first photo with navigation
+    const photo = application.photos[0];
+    if (photo.telegramFileId) {
+      await ctx.replyWithPhoto(photo.telegramFileId, {
+        caption: `Фото 1/${application.photos.length}\nЗаявка #${applicationId}`,
+        ...viewPhotosKeyboard(applicationId, 0, application.photos.length)
+      });
+    } else {
+      await ctx.replyWithPhoto(
+        { source: photo.data },
+        {
+          caption: `Фото 1/${application.photos.length}\nЗаявка #${applicationId}`,
+          ...viewPhotosKeyboard(applicationId, 0, application.photos.length)
+        }
+      );
+    }
+
+  } catch (error) {
+    console.error('[DOCTOR_BOT] Error showing photos:', error);
+    await ctx.answerCbQuery('Ошибка загрузки фото');
   }
 }
 

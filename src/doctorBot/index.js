@@ -7,6 +7,7 @@ import { handleStart, handleHelp, handleRegistration, getSession } from './handl
 import {
   handleMyApplications,
   handleViewApplication,
+  handleShowPhotos,
   handlePhotoNavigation,
   handleBackToList,
   handleRequestPhotos
@@ -60,6 +61,7 @@ export function createDoctorBot() {
 
   // Callback queries - application viewing
   bot.action(/^view_app_(\d+)$/, handleViewApplication);
+  bot.action(/^show_photos_(\d+)$/, handleShowPhotos);
   bot.action('back_to_list', handleBackToList);
   bot.action(/^photo_next_/, (ctx) => handlePhotoNavigation(ctx, 'next'));
   bot.action(/^photo_prev_/, (ctx) => handlePhotoNavigation(ctx, 'prev'));

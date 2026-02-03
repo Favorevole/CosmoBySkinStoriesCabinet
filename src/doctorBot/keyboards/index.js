@@ -7,13 +7,18 @@ export function mainMenuKeyboard() {
   ]).resize();
 }
 
-export function applicationViewKeyboard(applicationId, canRequestPhotos = true) {
-  const buttons = [
-    [Markup.button.callback('Дать рекомендацию', `recommend_${applicationId}`)]
-  ];
+export function applicationViewKeyboard(applicationId, photoCount = 0, canRequestPhotos = true) {
+  const buttons = [];
+
+  // View photos button if there are photos
+  if (photoCount > 0) {
+    buttons.push([Markup.button.callback(`🖼 Посмотреть фото (${photoCount})`, `show_photos_${applicationId}`)]);
+  }
+
+  buttons.push([Markup.button.callback('Дать рекомендацию', `recommend_${applicationId}`)]);
 
   if (canRequestPhotos) {
-    buttons.push([Markup.button.callback('📷 Запросить фото', `request_photos_${applicationId}`)]);
+    buttons.push([Markup.button.callback('📷 Запросить доп. фото', `request_photos_${applicationId}`)]);
   }
 
   buttons.push([Markup.button.callback('Отклонить заявку', `decline_${applicationId}`)]);
