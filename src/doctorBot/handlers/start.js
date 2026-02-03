@@ -1,6 +1,6 @@
 import { DOCTOR_STATES, createDoctorSession } from '../states/index.js';
 import { mainMenuKeyboard } from '../keyboards/index.js';
-import { getDoctorByTelegramId, createDoctor } from '../../db/doctors.js';
+import { getDoctorByTelegramId, getDoctorByUsername, createDoctor, linkDoctorTelegramId } from '../../db/doctors.js';
 
 // In-memory session storage
 export const doctorSessions = new Map();
@@ -21,7 +21,25 @@ export async function handleStart(ctx) {
   const username = ctx.from.username;
 
   try {
-    const doctor = await getDoctorByTelegramId(telegramId);
+    // First check if doctor already registered by telegram ID
+    let doctor = await getDoctorByTelegramId(telegramId);
+
+    // If not found by ID, check if pre-registered by username
+    if (!doctor && username) {
+      const preRegistered = await getDoctorByUsername(username);
+      if (preRegistered && preRegistered.telegramId.toString() === '0') {
+        // Link telegram ID to pre-registered doctor
+        doctor = await linkDoctorTelegramId(preRegistered.id, telegramId);
+
+        await ctx.reply(
+          `Добро пожаловать, ${doctor.fullName}!\n\n` +
+          'Ваш аккаунт врача активирован.\n' +
+          'Теперь вы можете получать заявки на консультации.',
+          mainMenuKeyboard()
+        );
+        return;
+      }
+    }
 
     if (doctor) {
       if (doctor.status === 'ACTIVE') {

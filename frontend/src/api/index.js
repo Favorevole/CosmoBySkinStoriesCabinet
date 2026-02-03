@@ -67,6 +67,9 @@ export const getDoctors = () =>
 export const getAvailableDoctors = () =>
   api.get('/doctors/available');
 
+export const createDoctor = (data) =>
+  api.post('/doctors', data);
+
 export const getDoctor = (id) =>
   api.get(`/doctors/${id}`);
 

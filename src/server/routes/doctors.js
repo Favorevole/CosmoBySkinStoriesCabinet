@@ -4,9 +4,11 @@ import {
   getAllDoctors,
   getAvailableDoctors,
   getDoctorByTelegramId,
+  getDoctorByUsername,
   updateDoctor,
   updateDoctorStatus,
-  setDoctorAvailability
+  setDoctorAvailability,
+  createInvitedDoctor
 } from '../../db/doctors.js';
 import { notifyDoctorStatusApproved } from '../../services/notifications.js';
 
@@ -15,6 +17,45 @@ const router = express.Router();
 // All routes require authentication
 router.use(authenticateToken);
 router.use(requireAdmin);
+
+/**
+ * POST /api/doctors
+ * Create a new pre-registered doctor (invite by username)
+ */
+router.post('/', async (req, res) => {
+  try {
+    const { telegramUsername, fullName, specialization } = req.body;
+
+    if (!telegramUsername || !fullName) {
+      return res.status(400).json({ error: 'telegramUsername and fullName are required' });
+    }
+
+    // Check if doctor with this username already exists
+    const existing = await getDoctorByUsername(telegramUsername);
+    if (existing) {
+      return res.status(400).json({ error: 'Врач с таким username уже существует' });
+    }
+
+    const doctor = await createInvitedDoctor({
+      telegramUsername,
+      fullName,
+      specialization
+    });
+
+    res.json({
+      success: true,
+      doctor: {
+        ...doctor,
+        telegramId: doctor.telegramId.toString()
+      },
+      message: `Врач @${doctor.telegramUsername} добавлен. Когда он запустит бота, его аккаунт будет автоматически активирован.`
+    });
+
+  } catch (error) {
+    console.error('[DOCTORS] Error creating:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 /**
  * GET /api/doctors

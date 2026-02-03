@@ -13,23 +13,42 @@ export function setDoctorBot(bot) {
   doctorBot = bot;
 }
 
-// Notify all admins about new application
-export async function notifyAdminsNewApplication(application) {
-  if (!clientBot) {
-    console.log('[NOTIFICATIONS] Client bot not initialized, skipping admin notification');
-    return;
+// Helper to send message to admins via doctor bot
+async function sendToAdminsViaDoctorBot(message, parseMode = 'Markdown') {
+  if (!doctorBot) {
+    console.log('[NOTIFICATIONS] Doctor bot not initialized, skipping doctor bot notification');
+    return 0;
   }
 
   try {
     const admins = await getAllAdmins();
-
-    // Also notify config-defined admins
     const adminIds = new Set([
       ...admins.map(a => a.telegramId),
       ...config.adminTelegramIds
     ]);
 
-    const message = `
+    let sent = 0;
+    for (const adminId of adminIds) {
+      try {
+        await doctorBot.telegram.sendMessage(Number(adminId), message, {
+          parse_mode: parseMode
+        });
+        sent++;
+      } catch (error) {
+        // Admin might not have started doctor bot yet
+        console.log(`[NOTIFICATIONS] Could not send to admin ${adminId} via doctor bot:`, error.message);
+      }
+    }
+    return sent;
+  } catch (error) {
+    console.error('[NOTIFICATIONS] Error sending to admins via doctor bot:', error);
+    return 0;
+  }
+}
+
+// Notify all admins about new application
+export async function notifyAdminsNewApplication(application) {
+  const message = `
 *Новая заявка #${application.id}*
 
 Возраст: ${application.age}
@@ -42,19 +61,31 @@ ${application.additionalComment ? `Комментарий: ${application.additio
 Откройте админ-панель для назначения врача.
 `;
 
-    for (const adminId of adminIds) {
-      try {
-        await clientBot.telegram.sendMessage(Number(adminId), message, {
-          parse_mode: 'Markdown'
-        });
-      } catch (error) {
-        console.error(`[NOTIFICATIONS] Failed to notify admin ${adminId}:`, error.message);
-      }
-    }
+  // Send via doctor bot to admins
+  const sentViaDoctorBot = await sendToAdminsViaDoctorBot(message);
+  console.log(`[NOTIFICATIONS] Notified ${sentViaDoctorBot} admins via doctor bot about application #${application.id}`);
 
-    console.log(`[NOTIFICATIONS] Notified ${adminIds.size} admins about application #${application.id}`);
-  } catch (error) {
-    console.error('[NOTIFICATIONS] Error notifying admins:', error);
+  // Also try client bot as fallback
+  if (clientBot) {
+    try {
+      const admins = await getAllAdmins();
+      const adminIds = new Set([
+        ...admins.map(a => a.telegramId),
+        ...config.adminTelegramIds
+      ]);
+
+      for (const adminId of adminIds) {
+        try {
+          await clientBot.telegram.sendMessage(Number(adminId), message, {
+            parse_mode: 'Markdown'
+          });
+        } catch (error) {
+          // Ignore - already sent via doctor bot
+        }
+      }
+    } catch (error) {
+      console.error('[NOTIFICATIONS] Error notifying admins via client bot:', error);
+    }
   }
 }
 
@@ -139,19 +170,7 @@ ${recommendation.text}
 
 // Notify admins about doctor response
 export async function notifyAdminsDoctorResponse(application) {
-  if (!clientBot) {
-    console.log('[NOTIFICATIONS] Client bot not initialized');
-    return;
-  }
-
-  try {
-    const admins = await getAllAdmins();
-    const adminIds = new Set([
-      ...admins.map(a => a.telegramId),
-      ...config.adminTelegramIds
-    ]);
-
-    const message = `
+  const message = `
 *Врач дал ответ по заявке #${application.id}*
 
 Врач: ${application.doctor.fullName}
@@ -160,35 +179,13 @@ export async function notifyAdminsDoctorResponse(application) {
 Откройте админ-панель для проверки и одобрения.
 `;
 
-    for (const adminId of adminIds) {
-      try {
-        await clientBot.telegram.sendMessage(Number(adminId), message, {
-          parse_mode: 'Markdown'
-        });
-      } catch (error) {
-        console.error(`[NOTIFICATIONS] Failed to notify admin ${adminId}:`, error.message);
-      }
-    }
-  } catch (error) {
-    console.error('[NOTIFICATIONS] Error notifying admins about doctor response:', error);
-  }
+  // Primary: send via doctor bot
+  await sendToAdminsViaDoctorBot(message);
 }
 
 // Notify admins about declined application
 export async function notifyAdminsDecline(application, reason) {
-  if (!clientBot) {
-    console.log('[NOTIFICATIONS] Client bot not initialized');
-    return;
-  }
-
-  try {
-    const admins = await getAllAdmins();
-    const adminIds = new Set([
-      ...admins.map(a => a.telegramId),
-      ...config.adminTelegramIds
-    ]);
-
-    const message = `
+  const message = `
 *Врач отклонил заявку #${application.id}*
 
 Врач: ${application.doctor.fullName}
@@ -197,18 +194,8 @@ export async function notifyAdminsDecline(application, reason) {
 Необходимо назначить другого врача.
 `;
 
-    for (const adminId of adminIds) {
-      try {
-        await clientBot.telegram.sendMessage(Number(adminId), message, {
-          parse_mode: 'Markdown'
-        });
-      } catch (error) {
-        console.error(`[NOTIFICATIONS] Failed to notify admin ${adminId}:`, error.message);
-      }
-    }
-  } catch (error) {
-    console.error('[NOTIFICATIONS] Error notifying admins about decline:', error);
-  }
+  // Primary: send via doctor bot
+  await sendToAdminsViaDoctorBot(message);
 }
 
 // Notify doctor about approval status change

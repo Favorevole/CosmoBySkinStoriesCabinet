@@ -1,8 +1,17 @@
 <template>
   <div class="doctors-page">
     <header class="page-header">
-      <h1>Врачи</h1>
-      <p class="subtitle">Управление специалистами</p>
+      <div class="header-left">
+        <h1>Врачи</h1>
+        <p class="subtitle">Управление специалистами</p>
+      </div>
+      <button @click="showAddModal = true" class="btn btn-primary add-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Добавить врача
+      </button>
     </header>
 
     <div class="stats-row">
@@ -145,13 +154,81 @@
           </svg>
         </div>
         <h3>Нет зарегистрированных врачей</h3>
-        <p>Врачи появятся здесь после регистрации через Telegram-бот</p>
+        <p>Добавьте врача по Telegram username или дождитесь регистрации через бот</p>
+        <button @click="showAddModal = true" class="btn btn-primary empty-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Добавить первого врача
+        </button>
       </div>
     </div>
 
     <div v-if="loading" class="loading">
       <div class="loading-spinner"></div>
       <span>Загрузка...</span>
+    </div>
+
+    <!-- Add Doctor Modal -->
+    <div class="modal-overlay" v-if="showAddModal" @click.self="closeAddModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>Добавить врача</h2>
+          <button @click="closeAddModal" class="modal-close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-hint">
+            Добавьте врача по Telegram username. Когда врач запустит бот для докторов,
+            его аккаунт будет автоматически активирован.
+          </p>
+          <div class="form-group">
+            <label>Telegram username</label>
+            <div class="input-with-prefix">
+              <span class="prefix">@</span>
+              <input
+                type="text"
+                v-model="newDoctor.username"
+                placeholder="username"
+                @keyup.enter="addDoctor"
+              >
+            </div>
+          </div>
+          <div class="form-group">
+            <label>ФИО врача</label>
+            <input
+              type="text"
+              v-model="newDoctor.fullName"
+              placeholder="Иванов Иван Иванович"
+            >
+          </div>
+          <div class="form-group">
+            <label>Специализация (опционально)</label>
+            <input
+              type="text"
+              v-model="newDoctor.specialization"
+              placeholder="Дерматолог-косметолог"
+            >
+          </div>
+          <div v-if="addError" class="error-message">{{ addError }}</div>
+        </div>
+        <div class="modal-footer">
+          <button @click="closeAddModal" class="btn btn-secondary">Отмена</button>
+          <button
+            @click="addDoctor"
+            :disabled="!newDoctor.username || !newDoctor.fullName || adding"
+            class="btn btn-primary"
+          >
+            <span v-if="adding" class="spinner"></span>
+            {{ adding ? 'Добавление...' : 'Добавить врача' }}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -162,11 +239,20 @@ import {
   getDoctors,
   approveDoctor as apiApproveDoctor,
   blockDoctor as apiBlockDoctor,
-  updateDoctor
+  updateDoctor,
+  createDoctor
 } from '../api/index.js';
 
 const doctors = ref([]);
 const loading = ref(true);
+const showAddModal = ref(false);
+const adding = ref(false);
+const addError = ref(null);
+const newDoctor = ref({
+  username: '',
+  fullName: '',
+  specialization: ''
+});
 
 const statusLabels = {
   PENDING: 'Ожидает',
@@ -230,6 +316,33 @@ async function toggleAvailability(doctor) {
 function formatDate(date) {
   return new Date(date).toLocaleDateString('ru-RU');
 }
+
+function closeAddModal() {
+  showAddModal.value = false;
+  newDoctor.value = { username: '', fullName: '', specialization: '' };
+  addError.value = null;
+}
+
+async function addDoctor() {
+  if (!newDoctor.value.username || !newDoctor.value.fullName) return;
+
+  adding.value = true;
+  addError.value = null;
+
+  try {
+    await createDoctor({
+      telegramUsername: newDoctor.value.username,
+      fullName: newDoctor.value.fullName,
+      specialization: newDoctor.value.specialization || null
+    });
+    closeAddModal();
+    await loadDoctors();
+  } catch (error) {
+    addError.value = error.response?.data?.error || 'Ошибка добавления врача';
+  } finally {
+    adding.value = false;
+  }
+}
 </script>
 
 <style scoped>
@@ -240,9 +353,12 @@ function formatDate(date) {
 
 .page-header {
   margin-bottom: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
-.page-header h1 {
+.header-left h1 {
   font-family: 'Cormorant Garamond', serif;
   font-size: 36px;
   font-weight: 600;
@@ -253,6 +369,10 @@ function formatDate(date) {
 .subtitle {
   color: rgba(255, 255, 255, 0.5);
   font-size: 15px;
+}
+
+.add-btn {
+  flex-shrink: 0;
 }
 
 .stats-row {
@@ -533,6 +653,11 @@ function formatDate(date) {
 .empty-state p {
   color: rgba(255, 255, 255, 0.5);
   font-size: 15px;
+  margin-bottom: 24px;
+}
+
+.empty-btn {
+  margin-top: 8px;
 }
 
 .loading {
@@ -558,9 +683,196 @@ function formatDate(date) {
   to { transform: rotate(360deg); }
 }
 
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal {
+  background: linear-gradient(135deg, #222224 0%, #1E1E20 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(201, 169, 98, 0.2);
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 28px;
+  border-bottom: 1px solid rgba(201, 169, 98, 0.1);
+}
+
+.modal-header h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.modal-close {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.modal-close svg {
+  width: 18px;
+  height: 18px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-body {
+  padding: 28px;
+}
+
+.modal-hint {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+  padding: 14px;
+  background: rgba(201, 169, 98, 0.08);
+  border-radius: 10px;
+  border-left: 3px solid #C9A962;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(201, 169, 98, 0.2);
+  border-radius: 10px;
+  font-size: 15px;
+  color: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #C9A962;
+  box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.1);
+}
+
+.form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.input-with-prefix {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(201, 169, 98, 0.2);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.input-with-prefix:focus-within {
+  border-color: #C9A962;
+  box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.1);
+}
+
+.input-with-prefix .prefix {
+  padding: 14px;
+  padding-right: 0;
+  color: #C9A962;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.input-with-prefix input {
+  border: none;
+  background: transparent;
+  padding-left: 8px;
+}
+
+.input-with-prefix input:focus {
+  box-shadow: none;
+}
+
+.error-message {
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  color: #F87171;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  margin-top: 16px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 28px;
+  border-top: 1px solid rgba(201, 169, 98, 0.1);
+}
+
+.modal-footer .btn {
+  min-width: 140px;
+  justify-content: center;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(26, 26, 28, 0.3);
+  border-top-color: #1A1A1C;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
 @media (max-width: 768px) {
   .doctors-page {
     padding: 24px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .add-btn {
+    width: 100%;
+    justify-content: center;
   }
 
   .stats-row {
@@ -573,6 +885,14 @@ function formatDate(date) {
 
   .btn {
     justify-content: center;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+  }
+
+  .modal-footer .btn {
+    width: 100%;
   }
 }
 </style>
