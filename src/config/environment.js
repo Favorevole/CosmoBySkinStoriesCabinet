@@ -18,12 +18,17 @@ const envPath = path.resolve(__dirname, '../../', envFile);
 dotenv.config();
 dotenv.config({ path: envPath, override: true });
 
+// Railway автоматически создает RAILWAY_PUBLIC_DOMAIN, используем его для webhook
+const WEBHOOK_URL = process.env.WEBHOOK_URL ||
+  (process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : null);
+
 const config = {
   nodeEnv: NODE_ENV,
   isDevelopment: NODE_ENV === 'development',
   isProduction: NODE_ENV === 'production',
 
   database: {
+    // DATABASE_URL - стандартная переменная для Railway
     url: process.env.DATABASE_URL
   },
 
@@ -37,7 +42,7 @@ const config = {
 
   server: {
     port: parseInt(process.env.PORT || '3000', 10),
-    webhookUrl: process.env.WEBHOOK_URL,
+    webhookUrl: WEBHOOK_URL,
     dashboardUrl: process.env.DASHBOARD_URL || 'http://localhost:5173'
   },
 
@@ -63,5 +68,25 @@ if (missing.length > 0) {
     process.exit(1);
   }
 }
+
+// Log configuration
+console.log(`\n🚀 Environment: ${NODE_ENV.toUpperCase()}`);
+console.log(`📁 Config file: ${envFile}`);
+if (config.clientBot.token) {
+  console.log(`🤖 Client Bot: ${config.clientBot.token.substring(0, 10)}...`);
+}
+if (config.doctorBot.token) {
+  console.log(`👨‍⚕️ Doctor Bot: ${config.doctorBot.token.substring(0, 10)}...`);
+}
+if (config.database.url) {
+  console.log(`🗄️  Database: ${config.database.url.substring(0, 30)}...`);
+}
+console.log(`🌐 Server Port: ${config.server.port}`);
+if (WEBHOOK_URL) {
+  console.log(`🔗 Webhook URL: ${WEBHOOK_URL}`);
+} else if (config.isProduction) {
+  console.warn(`⚠️  No WEBHOOK_URL or RAILWAY_PUBLIC_DOMAIN set in production!`);
+}
+console.log('');
 
 export default config;

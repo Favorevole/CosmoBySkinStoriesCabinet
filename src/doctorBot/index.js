@@ -135,12 +135,34 @@ export async function startDoctorBot() {
   }
 
   if (config.isProduction && config.server.webhookUrl) {
+    // Production: используем webhook - НЕ вызываем bot.launch()!
     const webhookUrl = `${config.server.webhookUrl}/doctor-webhook`;
-    await bot.telegram.setWebhook(webhookUrl);
-    console.log(`[DOCTOR_BOT] Webhook set to ${webhookUrl}`);
-  } else {
+    try {
+      await bot.telegram.setWebhook(webhookUrl);
+      console.log(`[DOCTOR_BOT] ✅ Webhook set to ${webhookUrl}`);
+
+      // Проверяем статус webhook
+      const webhookInfo = await bot.telegram.getWebhookInfo();
+      console.log(`[DOCTOR_BOT] Webhook info:`, {
+        url: webhookInfo.url,
+        pending_update_count: webhookInfo.pending_update_count,
+        last_error_message: webhookInfo.last_error_message || 'none'
+      });
+    } catch (error) {
+      console.error('[DOCTOR_BOT] ❌ Error setting webhook:', error.message);
+      throw error;
+    }
+  } else if (config.isProduction) {
+    // Production но webhook URL не установлен - предупреждение
+    console.warn('[DOCTOR_BOT] ⚠️ PRODUCTION mode but no WEBHOOK_URL!');
+    console.warn('[DOCTOR_BOT] ⚠️ Set RAILWAY_PUBLIC_DOMAIN or WEBHOOK_URL');
+    console.warn('[DOCTOR_BOT] ⚠️ Starting in polling mode (not recommended for production)');
     await bot.launch();
-    console.log('[DOCTOR_BOT] Started in polling mode');
+    console.log('[DOCTOR_BOT] Started in polling mode (temporary)');
+  } else {
+    // Development: используем polling
+    await bot.launch();
+    console.log('[DOCTOR_BOT] ✅ Started in polling mode');
   }
 
   return bot;

@@ -101,12 +101,34 @@ export async function startClientBot() {
   }
 
   if (config.isProduction && config.server.webhookUrl) {
+    // Production: используем webhook - НЕ вызываем bot.launch()!
     const webhookUrl = `${config.server.webhookUrl}/client-webhook`;
-    await bot.telegram.setWebhook(webhookUrl);
-    console.log(`[CLIENT_BOT] Webhook set to ${webhookUrl}`);
-  } else {
+    try {
+      await bot.telegram.setWebhook(webhookUrl);
+      console.log(`[CLIENT_BOT] ✅ Webhook set to ${webhookUrl}`);
+
+      // Проверяем статус webhook
+      const webhookInfo = await bot.telegram.getWebhookInfo();
+      console.log(`[CLIENT_BOT] Webhook info:`, {
+        url: webhookInfo.url,
+        pending_update_count: webhookInfo.pending_update_count,
+        last_error_message: webhookInfo.last_error_message || 'none'
+      });
+    } catch (error) {
+      console.error('[CLIENT_BOT] ❌ Error setting webhook:', error.message);
+      throw error;
+    }
+  } else if (config.isProduction) {
+    // Production но webhook URL не установлен - предупреждение
+    console.warn('[CLIENT_BOT] ⚠️ PRODUCTION mode but no WEBHOOK_URL!');
+    console.warn('[CLIENT_BOT] ⚠️ Set RAILWAY_PUBLIC_DOMAIN or WEBHOOK_URL');
+    console.warn('[CLIENT_BOT] ⚠️ Starting in polling mode (not recommended for production)');
     await bot.launch();
-    console.log('[CLIENT_BOT] Started in polling mode');
+    console.log('[CLIENT_BOT] Started in polling mode (temporary)');
+  } else {
+    // Development: используем polling
+    await bot.launch();
+    console.log('[CLIENT_BOT] ✅ Started in polling mode');
   }
 
   return bot;

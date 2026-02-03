@@ -47,6 +47,23 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Тестовые endpoints для проверки webhook путей
+app.get('/client-webhook', (req, res) => {
+  res.json({
+    message: 'Client webhook endpoint доступен',
+    method: 'GET',
+    note: 'Telegram использует POST метод'
+  });
+});
+
+app.get('/doctor-webhook', (req, res) => {
+  res.json({
+    message: 'Doctor webhook endpoint доступен',
+    method: 'GET',
+    note: 'Telegram использует POST метод'
+  });
+});
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/applications', applicationsRoutes);
@@ -58,18 +75,33 @@ app.use('/api/web', webRoutes);
 app.post('/client-webhook',
   express.raw({ type: 'application/json' }),
   async (req, res) => {
+    console.log('[WEBHOOK] ✅ Client bot request received');
+
     if (!clientBot) {
-      console.error('[WEBHOOK] Client bot not initialized');
-      return res.status(500).send('Bot not initialized');
+      console.error('[WEBHOOK] ❌ Client bot not initialized');
+      return res.status(503).json({ error: 'Bot not initialized' });
+    }
+
+    if (!req.body || req.body.length === 0) {
+      console.error('[WEBHOOK] ❌ Empty request body');
+      return res.status(400).json({ error: 'Empty body' });
     }
 
     try {
-      const update = JSON.parse(req.body.toString());
-      await clientBot.handleUpdate(update);
-      res.status(200).send('ok');
+      const bodyStr = Buffer.isBuffer(req.body) ? req.body.toString() : req.body;
+      const update = JSON.parse(bodyStr);
+      console.log('[WEBHOOK] Client update:', update?.message?.text || update?.callback_query?.data || 'other');
+
+      // Сразу отвечаем Telegram 200 OK, чтобы не было повторных отправок
+      res.sendStatus(200);
+
+      // Обрабатываем update асинхронно
+      clientBot.handleUpdate(update).catch(error => {
+        console.error('[WEBHOOK] ❌ Client bot processing error:', error.message);
+      });
     } catch (error) {
-      console.error('[WEBHOOK] Client bot error:', error);
-      res.status(200).send('ok'); // Always respond 200 to Telegram
+      console.error('[WEBHOOK] ❌ Client bot parse error:', error.message);
+      res.sendStatus(500);
     }
   }
 );
@@ -78,18 +110,33 @@ app.post('/client-webhook',
 app.post('/doctor-webhook',
   express.raw({ type: 'application/json' }),
   async (req, res) => {
+    console.log('[WEBHOOK] ✅ Doctor bot request received');
+
     if (!doctorBot) {
-      console.error('[WEBHOOK] Doctor bot not initialized');
-      return res.status(500).send('Bot not initialized');
+      console.error('[WEBHOOK] ❌ Doctor bot not initialized');
+      return res.status(503).json({ error: 'Bot not initialized' });
+    }
+
+    if (!req.body || req.body.length === 0) {
+      console.error('[WEBHOOK] ❌ Empty request body');
+      return res.status(400).json({ error: 'Empty body' });
     }
 
     try {
-      const update = JSON.parse(req.body.toString());
-      await doctorBot.handleUpdate(update);
-      res.status(200).send('ok');
+      const bodyStr = Buffer.isBuffer(req.body) ? req.body.toString() : req.body;
+      const update = JSON.parse(bodyStr);
+      console.log('[WEBHOOK] Doctor update:', update?.message?.text || update?.callback_query?.data || 'other');
+
+      // Сразу отвечаем Telegram 200 OK
+      res.sendStatus(200);
+
+      // Обрабатываем update асинхронно
+      doctorBot.handleUpdate(update).catch(error => {
+        console.error('[WEBHOOK] ❌ Doctor bot processing error:', error.message);
+      });
     } catch (error) {
-      console.error('[WEBHOOK] Doctor bot error:', error);
-      res.status(200).send('ok');
+      console.error('[WEBHOOK] ❌ Doctor bot parse error:', error.message);
+      res.sendStatus(500);
     }
   }
 );
