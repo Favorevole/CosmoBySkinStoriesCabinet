@@ -24,7 +24,7 @@ const config = {
   isProduction: NODE_ENV === 'production',
 
   database: {
-    url: process.env.DATABASE_URL || process.env.DB_URL
+    url: process.env.DATABASE_URL
   },
 
   clientBot: {
@@ -54,13 +54,8 @@ const config = {
 };
 
 // Validation
-const requiredVars = ['CLIENT_BOT_TOKEN', 'DOCTOR_BOT_TOKEN'];
+const requiredVars = ['DATABASE_URL', 'CLIENT_BOT_TOKEN', 'DOCTOR_BOT_TOKEN'];
 const missing = requiredVars.filter(v => !process.env[v]);
-
-// Check DB_URL separately (can be DB_URL or DATABASE_URL)
-if (!process.env.DB_URL && !process.env.DATABASE_URL) {
-  missing.push('DB_URL');
-}
 
 if (missing.length > 0) {
   console.error(`Missing required environment variables: ${missing.join(', ')}`);
