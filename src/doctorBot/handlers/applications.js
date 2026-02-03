@@ -129,10 +129,15 @@ export async function handleViewApplication(ctx) {
 
 export async function handleShowPhotos(ctx) {
   const telegramId = ctx.from.id;
-  const applicationId = parseInt(ctx.callbackQuery.data.split('_').pop());
+  const callbackData = ctx.callbackQuery.data;
+  console.log(`[DOCTOR_BOT] handleShowPhotos called with data: ${callbackData}`);
+
+  const applicationId = parseInt(callbackData.split('_').pop());
+  console.log(`[DOCTOR_BOT] Parsed applicationId: ${applicationId}`);
 
   try {
     const doctor = await getDoctorByTelegramId(telegramId);
+    console.log(`[DOCTOR_BOT] Doctor found: ${doctor?.id}, status: ${doctor?.status}`);
 
     if (!doctor || doctor.status !== 'ACTIVE') {
       await ctx.answerCbQuery('Нет доступа');
@@ -140,13 +145,14 @@ export async function handleShowPhotos(ctx) {
     }
 
     const application = await getApplicationById(applicationId);
+    console.log(`[DOCTOR_BOT] Application found: ${application?.id}, photos: ${application?.photos?.length}`);
 
     if (!application || application.doctorId !== doctor.id) {
       await ctx.answerCbQuery('Заявка не найдена');
       return;
     }
 
-    if (application.photos.length === 0) {
+    if (!application.photos || application.photos.length === 0) {
       await ctx.answerCbQuery('Нет фотографий');
       return;
     }
@@ -155,24 +161,39 @@ export async function handleShowPhotos(ctx) {
 
     // Send first photo with navigation
     const photo = application.photos[0];
-    if (photo.telegramFileId) {
-      await ctx.replyWithPhoto(photo.telegramFileId, {
-        caption: `Фото 1/${application.photos.length}\nЗаявка #${applicationId}`,
-        ...viewPhotosKeyboard(applicationId, 0, application.photos.length)
-      });
-    } else {
-      await ctx.replyWithPhoto(
-        { source: photo.data },
-        {
+    console.log(`[DOCTOR_BOT] Sending photo, telegramFileId: ${photo.telegramFileId}, hasData: ${!!photo.data}`);
+
+    try {
+      if (photo.telegramFileId) {
+        await ctx.replyWithPhoto(photo.telegramFileId, {
           caption: `Фото 1/${application.photos.length}\nЗаявка #${applicationId}`,
           ...viewPhotosKeyboard(applicationId, 0, application.photos.length)
-        }
-      );
+        });
+      } else if (photo.data) {
+        await ctx.replyWithPhoto(
+          { source: Buffer.from(photo.data) },
+          {
+            caption: `Фото 1/${application.photos.length}\nЗаявка #${applicationId}`,
+            ...viewPhotosKeyboard(applicationId, 0, application.photos.length)
+          }
+        );
+      } else {
+        console.error('[DOCTOR_BOT] Photo has no telegramFileId or data');
+        await ctx.reply('Не удалось загрузить фото - данные отсутствуют');
+      }
+      console.log('[DOCTOR_BOT] Photo sent successfully');
+    } catch (photoError) {
+      console.error('[DOCTOR_BOT] Error sending photo:', photoError);
+      await ctx.reply('Не удалось отправить фото. Попробуйте позже.');
     }
 
   } catch (error) {
     console.error('[DOCTOR_BOT] Error showing photos:', error);
-    await ctx.answerCbQuery('Ошибка загрузки фото');
+    try {
+      await ctx.answerCbQuery('Ошибка загрузки фото');
+    } catch (e) {
+      // callback already answered
+    }
   }
 }
 
@@ -210,19 +231,22 @@ export async function handlePhotoNavigation(ctx, direction) {
           },
           viewPhotosKeyboard(applicationId, newIndex, application.photos.length)
         );
-      } else {
+      } else if (photo.data) {
         // Can't edit with buffer, need to delete and send new
         await ctx.deleteMessage();
         await ctx.replyWithPhoto(
-          { source: photo.data },
+          { source: Buffer.from(photo.data) },
           {
             caption: `Фото ${newIndex + 1}/${application.photos.length}`,
             ...viewPhotosKeyboard(applicationId, newIndex, application.photos.length)
           }
         );
+      } else {
+        await ctx.reply('Не удалось загрузить фото');
       }
     } catch (e) {
       console.error('[DOCTOR_BOT] Error navigating photos:', e);
+      await ctx.reply('Ошибка при переключении фото');
     }
 
   } catch (error) {
