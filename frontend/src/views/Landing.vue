@@ -2,826 +2,848 @@
   <div class="landing">
     <!-- Header -->
     <header class="header">
-      <div class="container">
-        <div class="logo">CosmoSkin</div>
-        <nav>
+      <div class="header-content">
+        <div class="logo">SKIN.STORIES</div>
+        <nav class="nav">
+          <a href="#how-it-works">О нас</a>
           <a href="#how-it-works">Как это работает</a>
-          <a href="#benefits">Преимущества</a>
-          <a href="#form">Консультация</a>
+          <a href="#team">Специалисты</a>
+          <a href="#form">Контакты</a>
+          <a :href="telegramBotLink" target="_blank" class="nav-cta">Записаться</a>
         </nav>
       </div>
     </header>
 
     <!-- Hero -->
     <section class="hero">
-      <div class="container">
-        <h1>Персональные рекомендации<br>по уходу за кожей</h1>
-        <p class="subtitle">Получите консультацию от квалифицированного специалиста онлайн</p>
-        <div class="cta-buttons">
-          <a :href="telegramBotLink" target="_blank" class="btn btn-primary">
-            Написать в Telegram
-          </a>
-          <a href="#form" class="btn btn-secondary">Заполнить на сайте</a>
+      <div class="hero-overlay">
+        <span class="tagline">КАЖДАЯ ЛИНИЯ — ИСТОРИЯ</span>
+        <h1>Персональные консультации<br>по уходу за кожей</h1>
+        <p class="subtitle">Получите профессиональные рекомендации от квалифицированных специалистов<br>онлайн через Telegram</p>
+        <div class="hero-buttons">
+          <a :href="telegramBotLink" target="_blank" class="btn btn-primary">Начать консультацию</a>
+          <a href="#how-it-works" class="btn btn-secondary">Узнать больше</a>
         </div>
       </div>
     </section>
 
     <!-- How it works -->
     <section id="how-it-works" class="how-it-works">
-      <div class="container">
+      <div class="section-header">
+        <span class="tagline">ПРОЦЕСС</span>
         <h2>Как это работает</h2>
-        <div class="steps">
-          <div class="step">
-            <div class="step-number">1</div>
-            <h3>Заполните анкету</h3>
-            <p>Ответьте на 4 простых вопроса о вашей коже</p>
-          </div>
-          <div class="step">
-            <div class="step-number">2</div>
-            <h3>Загрузите фото</h3>
-            <p>Прикрепите 2-6 фотографий вашей кожи</p>
-          </div>
-          <div class="step">
-            <div class="step-number">3</div>
-            <h3>Дождитесь ответа</h3>
-            <p>Специалист изучит вашу заявку</p>
-          </div>
-          <div class="step">
-            <div class="step-number">4</div>
-            <h3>Получите рекомендации</h3>
-            <p>Персональный план ухода с рекомендациями средств</p>
-          </div>
+        <p class="section-desc">Простой путь к здоровой и красивой коже</p>
+      </div>
+      <div class="steps">
+        <div class="step-card">
+          <span class="step-num">01</span>
+          <h3>Заполните анкету</h3>
+          <p>Ответьте на несколько вопросов о вашей коже и текущем уходе</p>
+        </div>
+        <div class="step-card">
+          <span class="step-num">02</span>
+          <h3>Загрузите фото</h3>
+          <p>Прикрепите 2-6 фотографий вашей кожи для анализа</p>
+        </div>
+        <div class="step-card">
+          <span class="step-num">03</span>
+          <h3>Анализ специалиста</h3>
+          <p>Наш косметолог изучит вашу анкету и фотографии</p>
+        </div>
+        <div class="step-card">
+          <span class="step-num">04</span>
+          <h3>Получите план</h3>
+          <p>Персональные рекомендации по уходу и подбору средств</p>
         </div>
       </div>
     </section>
 
     <!-- Benefits -->
-    <section id="benefits" class="benefits">
-      <div class="container">
-        <h2>Преимущества</h2>
-        <div class="benefits-grid">
-          <div class="benefit">
-            <div class="icon">👩‍⚕️</div>
-            <h3>Квалифицированные специалисты</h3>
-            <p>Консультации от дерматологов и косметологов</p>
+    <section class="benefits">
+      <div class="benefits-content">
+        <span class="tagline">ПРЕИМУЩЕСТВА</span>
+        <h2>Почему выбирают нас</h2>
+        <div class="benefits-list">
+          <div class="benefit-item">
+            <span class="benefit-dash">—</span>
+            <div class="benefit-text">
+              <h4>Квалифицированные специалисты</h4>
+              <p>Консультации от опытных дерматологов и косметологов</p>
+            </div>
           </div>
-          <div class="benefit">
-            <div class="icon">📱</div>
-            <h3>Удобный формат</h3>
-            <p>Через Telegram или на сайте — как вам удобнее</p>
+          <div class="benefit-item">
+            <span class="benefit-dash">—</span>
+            <div class="benefit-text">
+              <h4>Удобный формат</h4>
+              <p>Через Telegram — консультация там, где вам удобно</p>
+            </div>
           </div>
-          <div class="benefit">
-            <div class="icon">⚡</div>
-            <h3>Быстрый ответ</h3>
-            <p>Рекомендации в течение 24-48 часов</p>
+          <div class="benefit-item">
+            <span class="benefit-dash">—</span>
+            <div class="benefit-text">
+              <h4>Быстрый результат</h4>
+              <p>Рекомендации в течение 24-48 часов</p>
+            </div>
           </div>
-          <div class="benefit">
-            <div class="icon">🎯</div>
-            <h3>Индивидуальный подход</h3>
-            <p>Учитываем особенности именно вашей кожи</p>
+          <div class="benefit-item">
+            <span class="benefit-dash">—</span>
+            <div class="benefit-text">
+              <h4>Индивидуальный подход</h4>
+              <p>Учитываем особенности именно вашей кожи</p>
+            </div>
           </div>
         </div>
       </div>
+      <div class="benefits-image"></div>
     </section>
 
-    <!-- Target audience -->
+    <!-- Concept -->
+    <section class="concept">
+      <div class="section-header">
+        <span class="tagline tagline-dark">КОНЦЕПТ</span>
+        <h2 class="dark-text">Кожа как микроландшафт</h2>
+        <p class="section-desc dark-text">Каждая пора — отпечаток времени. Мы видим красоту в деталях и помогаем<br>раскрыть потенциал вашей кожи.</p>
+      </div>
+      <div class="concept-grid">
+        <div class="concept-img concept-img-1"></div>
+        <div class="concept-img concept-img-2"></div>
+        <div class="concept-img concept-img-3"></div>
+        <div class="concept-img concept-img-4"></div>
+      </div>
+    </section>
+
+    <!-- Target Audience -->
     <section class="target">
-      <div class="container">
-        <h2>Для кого этот сервис</h2>
-        <ul>
-          <li>Тем, кто хочет подобрать правильный уход за кожей</li>
-          <li>Тем, кто столкнулся с проблемами кожи</li>
-          <li>Тем, кто хочет профессиональный взгляд на свой текущий уход</li>
-          <li>Тем, кто не знает, с чего начать</li>
-        </ul>
+      <div class="section-header">
+        <span class="tagline">ДЛЯ КОГО</span>
+        <h2>Кому подойдёт наш сервис</h2>
+      </div>
+      <div class="target-grid">
+        <div class="target-card">
+          <svg class="target-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 3l1.5 4.5h4.5l-3.5 2.5 1.5 4.5-4-3-4 3 1.5-4.5-3.5-2.5h4.5z"/>
+          </svg>
+          <h4>Начинающим</h4>
+          <p>Тем, кто не знает с чего начать уход за кожей</p>
+        </div>
+        <div class="target-card">
+          <svg class="target-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <h4>Ищущим решение</h4>
+          <p>Тем, кто столкнулся с проблемами кожи</p>
+        </div>
+        <div class="target-card">
+          <svg class="target-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+          <h4>Экспертам</h4>
+          <p>Тем, кто хочет профессиональную оценку текущего ухода</p>
+        </div>
+        <div class="target-card">
+          <svg class="target-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <h4>Заботливым</h4>
+          <p>Тем, кто хочет подобрать правильный уход</p>
+        </div>
       </div>
     </section>
 
-    <!-- Form -->
-    <section id="form" class="form-section">
-      <div class="container">
-        <h2>Заполнить анкету на сайте</h2>
-        <p class="form-subtitle">
-          Или используйте наш
-          <a :href="telegramBotLink" target="_blank">Telegram бот</a>
-        </p>
-
-        <form @submit.prevent="submitForm" class="questionnaire-form" v-if="!submitted">
-          <!-- Age -->
-          <div class="form-group">
-            <label for="age">Ваш возраст *</label>
-            <input
-              type="number"
-              id="age"
-              v-model.number="form.age"
-              min="12"
-              max="120"
-              required
-              placeholder="Например: 25"
-            >
-          </div>
-
-          <!-- Skin Type -->
-          <div class="form-group">
-            <label>Тип кожи *</label>
-            <div class="radio-group">
-              <label v-for="type in skinTypes" :key="type.value" class="radio-label">
-                <input type="radio" v-model="form.skinType" :value="type.value" required>
-                <span>{{ type.label }}</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Problems -->
-          <div class="form-group">
-            <label for="problems">Основные проблемы *</label>
-            <textarea
-              id="problems"
-              v-model="form.mainProblems"
-              required
-              placeholder="Опишите, что вас беспокоит..."
-              rows="3"
-            ></textarea>
-            <div class="hints">
-              <button
-                type="button"
-                v-for="hint in problemHints"
-                :key="hint"
-                @click="addHint(hint)"
-                class="hint-btn"
-              >
-                + {{ hint }}
-              </button>
-            </div>
-          </div>
-
-          <!-- Comment -->
-          <div class="form-group">
-            <label for="comment">Дополнительный комментарий</label>
-            <textarea
-              id="comment"
-              v-model="form.additionalComment"
-              placeholder="Текущий уход, аллергии, хронические заболевания..."
-              rows="2"
-            ></textarea>
-          </div>
-
-          <!-- Photos -->
-          <div class="form-group">
-            <label>Фотографии кожи (1-6 шт.) *</label>
-            <div class="photo-upload">
-              <input
-                type="file"
-                ref="fileInput"
-                @change="handleFiles"
-                accept="image/*"
-                multiple
-                :disabled="photos.length >= 6"
-                class="file-input"
-              >
-              <div class="upload-area" @click="$refs.fileInput.click()">
-                <span v-if="photos.length === 0">Нажмите для загрузки фотографий</span>
-                <span v-else>{{ photos.length }} / 6 фото загружено</span>
-              </div>
-              <div class="photo-previews" v-if="photos.length > 0">
-                <div v-for="(photo, index) in photos" :key="index" class="preview">
-                  <img :src="photo.preview" alt="">
-                  <button type="button" @click="removePhoto(index)" class="remove-btn">×</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Contact -->
-          <div class="form-group">
-            <label for="email">Email или Telegram для ответа *</label>
-            <input
-              type="text"
-              id="email"
-              v-model="form.contact"
-              required
-              placeholder="email@example.com или @username"
-            >
-          </div>
-
-          <!-- Submit -->
-          <button type="submit" class="btn btn-primary btn-lg" :disabled="loading || !isFormValid">
-            {{ loading ? 'Отправка...' : 'Отправить заявку' }}
-          </button>
-        </form>
-
-        <!-- Success -->
-        <div v-if="submitted" class="success-message">
-          <div class="success-icon">✅</div>
-          <h3>Заявка #{{ applicationId }} отправлена!</h3>
-          <p>
-            Специалист изучит вашу анкету и фотографии.
-            Ответ придёт на указанный контакт в течение 24-48 часов.
-          </p>
-          <p>
-            Для отслеживания статуса используйте наш
-            <a :href="telegramBotLink" target="_blank">Telegram бот</a>
-          </p>
+    <!-- Team -->
+    <section id="team" class="team">
+      <div class="section-header">
+        <span class="tagline">КОМАНДА</span>
+        <h2>Наши специалисты</h2>
+        <p class="section-desc">Квалифицированные косметологи и дерматологи с многолетним опытом</p>
+      </div>
+      <div class="team-grid">
+        <div class="specialist">
+          <div class="specialist-img specialist-img-1"></div>
+          <h4>Анна Петрова</h4>
+          <p>Косметолог-эстетист</p>
         </div>
-
-        <!-- Error -->
-        <div v-if="error" class="error-message">
-          {{ error }}
+        <div class="specialist">
+          <div class="specialist-img specialist-img-2"></div>
+          <h4>Елена Козырева</h4>
+          <p>Дерматолог</p>
+        </div>
+        <div class="specialist">
+          <div class="specialist-img specialist-img-3"></div>
+          <h4>Мария Иванова</h4>
+          <p>Мастер по лицу и телу</p>
+        </div>
+        <div class="specialist">
+          <div class="specialist-img specialist-img-4"></div>
+          <h4>Ольга Смирнова</h4>
+          <p>Косметолог-эстетист</p>
         </div>
       </div>
     </section>
 
     <!-- Final CTA -->
     <section class="final-cta">
-      <div class="container">
-        <h2>Готовы начать?</h2>
-        <div class="cta-buttons">
-          <a :href="telegramBotLink" target="_blank" class="btn btn-primary">
-            Написать в Telegram
-          </a>
-          <a href="#form" class="btn btn-secondary">Заполнить на сайте</a>
-        </div>
+      <h2>Готовы начать свой путь<br>к здоровой коже?</h2>
+      <p class="cta-subtitle">Получите персональные рекомендации от наших специалистов</p>
+      <div class="cta-buttons">
+        <a :href="telegramBotLink" target="_blank" class="btn btn-primary">Начать консультацию</a>
+        <a :href="telegramBotLink" target="_blank" class="btn btn-secondary-light">Написать в Telegram</a>
       </div>
+      <span class="cta-trust">Ответ в течение 24-48 часов</span>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
-      <div class="container">
-        <p>&copy; 2024 CosmoSkin. Все права защищены.</p>
+      <div class="footer-main">
+        <div class="footer-brand">
+          <div class="footer-logo">SKIN.STORIES</div>
+          <p>Персональные консультации по уходу за кожей от квалифицированных специалистов</p>
+        </div>
+        <div class="footer-nav">
+          <div class="footer-col">
+            <h5>Навигация</h5>
+            <a href="#how-it-works">О нас</a>
+            <a href="#how-it-works">Как это работает</a>
+            <a href="#team">Специалисты</a>
+            <a href="#form">Контакты</a>
+          </div>
+          <div class="footer-col">
+            <h5>Контакты</h5>
+            <a :href="telegramBotLink" target="_blank">Telegram: @skinstories_bot</a>
+            <a href="mailto:hello@skin.stories">Email: hello@skin.stories</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-bottom">
+        <span>© 2024 Skin.Stories. Все права защищены.</span>
+        <div class="footer-social">
+          <a :href="telegramBotLink" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="m22 2-11 11"/></svg>
+          </a>
+          <a href="#" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/></svg>
+          </a>
+        </div>
       </div>
     </footer>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { submitWebApplication } from '../api';
-
 const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
-
-const skinTypes = [
-  { value: 'DRY', label: 'Сухая' },
-  { value: 'OILY', label: 'Жирная' },
-  { value: 'COMBINATION', label: 'Комбинированная' },
-  { value: 'NORMAL', label: 'Нормальная' }
-];
-
-const problemHints = [
-  'Акне',
-  'Сухость',
-  'Жирность',
-  'Пигментация',
-  'Морщины',
-  'Покраснения'
-];
-
-const form = ref({
-  age: null,
-  skinType: '',
-  mainProblems: '',
-  additionalComment: '',
-  contact: ''
-});
-
-const photos = ref([]);
-const loading = ref(false);
-const submitted = ref(false);
-const applicationId = ref(null);
-const error = ref(null);
-const fileInput = ref(null);
-
-const isFormValid = computed(() => {
-  return form.value.age &&
-    form.value.skinType &&
-    form.value.mainProblems.length >= 3 &&
-    form.value.contact &&
-    photos.value.length >= 1;
-});
-
-function addHint(hint) {
-  if (form.value.mainProblems) {
-    form.value.mainProblems += ', ' + hint;
-  } else {
-    form.value.mainProblems = hint;
-  }
-}
-
-function handleFiles(event) {
-  const files = event.target.files;
-  for (const file of files) {
-    if (photos.value.length >= 6) break;
-    if (!file.type.startsWith('image/')) continue;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      photos.value.push({
-        file,
-        preview: e.target.result
-      });
-    };
-    reader.readAsDataURL(file);
-  }
-  event.target.value = '';
-}
-
-function removePhoto(index) {
-  photos.value.splice(index, 1);
-}
-
-async function submitForm() {
-  if (!isFormValid.value) return;
-
-  loading.value = true;
-  error.value = null;
-
-  try {
-    const formData = new FormData();
-    formData.append('age', form.value.age);
-    formData.append('skinType', form.value.skinType);
-    formData.append('mainProblems', form.value.mainProblems);
-    formData.append('additionalComment', form.value.additionalComment);
-
-    // Parse contact
-    if (form.value.contact.includes('@') && !form.value.contact.includes('.')) {
-      formData.append('phone', form.value.contact);
-    } else {
-      formData.append('email', form.value.contact);
-    }
-
-    for (const photo of photos.value) {
-      formData.append('photos', photo.file);
-    }
-
-    const response = await submitWebApplication(formData);
-    applicationId.value = response.data.applicationId;
-    submitted.value = true;
-
-  } catch (err) {
-    error.value = err.response?.data?.error || 'Произошла ошибка. Попробуйте позже.';
-  } finally {
-    loading.value = false;
-  }
-}
 </script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --bg-primary: #1A1A1C;
+  --bg-surface: #242426;
+  --bg-maroon: #5D1A2D;
+  --bg-cream: #F5EDE6;
+
+  --text-primary: #F5F5F0;
+  --text-secondary: #A0A0A0;
+  --text-muted: #6E6E70;
+  --text-dark: #1A1A1C;
+
+  --accent-gold: #C9A962;
+  --accent-beige: #D4B5A0;
+
+  --border-subtle: #3A3A3C;
+
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'Inter', sans-serif;
+}
+</style>
 
 <style scoped>
 .landing {
   min-height: 100vh;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
 }
 
 /* Header */
 .header {
-  padding: 20px 0;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  background: white;
   z-index: 100;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  background: rgba(26, 26, 28, 0.95);
+  backdrop-filter: blur(10px);
 }
 
-.header .container {
+.header-content {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 120px;
+  height: 80px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .logo {
+  font-family: var(--font-display);
   font-size: 24px;
-  font-weight: 700;
-  color: var(--primary);
-}
-
-.header nav {
-  display: flex;
-  gap: 30px;
-}
-
-.header nav a {
-  color: var(--gray-600);
   font-weight: 500;
+  letter-spacing: 3px;
+  color: var(--text-primary);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+}
+
+.nav a {
+  font-size: 14px;
+  color: var(--text-secondary);
+  transition: color 0.2s;
+}
+
+.nav a:hover {
+  color: var(--text-primary);
+}
+
+.nav-cta {
+  padding: 12px 24px;
+  border: 1px solid var(--accent-gold);
+  border-radius: 4px;
+  color: var(--accent-gold) !important;
+  font-weight: 500;
+}
+
+.nav-cta:hover {
+  background: var(--accent-gold);
+  color: var(--bg-primary) !important;
 }
 
 /* Hero */
 .hero {
-  padding: 160px 0 100px;
-  text-align: center;
-  background: linear-gradient(135deg, var(--secondary) 0%, white 100%);
+  min-height: 800px;
+  background: linear-gradient(180deg, rgba(26,26,28,0) 0%, rgba(26,26,28,1) 100%),
+              url('https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?w=1920&q=80') center/cover;
+  display: flex;
+  align-items: flex-end;
+}
+
+.hero-overlay {
+  width: 100%;
+  padding: 120px;
+  padding-top: 200px;
+}
+
+.tagline {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 4px;
+  color: var(--accent-gold);
+  margin-bottom: 16px;
+}
+
+.tagline-dark {
+  color: var(--bg-maroon);
 }
 
 .hero h1 {
-  font-size: 48px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  line-height: 1.2;
+  font-family: var(--font-display);
+  font-size: 72px;
+  font-weight: 300;
+  line-height: 1.1;
+  margin-bottom: 24px;
 }
 
 .subtitle {
-  font-size: 20px;
-  color: var(--gray-600);
+  font-size: 18px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 600px;
+  margin-bottom: 32px;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 18px 40px;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 4px;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.btn-primary {
+  background: var(--accent-gold);
+  color: var(--bg-primary);
+}
+
+.btn-primary:hover {
+  background: #D4B06A;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--text-primary);
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+}
+
+.btn-secondary-light {
+  background: transparent;
+  border: 1px solid var(--text-primary);
+  color: var(--text-primary);
+}
+
+/* How it works */
+.how-it-works {
+  padding: 120px;
+  background: var(--bg-primary);
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.section-header h2 {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 400;
+  margin: 16px 0;
+}
+
+.section-desc {
+  font-size: 18px;
+  color: var(--text-muted);
+}
+
+.dark-text {
+  color: var(--text-dark);
+}
+
+.steps {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.step-card {
+  width: 260px;
+  background: var(--bg-surface);
+  padding: 32px;
+  border-radius: 8px;
+}
+
+.step-num {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 300;
+  color: var(--accent-gold);
+  display: block;
+  margin-bottom: 20px;
+}
+
+.step-card h3 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.step-card p {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Benefits */
+.benefits {
+  display: flex;
+  min-height: 600px;
+  background: var(--bg-maroon);
+}
+
+.benefits-content {
+  flex: 1;
+  padding: 100px 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.benefits h2 {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 400;
+  margin: 16px 0 40px;
+}
+
+.benefits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.benefit-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.benefit-dash {
+  font-family: var(--font-display);
+  font-size: 24px;
+  color: var(--accent-gold);
+}
+
+.benefit-text h4 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.benefit-text p {
+  font-size: 14px;
+  color: var(--accent-beige);
+  line-height: 1.5;
+}
+
+.benefits-image {
+  width: 600px;
+  background: url('https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&q=80') center/cover;
+}
+
+/* Concept */
+.concept {
+  padding: 100px 120px;
+  background: var(--bg-cream);
+}
+
+.concept-grid {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.concept-img {
+  width: 280px;
+  height: 350px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+}
+
+.concept-img-1 { background-image: url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&q=80'); }
+.concept-img-2 { background-image: url('https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=400&q=80'); }
+.concept-img-3 { background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80'); }
+.concept-img-4 { background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80'); }
+
+/* Target */
+.target {
+  padding: 100px 120px;
+  background: var(--bg-primary);
+}
+
+.target-grid {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.target-card {
+  width: 260px;
+  background: var(--bg-surface);
+  padding: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+}
+
+.target-icon {
+  width: 32px;
+  height: 32px;
+  color: var(--accent-gold);
+  margin-bottom: 16px;
+}
+
+.target-card h4 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.target-card p {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Team */
+.team {
+  padding: 100px 120px;
+  background: var(--bg-surface);
+}
+
+.team-grid {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.specialist {
+  width: 270px;
+  text-align: center;
+}
+
+.specialist-img {
+  width: 270px;
+  height: 320px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 16px;
+}
+
+.specialist-img-1 { background-image: url('https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&q=80'); }
+.specialist-img-2 { background-image: url('https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&q=80'); }
+.specialist-img-3 { background-image: url('https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400&q=80'); }
+.specialist-img-4 { background-image: url('https://images.unsplash.com/photo-1580281657702-257584239a55?w=400&q=80'); }
+
+.specialist h4 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.specialist p {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* Final CTA */
+.final-cta {
+  padding: 120px;
+  background: var(--bg-maroon);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 500px;
+}
+
+.final-cta h2 {
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 400;
+  line-height: 1.2;
+  margin-bottom: 24px;
+}
+
+.cta-subtitle {
+  font-size: 18px;
+  color: var(--accent-beige);
   margin-bottom: 40px;
 }
 
 .cta-buttons {
   display: flex;
-  gap: 16px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.btn {
-  display: inline-block;
-  padding: 14px 28px;
-  font-size: 16px;
-  font-weight: 600;
-  border-radius: 8px;
-  border: none;
-  transition: all 0.2s;
-}
-
-.btn-primary {
-  background: var(--primary);
-  color: white;
-}
-
-.btn-primary:hover {
-  background: var(--primary-dark);
-  text-decoration: none;
-}
-
-.btn-secondary {
-  background: white;
-  color: var(--primary);
-  border: 2px solid var(--primary);
-}
-
-.btn-secondary:hover {
-  background: var(--secondary);
-  text-decoration: none;
-}
-
-.btn-lg {
-  padding: 16px 32px;
-  font-size: 18px;
-  width: 100%;
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Sections */
-section {
-  padding: 80px 0;
-}
-
-section h2 {
-  font-size: 36px;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 50px;
-}
-
-/* How it works */
-.steps {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 30px;
-}
-
-.step {
-  text-align: center;
-  padding: 30px;
-}
-
-.step-number {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: var(--primary);
-  color: white;
-  font-size: 24px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 20px;
-}
-
-.step h3 {
-  font-size: 20px;
-  margin-bottom: 10px;
-}
-
-.step p {
-  color: var(--gray-600);
-}
-
-/* Benefits */
-.benefits {
-  background: var(--gray-50);
-}
-
-.benefits-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 30px;
-}
-
-.benefit {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  text-align: center;
-}
-
-.benefit .icon {
-  font-size: 48px;
-  margin-bottom: 15px;
-}
-
-.benefit h3 {
-  font-size: 18px;
-  margin-bottom: 10px;
-}
-
-.benefit p {
-  color: var(--gray-600);
-  font-size: 14px;
-}
-
-/* Target */
-.target ul {
-  max-width: 600px;
-  margin: 0 auto;
-  list-style: none;
-}
-
-.target li {
-  padding: 15px 0;
-  padding-left: 40px;
-  position: relative;
-  font-size: 18px;
-  border-bottom: 1px solid var(--gray-200);
-}
-
-.target li:before {
-  content: '✓';
-  position: absolute;
-  left: 0;
-  color: var(--primary);
-  font-weight: bold;
-}
-
-/* Form */
-.form-section {
-  background: var(--gray-50);
-}
-
-.form-subtitle {
-  text-align: center;
-  color: var(--gray-600);
-  margin-bottom: 40px;
-}
-
-.questionnaire-form {
-  max-width: 600px;
-  margin: 0 auto;
-  background: white;
-  padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-}
-
-.form-group {
+  gap: 20px;
   margin-bottom: 24px;
 }
 
-.form-group label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.form-group input[type="text"],
-.form-group input[type="number"],
-.form-group textarea {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid var(--gray-300);
-  border-radius: 8px;
-  font-size: 16px;
-  transition: border-color 0.2s;
-}
-
-.form-group input:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: var(--primary);
-}
-
-.radio-group {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-
-.radio-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px;
-  border: 1px solid var(--gray-300);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.radio-label:has(input:checked) {
-  border-color: var(--primary);
-  background: var(--secondary);
-}
-
-.radio-label input {
-  accent-color: var(--primary);
-}
-
-.hints {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.hint-btn {
-  padding: 6px 12px;
-  background: var(--gray-100);
-  border: none;
-  border-radius: 20px;
-  font-size: 13px;
-  color: var(--gray-700);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.hint-btn:hover {
-  background: var(--secondary);
-  color: var(--primary);
-}
-
-.photo-upload {
-  border: 2px dashed var(--gray-300);
-  border-radius: 12px;
-  padding: 20px;
-}
-
-.file-input {
-  display: none;
-}
-
-.upload-area {
-  text-align: center;
-  padding: 30px;
-  cursor: pointer;
-  color: var(--gray-500);
-}
-
-.upload-area:hover {
-  color: var(--primary);
-}
-
-.photo-previews {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.preview {
-  position: relative;
-  width: 80px;
-  height: 80px;
-}
-
-.preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-.remove-btn {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--danger);
-  color: white;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.success-message {
-  text-align: center;
-  padding: 60px 40px;
-  background: white;
-  border-radius: 16px;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.success-icon {
-  font-size: 64px;
-  margin-bottom: 20px;
-}
-
-.success-message h3 {
-  font-size: 24px;
-  margin-bottom: 15px;
-}
-
-.success-message p {
-  color: var(--gray-600);
-  margin-bottom: 10px;
-}
-
-.error-message {
-  background: #FEE2E2;
-  color: var(--danger);
-  padding: 15px 20px;
-  border-radius: 8px;
-  text-align: center;
-  margin-top: 20px;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Final CTA */
-.final-cta {
-  text-align: center;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  color: white;
-}
-
-.final-cta h2 {
-  color: white;
-}
-
-.final-cta .btn-primary {
-  background: white;
-  color: var(--primary);
-}
-
-.final-cta .btn-secondary {
-  background: transparent;
-  color: white;
-  border-color: white;
+.cta-trust {
+  font-size: 14px;
+  color: #A08070;
 }
 
 /* Footer */
 .footer {
-  padding: 30px 0;
-  text-align: center;
-  color: var(--gray-500);
+  padding: 80px 120px 40px;
+  background: var(--bg-primary);
+}
+
+.footer-main {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 60px;
+}
+
+.footer-brand {
+  max-width: 300px;
+}
+
+.footer-logo {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+}
+
+.footer-brand p {
   font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.footer-nav {
+  display: flex;
+  gap: 80px;
+}
+
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.footer-col h5 {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent-gold);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.footer-col a {
+  font-size: 14px;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.footer-col a:hover {
+  color: var(--text-primary);
+}
+
+.footer-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin-bottom: 40px;
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-bottom span {
+  font-size: 13px;
+  color: #4A4A4C;
+}
+
+.footer-social {
+  display: flex;
+  gap: 20px;
+}
+
+.footer-social a {
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.footer-social a:hover {
+  color: var(--text-primary);
+}
+
+.footer-social svg {
+  width: 20px;
+  height: 20px;
 }
 
 /* Responsive */
+@media (max-width: 1200px) {
+  .header-content,
+  .hero-overlay,
+  .how-it-works,
+  .concept,
+  .target,
+  .team,
+  .final-cta,
+  .footer {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+
+  .benefits-content {
+    padding: 60px 40px;
+  }
+
+  .benefits-image {
+    width: 400px;
+  }
+}
+
 @media (max-width: 768px) {
-  .header nav {
+  .nav {
     display: none;
   }
 
   .hero h1 {
-    font-size: 32px;
+    font-size: 40px;
   }
 
-  .subtitle {
-    font-size: 16px;
+  .section-header h2,
+  .benefits h2 {
+    font-size: 36px;
   }
 
-  section h2 {
-    font-size: 28px;
+  .final-cta h2 {
+    font-size: 36px;
   }
 
-  .questionnaire-form {
-    padding: 20px;
+  .benefits {
+    flex-direction: column;
   }
 
-  .radio-group {
-    grid-template-columns: 1fr;
+  .benefits-image {
+    width: 100%;
+    height: 300px;
+  }
+
+  .steps,
+  .target-grid,
+  .team-grid,
+  .concept-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+  }
+
+  .footer-main {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .footer-nav {
+    flex-direction: column;
+    gap: 32px;
   }
 }
 </style>
