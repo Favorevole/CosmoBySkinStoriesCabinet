@@ -198,6 +198,94 @@ export async function notifyAdminsDecline(application, reason) {
   await sendToAdminsViaDoctorBot(message);
 }
 
+// Store pending photo requests (applicationId -> clientTelegramId)
+export const pendingPhotoRequests = new Map();
+
+// Request additional photos from client
+export async function requestAdditionalPhotos(application, doctor) {
+  if (!clientBot) {
+    console.log('[NOTIFICATIONS] Client bot not initialized');
+    return false;
+  }
+
+  if (!application.client.telegramId) {
+    console.log('[NOTIFICATIONS] Client has no telegramId');
+    return false;
+  }
+
+  try {
+    const { Markup } = await import('telegraf');
+
+    const message = `
+*Врач запрашивает дополнительные фотографии*
+
+Заявка #${application.id}
+Врач: ${doctor.fullName}
+
+Пожалуйста, отправьте дополнительные фотографии для более точной консультации.
+После отправки нажмите кнопку "Готово".
+`;
+
+    // Store the pending request
+    pendingPhotoRequests.set(Number(application.client.telegramId), {
+      applicationId: application.id,
+      doctorId: doctor.id,
+      doctorName: doctor.fullName,
+      photos: []
+    });
+
+    await clientBot.telegram.sendMessage(Number(application.client.telegramId), message, {
+      parse_mode: 'Markdown',
+      ...Markup.inlineKeyboard([
+        [Markup.button.callback('Фото отправлены ✓', `additional_photos_done_${application.id}`)]
+      ])
+    });
+
+    console.log(`[NOTIFICATIONS] Photo request sent to client for application #${application.id}`);
+    return true;
+  } catch (error) {
+    console.error('[NOTIFICATIONS] Error requesting photos:', error);
+    return false;
+  }
+}
+
+// Notify doctor about new photos from client
+export async function notifyDoctorNewPhotos(applicationId, doctorId, photoCount) {
+  if (!doctorBot) {
+    console.log('[NOTIFICATIONS] Doctor bot not initialized');
+    return;
+  }
+
+  try {
+    const prisma = (await import('../db/prisma.js')).default;
+    const doctor = await prisma.doctor.findUnique({ where: { id: doctorId } });
+
+    if (!doctor) return;
+
+    const { Markup } = await import('telegraf');
+
+    const message = `
+*Клиент отправил дополнительные фотографии*
+
+Заявка #${applicationId}
+Добавлено фото: ${photoCount}
+
+Нажмите кнопку для просмотра:
+`;
+
+    await doctorBot.telegram.sendMessage(Number(doctor.telegramId), message, {
+      parse_mode: 'Markdown',
+      ...Markup.inlineKeyboard([
+        [Markup.button.callback('Посмотреть заявку', `view_app_${applicationId}`)]
+      ])
+    });
+
+    console.log(`[NOTIFICATIONS] Notified doctor ${doctorId} about ${photoCount} new photos for application #${applicationId}`);
+  } catch (error) {
+    console.error('[NOTIFICATIONS] Error notifying doctor about new photos:', error);
+  }
+}
+
 // Notify doctor about approval status change
 export async function notifyDoctorStatusApproved(doctor) {
   if (!doctorBot) {

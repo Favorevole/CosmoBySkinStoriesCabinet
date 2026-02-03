@@ -7,12 +7,19 @@ export function mainMenuKeyboard() {
   ]).resize();
 }
 
-export function applicationViewKeyboard(applicationId) {
-  return Markup.inlineKeyboard([
-    [Markup.button.callback('Дать рекомендацию', `recommend_${applicationId}`)],
-    [Markup.button.callback('Отклонить заявку', `decline_${applicationId}`)],
-    [Markup.button.callback('Назад к списку', 'back_to_list')]
-  ]);
+export function applicationViewKeyboard(applicationId, canRequestPhotos = true) {
+  const buttons = [
+    [Markup.button.callback('Дать рекомендацию', `recommend_${applicationId}`)]
+  ];
+
+  if (canRequestPhotos) {
+    buttons.push([Markup.button.callback('📷 Запросить фото', `request_photos_${applicationId}`)]);
+  }
+
+  buttons.push([Markup.button.callback('Отклонить заявку', `decline_${applicationId}`)]);
+  buttons.push([Markup.button.callback('Назад к списку', 'back_to_list')]);
+
+  return Markup.inlineKeyboard(buttons);
 }
 
 export function confirmRecommendationKeyboard(applicationId) {

@@ -217,6 +217,47 @@ export async function handleBackToList(ctx) {
   await handleMyApplications(ctx);
 }
 
+export async function handleRequestPhotos(ctx) {
+  const telegramId = ctx.from.id;
+  const applicationId = parseInt(ctx.callbackQuery.data.split('_').pop());
+
+  try {
+    const doctor = await getDoctorByTelegramId(telegramId);
+
+    if (!doctor || doctor.status !== 'ACTIVE') {
+      await ctx.answerCbQuery('Нет доступа');
+      return;
+    }
+
+    const application = await getApplicationById(applicationId);
+
+    if (!application || application.doctorId !== doctor.id) {
+      await ctx.answerCbQuery('Заявка не найдена');
+      return;
+    }
+
+    // Check if client has telegram ID
+    if (!application.client.telegramId) {
+      await ctx.answerCbQuery('У клиента нет Telegram ID');
+      return;
+    }
+
+    // Request additional photos from client
+    const { requestAdditionalPhotos } = await import('../../services/notifications.js');
+    await requestAdditionalPhotos(application, doctor);
+
+    await ctx.answerCbQuery('Запрос отправлен клиенту');
+    await ctx.reply(
+      `Запрос на дополнительные фото отправлен клиенту.\n` +
+      `Когда клиент отправит фото, они будут добавлены к заявке #${applicationId}.`
+    );
+
+  } catch (error) {
+    console.error('[DOCTOR_BOT] Error requesting photos:', error);
+    await ctx.answerCbQuery('Ошибка отправки запроса');
+  }
+}
+
 export async function notifyAdminsNewDoctor(doctor) {
   // Import getClientBot dynamically to avoid circular dependency
   try {

@@ -18,7 +18,8 @@ import {
 import {
   handlePhotoUpload,
   handlePhotosDone,
-  handleAddMorePhotos
+  handleAddMorePhotos,
+  handleAdditionalPhotosDone
 } from './handlers/photos.js';
 
 let bot = null;
@@ -68,6 +69,7 @@ export function createClientBot() {
   // Callback queries - photos
   bot.action('photos_done', handlePhotosDone);
   bot.action('add_more_photos', handleAddMorePhotos);
+  bot.action(/^additional_photos_done_(\d+)$/, handleAdditionalPhotosDone);
 
   // Photo handler
   bot.on('photo', handlePhotoUpload);

@@ -8,7 +8,8 @@ import {
   handleMyApplications,
   handleViewApplication,
   handlePhotoNavigation,
-  handleBackToList
+  handleBackToList,
+  handleRequestPhotos
 } from './handlers/applications.js';
 import {
   handleStartRecommendation,
@@ -63,6 +64,9 @@ export function createDoctorBot() {
   bot.action(/^photo_next_/, (ctx) => handlePhotoNavigation(ctx, 'next'));
   bot.action(/^photo_prev_/, (ctx) => handlePhotoNavigation(ctx, 'prev'));
   bot.action('noop', (ctx) => ctx.answerCbQuery());
+
+  // Callback queries - photo request
+  bot.action(/^request_photos_(\d+)$/, handleRequestPhotos);
 
   // Callback queries - recommendations
   bot.action(/^recommend_(\d+)$/, handleStartRecommendation);
