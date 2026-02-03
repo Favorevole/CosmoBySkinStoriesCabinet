@@ -257,7 +257,7 @@
 import { ref, computed } from 'vue';
 import { submitWebApplication } from '../api';
 
-const telegramBotLink = 'https://t.me/CosmoSkinBot'; // Update with actual bot username
+const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
 
 const skinTypes = [
   { value: 'DRY', label: 'Сухая' },
