@@ -6,6 +6,10 @@
  * Example: node scripts/add-admin.js 123456789 skinstories_nika "Nika"
  */
 
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.development' });
+dotenv.config();
+
 import prisma from '../src/db/prisma.js';
 
 async function addAdmin() {

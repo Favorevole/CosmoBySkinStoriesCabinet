@@ -5,6 +5,10 @@
  * Usage: node scripts/list-admins.js
  */
 
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.development' });
+dotenv.config();
+
 import prisma from '../src/db/prisma.js';
 
 async function listAdmins() {
