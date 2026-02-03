@@ -1,7 +1,10 @@
 <template>
   <div class="applications-page">
     <header class="page-header">
-      <h1>Заявки</h1>
+      <div class="header-title">
+        <h1>Заявки</h1>
+        <p class="subtitle">Консультации клиентов</p>
+      </div>
       <div class="filters">
         <select v-model="filters.status" @change="loadApplications">
           <option value="">Все статусы</option>
@@ -17,16 +20,40 @@
 
     <div class="stats-row" v-if="stats">
       <div class="stat-card">
-        <div class="stat-value">{{ stats.total }}</div>
-        <div class="stat-label">Всего</div>
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.total }}</div>
+          <div class="stat-label">Всего</div>
+        </div>
       </div>
       <div class="stat-card highlight">
-        <div class="stat-value">{{ stats.byStatus?.NEW || 0 }}</div>
-        <div class="stat-label">Новых</div>
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.byStatus?.NEW || 0 }}</div>
+          <div class="stat-label">Новых</div>
+        </div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">{{ stats.byStatus?.RESPONSE_GIVEN || 0 }}</div>
-        <div class="stat-label">На проверке</div>
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.byStatus?.RESPONSE_GIVEN || 0 }}</div>
+          <div class="stat-label">На проверке</div>
+        </div>
       </div>
     </div>
 
@@ -46,56 +73,91 @@
         <div class="app-body">
           <div class="app-info">
             <div class="info-row">
-              <span class="label">Клиент:</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="info-icon">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
               <span>{{ app.client?.fullName || app.client?.telegramUsername || 'Не указано' }}</span>
             </div>
             <div class="info-row">
-              <span class="label">Возраст:</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="info-icon">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+              </svg>
               <span>{{ app.age }} лет</span>
             </div>
             <div class="info-row">
-              <span class="label">Тип кожи:</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="info-icon">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
               <span>{{ skinTypeLabels[app.skinType] }}</span>
             </div>
             <div class="info-row">
-              <span class="label">Фото:</span>
-              <span>{{ app.photoCount }} шт.</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="info-icon">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <span>{{ app.photoCount }} фото</span>
             </div>
           </div>
           <div class="app-meta">
             <div class="meta-item" v-if="app.doctor">
               <span class="label">Врач:</span>
-              <span>{{ app.doctor.fullName }}</span>
+              <span class="value">{{ app.doctor.fullName }}</span>
             </div>
             <div class="meta-item">
               <span class="label">Создана:</span>
-              <span>{{ formatDate(app.createdAt) }}</span>
+              <span class="value">{{ formatDate(app.createdAt) }}</span>
             </div>
           </div>
+        </div>
+        <div class="app-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
         </div>
       </div>
 
       <div v-if="applications.length === 0" class="empty-state">
-        Нет заявок
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            <line x1="9" y1="12" x2="15" y2="12"/>
+          </svg>
+        </div>
+        <h3>Нет заявок</h3>
+        <p>Заявки появятся здесь после обращения клиентов через Telegram-бот или веб-форму</p>
       </div>
     </div>
 
-    <div v-if="loading" class="loading">Загрузка...</div>
+    <div v-if="loading" class="loading">
+      <div class="loading-spinner"></div>
+      <span>Загрузка...</span>
+    </div>
 
     <!-- Pagination -->
     <div class="pagination" v-if="pagination.totalPages > 1">
       <button
         @click="changePage(pagination.page - 1)"
         :disabled="pagination.page === 1"
+        class="pagination-btn"
       >
-        ← Назад
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Назад
       </button>
-      <span>{{ pagination.page }} / {{ pagination.totalPages }}</span>
+      <span class="pagination-info">{{ pagination.page }} / {{ pagination.totalPages }}</span>
       <button
         @click="changePage(pagination.page + 1)"
         :disabled="pagination.page === pagination.totalPages"
+        class="pagination-btn"
       >
-        Вперёд →
+        Вперёд
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
       </button>
     </div>
   </div>
@@ -103,7 +165,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { getApplications, getDashboardStats } from '../api';
+import { getApplications, getDashboardStats } from '../api/index.js';
 
 const applications = ref([]);
 const loading = ref(true);
@@ -174,162 +236,332 @@ function formatDate(date) {
 
 <style scoped>
 .applications-page {
-  padding: 30px;
+  padding: 40px;
+  min-height: 100vh;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+  align-items: flex-start;
+  margin-bottom: 32px;
 }
 
 .page-header h1 {
-  font-size: 28px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 15px;
 }
 
 .filters select {
-  padding: 10px 16px;
-  border: 1px solid var(--gray-300);
-  border-radius: 8px;
+  padding: 12px 40px 12px 16px;
+  border: 1px solid rgba(201, 169, 98, 0.2);
+  border-radius: 10px;
   font-size: 14px;
-  background: white;
+  background: #222224 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23C9A962'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E") no-repeat right 12px center;
+  background-size: 18px;
+  color: #FFFFFF;
+  cursor: pointer;
+  appearance: none;
+  font-family: 'Inter', sans-serif;
+}
+
+.filters select:focus {
+  outline: none;
+  border-color: #C9A962;
+}
+
+.filters select option {
+  background: #222224;
+  color: #FFFFFF;
 }
 
 .stats-row {
   display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 20px;
+  margin-bottom: 32px;
 }
 
 .stat-card {
-  background: white;
-  padding: 20px 24px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  background: linear-gradient(135deg, #222224 0%, #1E1E20 100%);
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid rgba(201, 169, 98, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex: 1;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  border-color: rgba(201, 169, 98, 0.2);
+  transform: translateY(-2px);
 }
 
 .stat-card.highlight {
-  background: var(--primary);
-  color: white;
+  background: linear-gradient(135deg, #5D1A2D 0%, #7A2339 100%);
+  border-color: rgba(201, 169, 98, 0.2);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(201, 169, 98, 0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-icon svg {
+  width: 24px;
+  height: 24px;
+  color: #C9A962;
+}
+
+.stat-card.highlight .stat-icon {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.stat-card.highlight .stat-icon svg {
+  color: #FFFFFF;
 }
 
 .stat-value {
-  font-size: 32px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px;
   font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1;
 }
 
 .stat-label {
-  font-size: 14px;
-  opacity: 0.7;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 4px;
+}
+
+.stat-card.highlight .stat-label {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .applications-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .application-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
+  background: linear-gradient(135deg, #222224 0%, #1E1E20 100%);
+  border-radius: 16px;
+  padding: 20px 24px;
   cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(201, 169, 98, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .application-card:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-  transform: translateY(-2px);
+  border-color: rgba(201, 169, 98, 0.3);
+  transform: translateX(4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
 
 .app-header {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: 16px;
+  gap: 8px;
+  min-width: 100px;
 }
 
 .app-id {
-  font-size: 18px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
   font-weight: 600;
+  color: #FFFFFF;
 }
 
 .status {
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
 }
 
 .status-new {
-  background: #DBEAFE;
-  color: #1D4ED8;
+  background: rgba(59, 130, 246, 0.15);
+  color: #60A5FA;
 }
 
 .status-assigned {
-  background: #FEF3C7;
-  color: #B45309;
+  background: rgba(201, 169, 98, 0.15);
+  color: #C9A962;
 }
 
 .status-response_given {
-  background: #E0E7FF;
-  color: #4338CA;
+  background: rgba(139, 92, 246, 0.15);
+  color: #A78BFA;
 }
 
-.status-approved {
-  background: #D1FAE5;
-  color: #047857;
-}
-
+.status-approved,
 .status-sent_to_client {
-  background: #D1FAE5;
-  color: #047857;
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ADE80;
 }
 
 .status-declined {
-  background: #FEE2E2;
-  color: #B91C1C;
+  background: rgba(248, 113, 113, 0.15);
+  color: #F87171;
 }
 
 .app-body {
   display: flex;
   justify-content: space-between;
+  flex: 1;
+  gap: 20px;
 }
 
 .app-info {
   display: flex;
-  flex-direction: column;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
   gap: 8px;
-}
-
-.info-row, .meta-item {
   font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
 }
 
-.label {
-  color: var(--gray-500);
-  margin-right: 8px;
+.info-icon {
+  width: 16px;
+  height: 16px;
+  color: #C9A962;
+  flex-shrink: 0;
 }
 
 .app-meta {
   text-align: right;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+}
+
+.meta-item {
+  font-size: 13px;
+}
+
+.meta-item .label {
+  color: rgba(255, 255, 255, 0.4);
+  margin-right: 6px;
+}
+
+.meta-item .value {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.app-arrow {
+  width: 40px;
+  height: 40px;
+  background: rgba(201, 169, 98, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.app-arrow svg {
+  width: 20px;
+  height: 20px;
+  color: #C9A962;
+}
+
+.application-card:hover .app-arrow {
+  background: #C9A962;
+}
+
+.application-card:hover .app-arrow svg {
+  color: #1A1A1C;
 }
 
 .empty-state {
   text-align: center;
-  padding: 60px;
-  color: var(--gray-500);
+  padding: 80px 40px;
+  background: linear-gradient(135deg, #222224 0%, #1E1E20 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(201, 169, 98, 0.1);
+}
+
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  background: rgba(201, 169, 98, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-icon svg {
+  width: 40px;
+  height: 40px;
+  color: #C9A962;
+}
+
+.empty-state h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 15px;
+  max-width: 400px;
+  margin: 0 auto;
 }
 
 .loading {
   text-align: center;
-  padding: 40px;
-  color: var(--gray-500);
+  padding: 60px;
+  color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(201, 169, 98, 0.2);
+  border-top-color: #C9A962;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .pagination {
@@ -337,19 +569,81 @@ function formatDate(date) {
   justify-content: center;
   align-items: center;
   gap: 20px;
-  margin-top: 24px;
+  margin-top: 32px;
 }
 
-.pagination button {
-  padding: 10px 20px;
-  border: 1px solid var(--gray-300);
-  background: white;
-  border-radius: 8px;
+.pagination-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 1px solid rgba(201, 169, 98, 0.2);
+  background: #222224;
+  border-radius: 10px;
   cursor: pointer;
+  color: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
-.pagination button:disabled {
-  opacity: 0.5;
+.pagination-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  border-color: #C9A962;
+  background: rgba(201, 169, 98, 0.1);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
   cursor: not-allowed;
+}
+
+.pagination-info {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .applications-page {
+    padding: 24px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .stats-row {
+    flex-direction: column;
+  }
+
+  .application-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .app-header {
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .app-body {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .app-meta {
+    text-align: left;
+  }
+
+  .app-arrow {
+    display: none;
+  }
 }
 </style>

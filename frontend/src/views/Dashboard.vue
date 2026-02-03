@@ -2,21 +2,37 @@
   <div class="dashboard">
     <!-- Sidebar -->
     <aside class="sidebar">
-      <div class="logo">CosmoSkin</div>
+      <div class="logo">
+        <span class="logo-text">SKIN</span>
+        <span class="logo-accent">STORIES</span>
+      </div>
       <nav>
         <router-link to="/admin/applications" class="nav-item">
-          <span class="icon">📋</span>
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
           Заявки
           <span v-if="stats.newCount" class="badge">{{ stats.newCount }}</span>
         </router-link>
         <router-link to="/admin/doctors" class="nav-item">
-          <span class="icon">👩‍⚕️</span>
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+          </svg>
           Врачи
           <span v-if="stats.pendingDoctors" class="badge">{{ stats.pendingDoctors }}</span>
         </router-link>
       </nav>
       <div class="sidebar-footer">
-        <button @click="logout" class="logout-btn">Выйти</button>
+        <div class="admin-info" v-if="adminName">
+          <div class="admin-avatar">{{ adminInitials }}</div>
+          <span class="admin-name">{{ adminName }}</span>
+        </div>
+        <button @click="logout" class="logout-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+          </svg>
+          Выйти
+        </button>
       </div>
     </aside>
 
@@ -28,9 +44,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { getDashboardStats } from '../api';
+import { getDashboardStats, getMe } from '../api/index.js';
 
 const router = useRouter();
 
@@ -39,13 +55,24 @@ const stats = ref({
   pendingDoctors: 0
 });
 
+const adminName = ref('');
+
+const adminInitials = computed(() => {
+  if (!adminName.value) return '?';
+  return adminName.value.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+});
+
 onMounted(async () => {
   try {
-    const response = await getDashboardStats();
-    stats.value.newCount = response.data.applications.newCount || 0;
-    stats.value.pendingDoctors = response.data.doctors.pending || 0;
+    const [statsResponse, meResponse] = await Promise.all([
+      getDashboardStats(),
+      getMe()
+    ]);
+    stats.value.newCount = statsResponse.data.applications?.newCount || 0;
+    stats.value.pendingDoctors = statsResponse.data.doctors?.pending || 0;
+    adminName.value = meResponse.data.fullName || meResponse.data.telegramUsername || 'Admin';
   } catch (error) {
-    console.error('Failed to load stats:', error);
+    console.error('Failed to load data:', error);
   }
 });
 
@@ -59,12 +86,13 @@ function logout() {
 .dashboard {
   display: flex;
   min-height: 100vh;
+  background: #1A1A1C;
 }
 
 .sidebar {
-  width: 250px;
-  background: var(--gray-900);
-  color: white;
+  width: 260px;
+  background: linear-gradient(180deg, #1A1A1C 0%, #151517 100%);
+  border-right: 1px solid rgba(201, 169, 98, 0.1);
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -74,78 +102,144 @@ function logout() {
 }
 
 .logo {
-  padding: 24px;
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--primary);
+  padding: 28px 24px;
+  border-bottom: 1px solid rgba(201, 169, 98, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.logo-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: #FFFFFF;
+  letter-spacing: 0.3em;
+}
+
+.logo-accent {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #C9A962;
+  letter-spacing: 0.4em;
 }
 
 nav {
   flex: 1;
-  padding: 0 12px;
+  padding: 20px 16px;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  color: var(--gray-400);
-  border-radius: 8px;
-  margin-bottom: 4px;
+  gap: 14px;
+  padding: 14px 18px;
+  color: rgba(255, 255, 255, 0.6);
+  border-radius: 10px;
+  margin-bottom: 6px;
   text-decoration: none;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .nav-item:hover {
-  background: var(--gray-800);
-  color: white;
+  background: rgba(201, 169, 98, 0.08);
+  color: rgba(255, 255, 255, 0.9);
   text-decoration: none;
 }
 
 .nav-item.router-link-active {
-  background: var(--primary);
-  color: white;
+  background: linear-gradient(135deg, #5D1A2D 0%, #7A2339 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 15px rgba(93, 26, 45, 0.3);
 }
 
-.nav-item .icon {
-  font-size: 18px;
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 .badge {
   margin-left: auto;
-  background: var(--danger);
-  color: white;
-  font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 10px;
+  background: #C9A962;
+  color: #1A1A1C;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
 }
 
 .sidebar-footer {
   padding: 20px;
-  border-top: 1px solid var(--gray-800);
+  border-top: 1px solid rgba(201, 169, 98, 0.1);
+}
+
+.admin-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(201, 169, 98, 0.05);
+  border-radius: 10px;
+}
+
+.admin-avatar {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #5D1A2D 0%, #7A2339 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.admin-name {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .logout-btn {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   background: transparent;
-  border: 1px solid var(--gray-700);
-  color: var(--gray-400);
-  border-radius: 6px;
+  border: 1px solid rgba(201, 169, 98, 0.2);
+  color: rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.logout-btn svg {
+  width: 18px;
+  height: 18px;
 }
 
 .logout-btn:hover {
-  background: var(--gray-800);
-  color: white;
+  background: rgba(201, 169, 98, 0.1);
+  border-color: rgba(201, 169, 98, 0.3);
+  color: #FFFFFF;
 }
 
 .main {
   flex: 1;
-  margin-left: 250px;
-  background: var(--gray-50);
+  margin-left: 260px;
+  background: #1A1A1C;
   min-height: 100vh;
 }
 </style>

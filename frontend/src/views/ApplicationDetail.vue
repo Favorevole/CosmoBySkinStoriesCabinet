@@ -1,7 +1,12 @@
 <template>
   <div class="detail-page" v-if="application">
     <header class="page-header">
-      <button @click="$router.back()" class="back-btn">← Назад</button>
+      <button @click="$router.back()" class="back-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Назад
+      </button>
       <h1>Заявка #{{ application.id }}</h1>
       <span :class="['status', `status-${application.status.toLowerCase()}`]">
         {{ statusLabels[application.status] }}
@@ -11,7 +16,12 @@
     <div class="content-grid">
       <!-- Left: Questionnaire -->
       <div class="section questionnaire">
-        <h2>Анкета</h2>
+        <div class="section-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          <h2>Анкета</h2>
+        </div>
         <div class="info-grid">
           <div class="info-item">
             <span class="label">Возраст</span>
@@ -22,24 +32,41 @@
             <span class="value">{{ skinTypeLabels[application.skinType] }}</span>
           </div>
           <div class="info-item full">
-            <span class="label">Проблемы</span>
+            <span class="label">Основные проблемы</span>
             <span class="value">{{ application.mainProblems }}</span>
           </div>
           <div class="info-item full" v-if="application.additionalComment">
-            <span class="label">Комментарий</span>
+            <span class="label">Дополнительный комментарий</span>
             <span class="value">{{ application.additionalComment }}</span>
           </div>
         </div>
 
-        <h3>Фотографии ({{ application.photos.length }})</h3>
-        <div class="photos-grid">
-          <div
-            v-for="photo in application.photos"
-            :key="photo.id"
-            class="photo-thumb"
-            @click="openPhoto(photo)"
-          >
-            <img :src="getPhotoUrl(application.id, photo.id)" alt="">
+        <div class="photos-section">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            Фотографии ({{ application.photos.length }})
+          </h3>
+          <div class="photos-grid">
+            <div
+              v-for="photo in application.photos"
+              :key="photo.id"
+              class="photo-thumb"
+              @click="openPhoto(photo)"
+            >
+              <img :src="getPhotoUrl(application.id, photo.id)" alt="">
+              <div class="photo-overlay">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="M21 21l-4.35-4.35"/>
+                  <line x1="11" y1="8" x2="11" y2="14"/>
+                  <line x1="8" y1="11" x2="14" y2="11"/>
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -48,18 +75,41 @@
       <div class="section actions">
         <!-- Client Info -->
         <div class="subsection">
-          <h3>Клиент</h3>
-          <p>{{ application.client?.fullName || 'Не указано' }}</p>
-          <p v-if="application.client?.telegramUsername">
-            @{{ application.client.telegramUsername }}
-          </p>
-          <p v-if="application.client?.email">{{ application.client.email }}</p>
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            Клиент
+          </h3>
+          <div class="client-info">
+            <div class="client-avatar">
+              {{ (application.client?.fullName || 'U').substring(0, 2).toUpperCase() }}
+            </div>
+            <div class="client-details">
+              <p class="client-name">{{ application.client?.fullName || 'Не указано' }}</p>
+              <p class="client-contact" v-if="application.client?.telegramUsername">
+                @{{ application.client.telegramUsername }}
+              </p>
+              <p class="client-contact" v-if="application.client?.email">
+                {{ application.client.email }}
+              </p>
+            </div>
+          </div>
         </div>
 
         <!-- Assign Doctor (if NEW) -->
         <div class="subsection" v-if="application.status === 'NEW'">
-          <h3>Назначить врача</h3>
-          <select v-model="selectedDoctorId">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+              <circle cx="8.5" cy="7" r="4"/>
+              <line x1="20" y1="8" x2="20" y2="14"/>
+              <line x1="23" y1="11" x2="17" y2="11"/>
+            </svg>
+            Назначить врача
+          </h3>
+          <select v-model="selectedDoctorId" class="select-doctor">
             <option value="">Выберите врача</option>
             <option v-for="doc in availableDoctors" :key="doc.id" :value="doc.id">
               {{ doc.fullName }}
@@ -70,30 +120,64 @@
             :disabled="!selectedDoctorId || assigning"
             class="btn btn-primary"
           >
-            {{ assigning ? 'Назначение...' : 'Назначить' }}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            {{ assigning ? 'Назначение...' : 'Назначить врача' }}
           </button>
         </div>
 
         <!-- Doctor Info (if assigned) -->
         <div class="subsection" v-if="application.doctor">
-          <h3>Назначенный врач</h3>
-          <p>{{ application.doctor.fullName }}</p>
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+              <circle cx="8.5" cy="7" r="4"/>
+              <polyline points="17 11 19 13 23 9"/>
+            </svg>
+            Назначенный врач
+          </h3>
+          <div class="doctor-badge">
+            <div class="doctor-avatar">
+              {{ application.doctor.fullName.substring(0, 2).toUpperCase() }}
+            </div>
+            <span>{{ application.doctor.fullName }}</span>
+          </div>
         </div>
 
         <!-- Recommendation (if exists) -->
-        <div class="subsection" v-if="application.recommendation">
-          <h3>Рекомендации врача</h3>
+        <div class="subsection recommendation-section" v-if="application.recommendation">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            Рекомендации врача
+          </h3>
           <div class="recommendation-box">
             <textarea
               v-model="editedRecommendation"
-              rows="8"
+              rows="10"
               :disabled="application.status === 'SENT_TO_CLIENT'"
+              placeholder="Рекомендации..."
             ></textarea>
             <div class="rec-actions" v-if="application.status === 'RESPONSE_GIVEN'">
               <button @click="saveRecommendation" :disabled="saving" class="btn btn-secondary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                  <polyline points="17 21 17 13 7 13 7 21"/>
+                  <polyline points="7 3 7 8 15 8"/>
+                </svg>
                 {{ saving ? 'Сохранение...' : 'Сохранить изменения' }}
               </button>
               <button @click="approveAndSend" :disabled="approving" class="btn btn-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="22" y1="2" x2="11" y2="13"/>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
                 {{ approving ? 'Отправка...' : 'Одобрить и отправить' }}
               </button>
             </div>
@@ -102,12 +186,21 @@
 
         <!-- Status History -->
         <div class="subsection">
-          <h3>История</h3>
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            История
+          </h3>
           <div class="history-list">
             <div v-for="item in application.statusHistory" :key="item.id" class="history-item">
-              <span class="history-status">{{ statusLabels[item.toStatus] }}</span>
-              <span class="history-date">{{ formatDate(item.createdAt) }}</span>
-              <span class="history-comment" v-if="item.comment">{{ item.comment }}</span>
+              <div class="history-dot"></div>
+              <div class="history-content">
+                <span class="history-status">{{ statusLabels[item.toStatus] }}</span>
+                <span class="history-date">{{ formatDate(item.createdAt) }}</span>
+                <span class="history-comment" v-if="item.comment">{{ item.comment }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -116,11 +209,20 @@
 
     <!-- Photo Modal -->
     <div class="modal" v-if="selectedPhoto" @click="selectedPhoto = null">
+      <button class="modal-close" @click.stop="selectedPhoto = null">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
       <img :src="getPhotoUrl(application.id, selectedPhoto.id)" alt="">
     </div>
   </div>
 
-  <div v-else class="loading">Загрузка...</div>
+  <div v-else class="loading">
+    <div class="loading-spinner"></div>
+    <span>Загрузка...</span>
+  </div>
 </template>
 
 <script setup>
@@ -133,7 +235,7 @@ import {
   updateRecommendation,
   approveApplication,
   getPhotoUrl
-} from '../api';
+} from '../api/index.js';
 
 const route = useRoute();
 
@@ -250,78 +352,129 @@ function formatDate(date) {
 
 <style scoped>
 .detail-page {
-  padding: 30px;
+  padding: 40px;
+  min-height: 100vh;
 }
 
 .page-header {
   display: flex;
   align-items: center;
   gap: 20px;
-  margin-bottom: 30px;
+  margin-bottom: 32px;
 }
 
 .back-btn {
-  padding: 8px 16px;
-  background: white;
-  border: 1px solid var(--gray-300);
-  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: rgba(201, 169, 98, 0.1);
+  border: 1px solid rgba(201, 169, 98, 0.2);
+  border-radius: 10px;
   cursor: pointer;
+  color: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.back-btn svg {
+  width: 18px;
+  height: 18px;
+  color: #C9A962;
+}
+
+.back-btn:hover {
+  background: rgba(201, 169, 98, 0.2);
+  border-color: #C9A962;
 }
 
 .page-header h1 {
-  font-size: 24px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px;
+  font-weight: 600;
+  color: #FFFFFF;
   flex: 1;
 }
 
 .status {
-  padding: 6px 16px;
+  padding: 8px 18px;
   border-radius: 20px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
-.status-new { background: #DBEAFE; color: #1D4ED8; }
-.status-assigned { background: #FEF3C7; color: #B45309; }
-.status-response_given { background: #E0E7FF; color: #4338CA; }
-.status-approved, .status-sent_to_client { background: #D1FAE5; color: #047857; }
-.status-declined { background: #FEE2E2; color: #B91C1C; }
+.status-new { background: rgba(59, 130, 246, 0.15); color: #60A5FA; }
+.status-assigned { background: rgba(201, 169, 98, 0.15); color: #C9A962; }
+.status-response_given { background: rgba(139, 92, 246, 0.15); color: #A78BFA; }
+.status-approved, .status-sent_to_client { background: rgba(74, 222, 128, 0.15); color: #4ADE80; }
+.status-declined { background: rgba(248, 113, 113, 0.15); color: #F87171; }
 
 .content-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1.5fr 1fr;
   gap: 24px;
 }
 
 .section {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
+  background: linear-gradient(135deg, #222224 0%, #1E1E20 100%);
+  border-radius: 16px;
+  padding: 28px;
+  border: 1px solid rgba(201, 169, 98, 0.1);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.section-header svg {
+  width: 24px;
+  height: 24px;
+  color: #C9A962;
 }
 
 .section h2 {
-  margin-bottom: 20px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: #FFFFFF;
 }
 
 .section h3 {
-  font-size: 16px;
-  margin: 20px 0 12px;
-  color: var(--gray-700);
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.section h3:first-child {
-  margin-top: 0;
+.section h3 svg {
+  width: 18px;
+  height: 18px;
+  color: #C9A962;
 }
 
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 20px;
 }
 
 .info-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
 }
 
 .info-item.full {
@@ -329,13 +482,20 @@ function formatDate(date) {
 }
 
 .info-item .label {
-  font-size: 12px;
-  color: var(--gray-500);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
   text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .info-item .value {
-  font-size: 16px;
+  font-size: 15px;
+  color: #FFFFFF;
+  line-height: 1.5;
+}
+
+.photos-section {
+  margin-top: 28px;
 }
 
 .photos-grid {
@@ -345,58 +505,192 @@ function formatDate(date) {
 }
 
 .photo-thumb {
-  width: 120px;
-  height: 120px;
-  border-radius: 8px;
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
+  position: relative;
 }
 
 .photo-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 26, 28, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.photo-overlay svg {
+  width: 28px;
+  height: 28px;
+  color: #C9A962;
+}
+
+.photo-thumb:hover .photo-overlay {
+  opacity: 1;
+}
+
+.photo-thumb:hover img {
+  transform: scale(1.1);
 }
 
 .subsection {
-  padding: 16px 0;
-  border-bottom: 1px solid var(--gray-200);
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(201, 169, 98, 0.1);
+}
+
+.subsection:first-child {
+  padding-top: 0;
 }
 
 .subsection:last-child {
   border-bottom: none;
+  padding-bottom: 0;
 }
 
-.subsection h3 {
-  margin-top: 0;
+.client-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
 }
 
-.subsection select {
+.client-avatar {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #5D1A2D 0%, #7A2339 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+  flex-shrink: 0;
+}
+
+.client-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.client-contact {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 2px;
+}
+
+.select-doctor {
   width: 100%;
-  padding: 10px;
-  border: 1px solid var(--gray-300);
-  border-radius: 8px;
+  padding: 14px 40px 14px 16px;
+  border: 1px solid rgba(201, 169, 98, 0.2);
+  border-radius: 10px;
+  font-size: 14px;
+  background: rgba(0, 0, 0, 0.2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23C9A962'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E") no-repeat right 12px center;
+  background-size: 18px;
+  color: #FFFFFF;
+  cursor: pointer;
+  appearance: none;
+  font-family: 'Inter', sans-serif;
   margin-bottom: 12px;
 }
 
+.select-doctor:focus {
+  outline: none;
+  border-color: #C9A962;
+}
+
+.select-doctor option {
+  background: #222224;
+  color: #FFFFFF;
+}
+
+.doctor-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.doctor-avatar {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #5D1A2D 0%, #7A2339 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.doctor-badge span {
+  font-size: 15px;
+  font-weight: 500;
+  color: #FFFFFF;
+}
+
 .btn {
-  padding: 10px 20px;
-  border-radius: 8px;
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 10px;
   font-weight: 600;
   border: none;
   cursor: pointer;
-  width: 100%;
-  margin-bottom: 8px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 10px;
+}
+
+.btn:last-child {
+  margin-bottom: 0;
+}
+
+.btn svg {
+  width: 18px;
+  height: 18px;
 }
 
 .btn-primary {
-  background: var(--primary);
-  color: white;
+  background: linear-gradient(135deg, #C9A962 0%, #D4B978 100%);
+  color: #1A1A1C;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(201, 169, 98, 0.3);
 }
 
 .btn-secondary {
-  background: var(--gray-100);
-  color: var(--gray-700);
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .btn:disabled {
@@ -406,41 +700,85 @@ function formatDate(date) {
 
 .recommendation-box textarea {
   width: 100%;
-  padding: 12px;
-  border: 1px solid var(--gray-300);
-  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid rgba(201, 169, 98, 0.2);
+  border-radius: 10px;
   resize: vertical;
-  font-family: inherit;
-  margin-bottom: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  color: #FFFFFF;
+}
+
+.recommendation-box textarea:focus {
+  outline: none;
+  border-color: #C9A962;
+}
+
+.recommendation-box textarea:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .history-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0;
+  position: relative;
+  padding-left: 20px;
+}
+
+.history-list::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: rgba(201, 169, 98, 0.2);
 }
 
 .history-item {
   display: flex;
+  gap: 16px;
+  padding: 12px 0;
+  position: relative;
+}
+
+.history-dot {
+  position: absolute;
+  left: -20px;
+  top: 16px;
+  width: 14px;
+  height: 14px;
+  background: #C9A962;
+  border-radius: 50%;
+  border: 3px solid #1E1E20;
+}
+
+.history-content {
+  display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 12px;
-  background: var(--gray-50);
-  border-radius: 8px;
 }
 
 .history-status {
   font-weight: 600;
+  color: #FFFFFF;
+  font-size: 14px;
 }
 
 .history-date {
   font-size: 12px;
-  color: var(--gray-500);
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .history-comment {
-  font-size: 14px;
-  color: var(--gray-600);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 4px;
 }
 
 .modal {
@@ -449,7 +787,7 @@ function formatDate(date) {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.9);
+  background: rgba(0, 0, 0, 0.95);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -457,20 +795,84 @@ function formatDate(date) {
   cursor: pointer;
 }
 
+.modal-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.modal-close svg {
+  width: 24px;
+  height: 24px;
+  color: #FFFFFF;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .modal img {
   max-width: 90%;
   max-height: 90%;
   object-fit: contain;
+  border-radius: 8px;
 }
 
 .loading {
-  text-align: center;
-  padding: 60px;
-  color: var(--gray-500);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: rgba(255, 255, 255, 0.5);
 }
 
-@media (max-width: 900px) {
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(201, 169, 98, 0.2);
+  border-top-color: #C9A962;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 1024px) {
   .content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .detail-page {
+    padding: 24px;
+  }
+
+  .page-header {
+    flex-wrap: wrap;
+  }
+
+  .page-header h1 {
+    order: 3;
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .info-grid {
     grid-template-columns: 1fr;
   }
 }
