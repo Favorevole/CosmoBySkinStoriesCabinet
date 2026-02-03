@@ -14,13 +14,15 @@ router.use(requireAdmin);
  */
 router.get('/dashboard', async (req, res) => {
   try {
-    const [applicationStats, doctorStats, recentApplications] = await Promise.all([
+    const [applicationStats, doctorStats, clientCount, recentApplications] = await Promise.all([
       getApplicationStats(),
 
       prisma.doctor.groupBy({
         by: ['status'],
         _count: { id: true }
       }),
+
+      prisma.client.count(),
 
       prisma.application.findMany({
         orderBy: { createdAt: 'desc' },
@@ -52,6 +54,9 @@ router.get('/dashboard', async (req, res) => {
         total: Object.values(doctorStatusCounts).reduce((a, b) => a + b, 0),
         active: doctorStatusCounts.ACTIVE || 0,
         pending: doctorStatusCounts.PENDING || 0
+      },
+      clients: {
+        total: clientCount
       },
       recentApplications: recentApplications.map(app => ({
         id: app.id,

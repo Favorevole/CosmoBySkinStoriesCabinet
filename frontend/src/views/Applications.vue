@@ -18,6 +18,65 @@
       </div>
     </header>
 
+    <!-- System Overview -->
+    <div class="system-overview" v-if="systemStats">
+      <div class="overview-card">
+        <div class="overview-icon clients">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+          </svg>
+        </div>
+        <div class="overview-content">
+          <div class="overview-value">{{ systemStats.clients?.total || 0 }}</div>
+          <div class="overview-label">Клиентов</div>
+        </div>
+      </div>
+      <div class="overview-card">
+        <div class="overview-icon doctors">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+            <circle cx="8.5" cy="7" r="4"/>
+            <line x1="20" y1="8" x2="20" y2="14"/>
+            <line x1="23" y1="11" x2="17" y2="11"/>
+          </svg>
+        </div>
+        <div class="overview-content">
+          <div class="overview-value">{{ systemStats.doctors?.active || 0 }}</div>
+          <div class="overview-label">Активных врачей</div>
+        </div>
+      </div>
+      <div class="overview-card">
+        <div class="overview-icon applications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </div>
+        <div class="overview-content">
+          <div class="overview-value">{{ systemStats.applications?.total || 0 }}</div>
+          <div class="overview-label">Всего заявок</div>
+        </div>
+      </div>
+      <div class="overview-card highlight">
+        <div class="overview-icon completed">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <div class="overview-content">
+          <div class="overview-value">{{ (systemStats.applications?.byStatus?.SENT_TO_CLIENT || 0) }}</div>
+          <div class="overview-label">Выполнено</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Applications Stats -->
+    <div class="section-title">Статус заявок</div>
     <div class="stats-row" v-if="stats">
       <div class="stat-card">
         <div class="stat-icon">
@@ -170,6 +229,7 @@ import { getApplications, getDashboardStats } from '../api/index.js';
 const applications = ref([]);
 const loading = ref(true);
 const stats = ref(null);
+const systemStats = ref(null);
 const pagination = ref({ page: 1, totalPages: 1 });
 const filters = ref({ status: '' });
 
@@ -214,6 +274,7 @@ async function loadStats() {
   try {
     const response = await getDashboardStats();
     stats.value = response.data.applications;
+    systemStats.value = response.data;
   } catch (error) {
     console.error('Failed to load stats:', error);
   }
@@ -258,6 +319,101 @@ function formatDate(date) {
 .subtitle {
   color: rgba(255, 255, 255, 0.5);
   font-size: 15px;
+}
+
+/* System Overview */
+.system-overview {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.overview-card {
+  background: linear-gradient(135deg, rgba(201, 169, 98, 0.08) 0%, rgba(201, 169, 98, 0.03) 100%);
+  border: 1px solid rgba(201, 169, 98, 0.15);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.3s ease;
+}
+
+.overview-card:hover {
+  border-color: rgba(201, 169, 98, 0.3);
+  transform: translateY(-2px);
+}
+
+.overview-card.highlight {
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.1) 0%, rgba(74, 222, 128, 0.03) 100%);
+  border-color: rgba(74, 222, 128, 0.2);
+}
+
+.overview-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.overview-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.overview-icon.clients {
+  background: rgba(139, 92, 246, 0.15);
+}
+.overview-icon.clients svg {
+  color: #A78BFA;
+}
+
+.overview-icon.doctors {
+  background: rgba(59, 130, 246, 0.15);
+}
+.overview-icon.doctors svg {
+  color: #60A5FA;
+}
+
+.overview-icon.applications {
+  background: rgba(201, 169, 98, 0.15);
+}
+.overview-icon.applications svg {
+  color: #C9A962;
+}
+
+.overview-icon.completed {
+  background: rgba(74, 222, 128, 0.15);
+}
+.overview-icon.completed svg {
+  color: #4ADE80;
+}
+
+.overview-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1;
+}
+
+.overview-label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 4px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
 }
 
 .filters select {
@@ -608,6 +764,12 @@ function formatDate(date) {
   font-size: 14px;
 }
 
+@media (max-width: 1200px) {
+  .system-overview {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 900px) {
   .applications-page {
     padding: 24px;
@@ -616,6 +778,10 @@ function formatDate(date) {
   .page-header {
     flex-direction: column;
     gap: 20px;
+  }
+
+  .system-overview {
+    grid-template-columns: 1fr;
   }
 
   .stats-row {
