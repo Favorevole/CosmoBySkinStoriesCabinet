@@ -31,6 +31,12 @@ enum SkinType {
   NORMAL
 }
 
+enum PriceRange {
+  UP_TO_5000
+  UP_TO_10000
+  UP_TO_20000
+}
+
 enum ApplicationSource {
   TELEGRAM
   WEB
@@ -101,6 +107,7 @@ model Application {
   // Questionnaire data
   age               Int
   skinType          SkinType          @map("skin_type")
+  priceRange        PriceRange?       @map("price_range")
   mainProblems      String            @map("main_problems") @db.Text
   additionalComment String?           @map("additional_comment") @db.Text
 

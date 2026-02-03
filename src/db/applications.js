@@ -6,6 +6,7 @@ export async function createApplication(data) {
       clientId: data.clientId,
       age: data.age,
       skinType: data.skinType,
+      priceRange: data.priceRange,
       mainProblems: data.mainProblems,
       additionalComment: data.additionalComment,
       source: data.source || 'TELEGRAM',

@@ -7,6 +7,7 @@ import { handleStart, handleHelp } from './handlers/start.js';
 import {
   handleStartQuestionnaire,
   handleSkinTypeSelection,
+  handlePriceRangeSelection,
   handleProblemsHelp,
   handleProblemSelection,
   handleProblemsDone,
@@ -59,6 +60,7 @@ export function createClientBot() {
   // Callback queries - questionnaire
   bot.action('start_questionnaire', handleStartQuestionnaire);
   bot.action(/^skin_(.+)$/, handleSkinTypeSelection);
+  bot.action(/^price_(.+)$/, handlePriceRangeSelection);
   bot.action('problems_help', handleProblemsHelp);
   bot.action(/^problem_(.+)$/, handleProblemSelection);
   bot.action('problems_done', handleProblemsDone);

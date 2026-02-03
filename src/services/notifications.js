@@ -1,6 +1,6 @@
 import config from '../config/environment.js';
 import { getAllAdmins } from '../db/admins.js';
-import { formatSkinType } from '../clientBot/states/index.js';
+import { formatSkinType, formatPriceRange } from '../clientBot/states/index.js';
 
 let clientBot = null;
 let doctorBot = null;
@@ -53,6 +53,7 @@ export async function notifyAdminsNewApplication(application) {
 
 Возраст: ${application.age}
 Тип кожи: ${formatSkinType(application.skinType)}
+Бюджет: ${application.priceRange ? formatPriceRange(application.priceRange) : 'Не указан'}
 Проблемы: ${application.mainProblems}
 ${application.additionalComment ? `Комментарий: ${application.additionalComment}` : ''}
 
@@ -104,6 +105,7 @@ export async function notifyDoctorAssignment(doctor, application) {
 
 Возраст пациента: ${application.age}
 Тип кожи: ${formatSkinType(application.skinType)}
+Бюджет: ${application.priceRange ? formatPriceRange(application.priceRange) : 'Не указан'}
 Проблемы: ${application.mainProblems}
 ${application.additionalComment ? `Комментарий: ${application.additionalComment}` : ''}
 Фотографий: ${application.photos?.length || 0}

@@ -1,5 +1,5 @@
 import { Markup } from 'telegraf';
-import { SKIN_TYPES, SKIN_PROBLEMS } from '../states/index.js';
+import { SKIN_TYPES, SKIN_PROBLEMS, PRICE_RANGES } from '../states/index.js';
 
 export function startKeyboard() {
   return Markup.inlineKeyboard([
@@ -17,6 +17,15 @@ export function skinTypeKeyboard() {
       Markup.button.callback(SKIN_TYPES.COMBINATION.label, 'skin_COMBINATION'),
       Markup.button.callback(SKIN_TYPES.NORMAL.label, 'skin_NORMAL')
     ],
+    [Markup.button.callback('Отмена', 'cancel')]
+  ]);
+}
+
+export function priceRangeKeyboard() {
+  return Markup.inlineKeyboard([
+    [Markup.button.callback(PRICE_RANGES.UP_TO_5000.label, 'price_UP_TO_5000')],
+    [Markup.button.callback(PRICE_RANGES.UP_TO_10000.label, 'price_UP_TO_10000')],
+    [Markup.button.callback(PRICE_RANGES.UP_TO_20000.label, 'price_UP_TO_20000')],
     [Markup.button.callback('Отмена', 'cancel')]
   ]);
 }
