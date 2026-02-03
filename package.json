@@ -12,7 +12,9 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "frontend:dev": "cd frontend && npm run dev",
-    "frontend:build": "cd frontend && npm run build"
+    "frontend:build": "cd frontend && npm run build",
+    "admin:add": "node scripts/add-admin.js",
+    "admin:list": "node scripts/list-admins.js"
   },
   "dependencies": {
     "@prisma/client": "^5.20.0",

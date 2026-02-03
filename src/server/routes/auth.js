@@ -1,6 +1,6 @@
 import express from 'express';
 import { createAuthCode, verifyAuthCode, cleanupExpiredCodes } from '../../db/auth.js';
-import { getAdminByTelegramId, createAdmin, isAdmin } from '../../db/admins.js';
+import { getAdminByTelegramId, getAdminByUsername, createAdmin, isAdmin } from '../../db/admins.js';
 import { generateToken } from '../middleware/auth.js';
 import config from '../../config/environment.js';
 
@@ -26,12 +26,15 @@ router.post('/request-code', async (req, res) => {
       // Direct telegramId provided
       admin = await getAdminByTelegramId(telegramId);
       targetTelegramId = telegramId;
-    } else {
-      // Need to find by username - check if they're a config admin
-      // For now, we require telegramId for first-time login
-      return res.status(400).json({
-        error: 'Please use telegramId for authentication. You can find it in Telegram settings or by messaging @userinfobot'
-      });
+    } else if (telegramUsername) {
+      // Find admin by username
+      admin = await getAdminByUsername(telegramUsername);
+      if (!admin) {
+        return res.status(403).json({
+          error: 'Администратор с таким username не найден'
+        });
+      }
+      targetTelegramId = admin.telegramId.toString();
     }
 
     // Check if this telegramId is an admin

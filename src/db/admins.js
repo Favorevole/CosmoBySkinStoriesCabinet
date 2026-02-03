@@ -6,6 +6,17 @@ export async function getAdminByTelegramId(telegramId) {
   });
 }
 
+export async function getAdminByUsername(username) {
+  // Remove @ if present
+  const cleanUsername = username.replace(/^@/, '');
+  return prisma.admin.findFirst({
+    where: {
+      telegramUsername: cleanUsername,
+      status: 'ACTIVE'
+    }
+  });
+}
+
 export async function createAdmin(data) {
   return prisma.admin.create({
     data: {

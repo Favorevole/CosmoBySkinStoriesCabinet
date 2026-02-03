@@ -4,20 +4,19 @@
       <h1>Вход в админ-панель</h1>
       <p class="subtitle">CosmoSkin Consultation System</p>
 
-      <!-- Step 1: Enter Telegram ID -->
+      <!-- Step 1: Enter Telegram Username -->
       <div v-if="step === 1" class="step">
-        <p class="instruction">Введите ваш Telegram ID</p>
+        <p class="instruction">Введите ваш Telegram username</p>
         <p class="hint">
-          Узнать свой ID можно у бота
-          <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a>
+          Введите ваш username без @, например: username
         </p>
         <input
           type="text"
-          v-model="telegramId"
-          placeholder="Например: 123456789"
+          v-model="telegramUsername"
+          placeholder="Например: username"
           @keyup.enter="requestCode"
         >
-        <button @click="requestCode" :disabled="!telegramId || loading" class="btn btn-primary">
+        <button @click="requestCode" :disabled="!telegramUsername || loading" class="btn btn-primary">
           {{ loading ? 'Отправка...' : 'Получить код' }}
         </button>
       </div>
@@ -48,24 +47,27 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { requestCode as apiRequestCode, verifyCode as apiVerifyCode } from '../api';
+import { requestCode as apiRequestCode, verifyCode as apiVerifyCode } from '../api/index.js';
 
 const router = useRouter();
 
 const step = ref(1);
+const telegramUsername = ref('');
 const telegramId = ref('');
 const code = ref('');
 const loading = ref(false);
 const error = ref(null);
 
 async function requestCode() {
-  if (!telegramId.value) return;
+  if (!telegramUsername.value) return;
 
   loading.value = true;
   error.value = null;
 
   try {
-    await apiRequestCode(telegramId.value);
+    const response = await apiRequestCode(null, telegramUsername.value);
+    // Save the telegramId returned by server for verification step
+    telegramId.value = response.data.telegramId;
     step.value = 2;
   } catch (err) {
     error.value = err.response?.data?.error || 'Ошибка отправки кода';

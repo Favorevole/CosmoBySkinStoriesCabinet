@@ -27,8 +27,8 @@ api.interceptors.response.use(
 );
 
 // Auth
-export const requestCode = (telegramId) =>
-  api.post('/auth/request-code', { telegramId });
+export const requestCode = (telegramId, telegramUsername) =>
+  api.post('/auth/request-code', { telegramId, telegramUsername });
 
 export const verifyCode = (telegramId, code) =>
   api.post('/auth/verify', { telegramId, code });
