@@ -177,8 +177,8 @@ app.use((err, req, res, next) => {
 let server = null;
 
 export function startServer() {
-  server = app.listen(config.server.port, () => {
-    console.log(`[SERVER] Running on port ${config.server.port}`);
+  server = app.listen(config.server.port, '0.0.0.0', () => {
+    console.log(`[SERVER] Running on http://0.0.0.0:${config.server.port}`);
   });
 
   return { app, server };
