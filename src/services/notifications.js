@@ -62,32 +62,9 @@ ${application.additionalComment ? `Комментарий: ${application.additio
 Откройте админ-панель для назначения врача.
 `;
 
-  // Send via doctor bot to admins
+  // Send via doctor bot to admins only
   const sentViaDoctorBot = await sendToAdminsViaDoctorBot(message);
   console.log(`[NOTIFICATIONS] Notified ${sentViaDoctorBot} admins via doctor bot about application #${application.id}`);
-
-  // Also try client bot as fallback
-  if (clientBot) {
-    try {
-      const admins = await getAllAdmins();
-      const adminIds = new Set([
-        ...admins.map(a => a.telegramId),
-        ...config.adminTelegramIds
-      ]);
-
-      for (const adminId of adminIds) {
-        try {
-          await clientBot.telegram.sendMessage(Number(adminId), message, {
-            parse_mode: 'Markdown'
-          });
-        } catch (error) {
-          // Ignore - already sent via doctor bot
-        }
-      }
-    } catch (error) {
-      console.error('[NOTIFICATIONS] Error notifying admins via client bot:', error);
-    }
-  }
 }
 
 // Notify doctor about assigned application
