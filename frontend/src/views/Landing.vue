@@ -3,7 +3,9 @@
     <!-- Header -->
     <header class="header">
       <div class="header-content">
-        <div class="logo">SKIN.STORIES</div>
+        <div class="logo">
+          <img src="/logo.jpg" alt="Skin Stories" class="logo-img" />
+        </div>
         <nav class="nav">
           <a href="#how-it-works">Как это работает</a>
           <a href="#demo">Демо</a>
@@ -479,7 +481,9 @@
     <footer class="footer">
       <div class="footer-main">
         <div class="footer-brand">
-          <div class="footer-logo">SKIN.STORIES</div>
+          <div class="footer-logo">
+            <img src="/logo.jpg" alt="Skin Stories" class="footer-logo-img" />
+          </div>
           <p>AI-анализ кожи, который помогает понимать и заботиться о вашей уникальной коже.</p>
         </div>
         <div class="footer-nav">
@@ -677,11 +681,14 @@ h1, h2, h3, h4 {
 }
 
 .logo {
-  font-family: var(--font-editorial);
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  color: var(--color-rich-ebony);
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
 }
 
 .nav {
@@ -1934,12 +1941,14 @@ h1, h2, h3, h4 {
 }
 
 .footer-logo {
-  font-family: var(--font-editorial);
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  color: var(--color-porcelain);
   margin-bottom: var(--space-md);
+}
+
+.footer-logo-img {
+  height: 56px;
+  width: auto;
+  object-fit: contain;
+  filter: brightness(1.2);
 }
 
 .footer-brand p {
@@ -2187,8 +2196,8 @@ h1, h2, h3, h4 {
     height: 60px;
   }
 
-  .logo {
-    font-size: 18px;
+  .logo-img {
+    height: 36px;
   }
 
   .hero {
