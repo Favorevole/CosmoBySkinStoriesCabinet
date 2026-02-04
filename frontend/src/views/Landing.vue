@@ -4,10 +4,7 @@
     <header class="header">
       <div class="header-content">
         <div class="logo">
-          <div class="logo-icon">
-            <span>SK</span>
-          </div>
-          <span class="logo-text">stories</span>
+          <img src="/logo.jpg" alt="Skin Stories" class="logo-img" />
         </div>
         <nav class="nav">
           <a href="#how-it-works">Как это работает</a>
@@ -224,10 +221,7 @@
       <div class="footer-content">
         <div class="footer-brand">
           <div class="logo logo-footer">
-            <div class="logo-icon">
-              <span>SK</span>
-            </div>
-            <span class="logo-text">Skin.Stories</span>
+            <img src="/logo.jpg" alt="Skin Stories" class="logo-img logo-img-footer" />
           </div>
         </div>
         <div class="footer-links">
@@ -304,31 +298,17 @@ const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
 .logo {
   display: flex;
   align-items: center;
-  gap: 8px;
 }
 
-.logo-icon {
-  width: 40px;
-  height: 40px;
-  background: var(--color-burgundy);
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.logo-img {
+  height: 56px;
+  width: auto;
+  object-fit: contain;
 }
 
-.logo-icon span {
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--color-white);
-}
-
-.logo-text {
-  font-family: var(--font-body);
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--color-burgundy);
+.logo-img-footer {
+  height: 48px;
+  filter: brightness(0) invert(1);
 }
 
 .nav {
@@ -911,9 +891,6 @@ const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
   align-items: center;
 }
 
-.logo-footer .logo-text {
-  color: var(--color-white);
-}
 
 .footer-links {
   display: flex;
@@ -1076,13 +1053,12 @@ const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
     padding-top: env(safe-area-inset-top, 0px);
   }
 
-  .logo-icon {
-    width: 36px;
-    height: 36px;
+  .logo-img {
+    height: 44px;
   }
 
-  .logo-text {
-    font-size: 16px;
+  .logo-img-footer {
+    height: 36px;
   }
 
   .hero {
