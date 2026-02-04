@@ -24,7 +24,7 @@
           <h1>Мы обучаем AI<br>понимать настоящую кожу</h1>
           <p class="hero-subtitle">Загрузите фото кожи через Telegram.<br>Получите экспертные рекомендации — пока наш AI учится.</p>
           <a :href="telegramBotLink" target="_blank" class="btn btn-primary">
-            <span class="btn-icon">✈️</span>
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="m22 2-11 11"/></svg>
             Загрузить фото в Telegram
           </a>
         </div>
@@ -43,19 +43,25 @@
       </div>
       <div class="steps">
         <div class="step-card">
-          <div class="step-icon">📸</div>
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
           <span class="step-num">01</span>
           <h3>Загрузите фото</h3>
           <p>Отправьте фото кожи в наш Telegram-бот</p>
         </div>
         <div class="step-card">
-          <div class="step-icon">👩‍⚕️</div>
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
           <span class="step-num">02</span>
           <h3>Эксперты анализируют</h3>
           <p>Косметологи изучают ваше фото и дают рекомендации</p>
         </div>
         <div class="step-card">
-          <div class="step-icon">🤖</div>
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 1 4 4c0 1.1-.9 2-2 2h-4c-1.1 0-2-.9-2-2a4 4 0 0 1 4-4z"/><path d="M12 8v6"/><path d="M8 14h8"/><circle cx="12" cy="18" r="4"/><path d="M12 14v4"/></svg>
+          </div>
           <span class="step-num">03</span>
           <h3>AI учится</h3>
           <p>Ваши данные помогают обучить умного помощника</p>
@@ -72,17 +78,23 @@
       </div>
       <div class="benefits-grid">
         <div class="benefit-card">
-          <div class="benefit-icon">🔬</div>
+          <div class="benefit-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><path d="M12 8v4"/><path d="M8 12h8"/><circle cx="12" cy="19" r="3"/><path d="M12 16v-4"/></svg>
+          </div>
           <h3>Экспертный анализ</h3>
           <p>Ваши фото анализируют реальные косметологи и дерматологи, не автоматика</p>
         </div>
         <div class="benefit-card">
-          <div class="benefit-icon">🌍</div>
+          <div class="benefit-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
           <h3>Этичный AI</h3>
           <p>Помогаете создать AI, который понимает разнообразие типов кожи, а не только идеальные фото</p>
         </div>
         <div class="benefit-card">
-          <div class="benefit-icon">🎁</div>
+          <div class="benefit-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+          </div>
           <h3>Бесплатные рекомендации</h3>
           <p>Получаете персональные советы по уходу за кожей в благодарность за участие</p>
         </div>
@@ -181,21 +193,27 @@
         </div>
         <div class="telegram-features">
           <div class="feature">
-            <div class="feature-icon">📱</div>
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+            </div>
             <div class="feature-text">
               <h4>Без установки приложений</h4>
               <p>Telegram уже есть у миллионов</p>
             </div>
           </div>
           <div class="feature">
-            <div class="feature-icon">🔒</div>
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
             <div class="feature-text">
               <h4>Приватность</h4>
               <p>Ваши данные защищены</p>
             </div>
           </div>
           <div class="feature">
-            <div class="feature-icon">⚡</div>
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
             <div class="feature-text">
               <h4>Быстрый ответ</h4>
               <p>Рекомендации в течение 24 часов</p>
@@ -210,7 +228,7 @@
       <h2>Готовы помочь AI понять кожу?</h2>
       <p class="cta-subtitle">Загрузите фото — получите экспертный анализ бесплатно</p>
       <a :href="telegramBotLink" target="_blank" class="btn btn-white">
-        <span class="btn-icon">✈️</span>
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="m22 2-11 11"/></svg>
         Открыть Telegram
       </a>
       <span class="cta-note">Бесплатно • Конфиденциально • Без регистрации</span>
@@ -424,7 +442,9 @@ const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
 }
 
 .btn-icon {
-  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 .btn-primary {
@@ -499,8 +519,15 @@ const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
 }
 
 .step-icon {
-  font-size: 32px;
+  width: 48px;
+  height: 48px;
   margin-bottom: 16px;
+  color: var(--color-burgundy);
+}
+
+.step-icon svg {
+  width: 100%;
+  height: 100%;
 }
 
 .step-num {
@@ -554,8 +581,13 @@ const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
   margin-bottom: 20px;
+  color: var(--color-burgundy);
+}
+
+.benefit-icon svg {
+  width: 28px;
+  height: 28px;
 }
 
 .benefit-card h3 {
@@ -833,8 +865,13 @@ const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
   flex-shrink: 0;
+  color: var(--color-burgundy);
+}
+
+.feature-icon svg {
+  width: 24px;
+  height: 24px;
 }
 
 .feature-text h4 {
