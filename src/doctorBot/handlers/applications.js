@@ -162,30 +162,31 @@ export async function handleShowPhotos(ctx) {
 
     // Send first photo with navigation
     const photo = application.photos[0];
-    console.log(`[DOCTOR_BOT] Sending photo, telegramFileId: ${photo.telegramFileId}, hasData: ${!!photo.data}`);
+    console.log(`[DOCTOR_BOT] Sending photo id: ${photo.id}, telegramFileId: ${photo.telegramFileId}, hasData: ${!!photo.data}, dataType: ${photo.data ? photo.data.constructor.name : 'none'}, dataLength: ${photo.data ? photo.data.length : 0}`);
 
     try {
-      if (photo.telegramFileId) {
-        await ctx.replyWithPhoto(photo.telegramFileId, {
-          caption: `Фото 1/${application.photos.length}\nЗаявка #${applicationId}`,
-          ...viewPhotosKeyboard(applicationId, 0, application.photos.length)
-        });
-      } else if (photo.data) {
+      // Always use binary data from DB - telegramFileId from client bot won't work in doctor bot
+      if (photo.data && photo.data.length > 0) {
+        // Ensure we have a proper Buffer
+        const photoBuffer = Buffer.isBuffer(photo.data) ? photo.data : Buffer.from(photo.data);
+        console.log(`[DOCTOR_BOT] Sending photo buffer, size: ${photoBuffer.length} bytes`);
+
         await ctx.replyWithPhoto(
-          { source: Buffer.from(photo.data) },
+          { source: photoBuffer },
           {
             caption: `Фото 1/${application.photos.length}\nЗаявка #${applicationId}`,
             ...viewPhotosKeyboard(applicationId, 0, application.photos.length)
           }
         );
+        console.log('[DOCTOR_BOT] Photo sent successfully');
       } else {
-        console.error('[DOCTOR_BOT] Photo has no telegramFileId or data');
-        await ctx.reply('Не удалось загрузить фото - данные отсутствуют');
+        console.error('[DOCTOR_BOT] Photo has no data or empty data');
+        await ctx.reply('Не удалось загрузить фото - данные отсутствуют в базе');
       }
-      console.log('[DOCTOR_BOT] Photo sent successfully');
     } catch (photoError) {
-      console.error('[DOCTOR_BOT] Error sending photo:', photoError);
-      await ctx.reply('Не удалось отправить фото. Попробуйте позже.');
+      console.error('[DOCTOR_BOT] Error sending photo:', photoError.message);
+      console.error('[DOCTOR_BOT] Error stack:', photoError.stack);
+      await ctx.reply(`Не удалось отправить фото: ${photoError.message}`);
     }
 
   } catch (error) {
@@ -223,30 +224,29 @@ export async function handlePhotoNavigation(ctx, direction) {
     await ctx.answerCbQuery();
 
     try {
-      if (photo.telegramFileId) {
-        await ctx.editMessageMedia(
-          {
-            type: 'photo',
-            media: photo.telegramFileId,
-            caption: `Фото ${newIndex + 1}/${application.photos.length}`
-          },
-          viewPhotosKeyboard(applicationId, newIndex, application.photos.length)
-        );
-      } else if (photo.data) {
-        // Can't edit with buffer, need to delete and send new
-        await ctx.deleteMessage();
+      // Always use binary data - telegramFileId from client bot won't work in doctor bot
+      if (photo.data && photo.data.length > 0) {
+        const photoBuffer = Buffer.isBuffer(photo.data) ? photo.data : Buffer.from(photo.data);
+
+        // Can't edit message media with buffer, need to delete and send new
+        try {
+          await ctx.deleteMessage();
+        } catch (deleteErr) {
+          console.log('[DOCTOR_BOT] Could not delete message:', deleteErr.message);
+        }
+
         await ctx.replyWithPhoto(
-          { source: Buffer.from(photo.data) },
+          { source: photoBuffer },
           {
             caption: `Фото ${newIndex + 1}/${application.photos.length}`,
             ...viewPhotosKeyboard(applicationId, newIndex, application.photos.length)
           }
         );
       } else {
-        await ctx.reply('Не удалось загрузить фото');
+        await ctx.reply('Не удалось загрузить фото - данные отсутствуют');
       }
     } catch (e) {
-      console.error('[DOCTOR_BOT] Error navigating photos:', e);
+      console.error('[DOCTOR_BOT] Error navigating photos:', e.message);
       await ctx.reply('Ошибка при переключении фото');
     }
 
