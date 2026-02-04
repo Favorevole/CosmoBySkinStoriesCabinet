@@ -70,9 +70,12 @@ export async function getDoctorByUsername(username) {
 
 // Create pre-registered doctor (invited, no telegram ID yet)
 export async function createInvitedDoctor(data) {
+  // Generate unique negative placeholder ID (timestamp-based to avoid collisions)
+  const placeholderId = BigInt(-Date.now());
+
   return prisma.doctor.create({
     data: {
-      telegramId: BigInt(0), // Placeholder, will be updated on registration
+      telegramId: placeholderId, // Negative placeholder, will be updated on registration
       telegramUsername: data.telegramUsername.replace(/^@/, ''),
       fullName: data.fullName,
       specialization: data.specialization || null,
