@@ -22,7 +22,8 @@ export const PRICE_RANGES = {
   UP_TO_20000: { value: 'UP_TO_20000', label: 'До 20 000 ₽' }
 };
 
-export const SKIN_PROBLEMS = [
+// Default skin problems (fallback)
+export const DEFAULT_SKIN_PROBLEMS = [
   'Акне / прыщи',
   'Сухость и шелушение',
   'Жирный блеск',
@@ -32,6 +33,24 @@ export const SKIN_PROBLEMS = [
   'Расширенные поры',
   'Чувствительность'
 ];
+
+// This will be loaded from database
+export let SKIN_PROBLEMS = [...DEFAULT_SKIN_PROBLEMS];
+
+// Function to reload skin problems from database
+export async function reloadSkinProblems() {
+  try {
+    const { getSkinProblems } = await import('../../db/settings.js');
+    const problems = await getSkinProblems();
+    if (Array.isArray(problems) && problems.length > 0) {
+      SKIN_PROBLEMS = problems;
+    }
+    return SKIN_PROBLEMS;
+  } catch (error) {
+    console.error('[CLIENT_BOT] Error loading skin problems:', error.message);
+    return DEFAULT_SKIN_PROBLEMS;
+  }
+}
 
 export function createSessionData() {
   return {

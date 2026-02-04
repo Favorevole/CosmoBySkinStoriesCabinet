@@ -100,6 +100,15 @@ export function createClientBot() {
 }
 
 export async function startClientBot() {
+  // Load skin problems from database
+  try {
+    const { reloadSkinProblems } = await import('./states/index.js');
+    const problems = await reloadSkinProblems();
+    console.log(`[CLIENT_BOT] Loaded ${problems.length} skin problems from database`);
+  } catch (error) {
+    console.log('[CLIENT_BOT] Using default skin problems (DB not available)');
+  }
+
   if (!bot) {
     createClientBot();
   }

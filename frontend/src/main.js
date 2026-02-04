@@ -9,6 +9,7 @@ import Dashboard from './views/Dashboard.vue';
 import Applications from './views/Applications.vue';
 import ApplicationDetail from './views/ApplicationDetail.vue';
 import Doctors from './views/Doctors.vue';
+import Settings from './views/Settings.vue';
 
 const routes = [
   { path: '/', component: Landing },
@@ -21,7 +22,8 @@ const routes = [
       { path: '', redirect: '/admin/applications' },
       { path: 'applications', component: Applications },
       { path: 'applications/:id', component: ApplicationDetail },
-      { path: 'doctors', component: Doctors }
+      { path: 'doctors', component: Doctors },
+      { path: 'settings', component: Settings }
     ]
   }
 ];

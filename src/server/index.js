@@ -8,6 +8,7 @@ import applicationsRoutes from './routes/applications.js';
 import doctorsRoutes from './routes/doctors.js';
 import statsRoutes from './routes/stats.js';
 import webRoutes from './routes/web.js';
+import settingsRoutes from './routes/settings.js';
 
 const app = express();
 
@@ -70,6 +71,7 @@ app.use('/api/applications', applicationsRoutes);
 app.use('/api/doctors', doctorsRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/web', webRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // Client bot webhook
 app.post('/client-webhook',

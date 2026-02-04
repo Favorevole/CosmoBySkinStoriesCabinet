@@ -213,3 +213,12 @@ model AuthCode {
   @@index([expiresAt])
   @@map("auth_codes")
 }
+
+model Setting {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("settings")
+}

@@ -98,4 +98,11 @@ export const submitWebApplication = (formData) =>
 export const checkApplicationStatus = (id) =>
   api.get(`/web/application/${id}/status`);
 
+// Settings
+export const getSkinProblems = () =>
+  api.get('/settings/skin-problems');
+
+export const updateSkinProblems = (problems) =>
+  api.put('/settings/skin-problems', { problems });
+
 export default api;
