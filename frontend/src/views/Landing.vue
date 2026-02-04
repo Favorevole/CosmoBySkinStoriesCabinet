@@ -99,6 +99,9 @@
           <p>Получаете персональные советы по уходу за кожей в благодарность за участие</p>
         </div>
       </div>
+      <div class="skin-banner">
+        <img src="/skin-section.png" alt="Skin care" />
+      </div>
     </section>
 
     <!-- Experts -->
@@ -602,6 +605,22 @@ const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
   font-size: 16px;
   color: var(--color-cocoa);
   line-height: 1.6;
+}
+
+.skin-banner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 60px auto 0;
+  height: 400px;
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.skin-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
 }
 
 /* Experts */
