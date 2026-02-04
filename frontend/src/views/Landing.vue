@@ -686,7 +686,7 @@ h1, h2, h3, h4 {
 }
 
 .logo-img {
-  height: 48px;
+  height: 64px;
   width: auto;
   object-fit: contain;
 }
@@ -1945,7 +1945,7 @@ h1, h2, h3, h4 {
 }
 
 .footer-logo-img {
-  height: 56px;
+  height: 72px;
   width: auto;
   object-fit: contain;
   filter: brightness(1.2);
