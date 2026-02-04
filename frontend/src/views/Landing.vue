@@ -114,11 +114,11 @@
       <div class="experts-grid">
         <div class="expert-card">
           <div class="expert-photo">
-            <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&q=80" alt="Анна Соколова" />
+            <img src="/nika.png" alt="Ника Шамхалова" />
           </div>
-          <h3>Анна Соколова</h3>
-          <span class="expert-role">Косметолог, 12 лет опыта</span>
-          <p>Специализация на проблемной коже и антивозрастных процедурах</p>
+          <h3>Ника Шамхалова</h3>
+          <span class="expert-role">Врач дерматолог-косметолог, к.м.н.</span>
+          <p>Руководитель клиники Skin Stories. Визионер beauty tech проекта Skin Stories</p>
         </div>
         <div class="expert-card">
           <div class="expert-photo">
