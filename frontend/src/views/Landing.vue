@@ -29,7 +29,7 @@
           </a>
         </div>
         <div class="hero-visual">
-          <img src="https://images.unsplash.com/photo-1551890113-88bebc4b4d8c?w=800&q=80" alt="Skin care" />
+          <img src="/hero.png" alt="Skin care" />
         </div>
       </div>
     </section>
