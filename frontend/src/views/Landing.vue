@@ -74,7 +74,7 @@
       <div class="section-header">
         <span class="tagline">ЗАЧЕМ УЧАСТВОВАТЬ</span>
         <h2>Почему стоит присоединиться</h2>
-        <p class="section-desc">Станьте частью этичного AI-проекта и получите реальную пользу</p>
+        <p class="section-desc">Стань частью Skin Stories — проекта, который создаёт новую эпоху ухода за кожей через реальные данные и экспертные знания</p>
       </div>
       <div class="benefits-grid">
         <div class="benefit-card">
