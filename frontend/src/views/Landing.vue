@@ -629,9 +629,9 @@ const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
 
 .skin-banner {
   width: 100%;
-  max-width: 1200px;
+  max-width: 700px;
   margin: 60px auto 0;
-  height: 400px;
+  height: 500px;
   border-radius: 24px;
   overflow: hidden;
 }
