@@ -3,510 +3,214 @@
     <!-- Header -->
     <header class="header">
       <div class="header-content">
-        <div class="logo">
-          <img src="/logo.jpg" alt="Skin Stories" class="logo-img" />
-        </div>
+        <div class="logo">SKIN.STORIES</div>
         <nav class="nav">
+          <a href="#how-it-works">О нас</a>
           <a href="#how-it-works">Как это работает</a>
-          <a href="#demo">Демо</a>
-          <a href="#technology">Технологии</a>
-          <a href="#pricing">Тарифы</a>
-          <a href="#final-cta" class="nav-cta">Записаться</a>
+          <a href="#team">Специалисты</a>
+          <a href="#form">Контакты</a>
+          <a :href="telegramBotLink" target="_blank" class="nav-cta">Записаться</a>
         </nav>
-        <button class="mobile-menu-btn" @click="mobileMenuOpen = !mobileMenuOpen">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-      </div>
-      <!-- Mobile Menu -->
-      <div class="mobile-menu" :class="{ 'mobile-menu-open': mobileMenuOpen }">
-        <a href="#how-it-works" @click="mobileMenuOpen = false">Как это работает</a>
-        <a href="#demo" @click="mobileMenuOpen = false">Демо</a>
-        <a href="#technology" @click="mobileMenuOpen = false">Технологии</a>
-        <a href="#pricing" @click="mobileMenuOpen = false">Тарифы</a>
-        <a href="#final-cta" class="mobile-cta" @click="mobileMenuOpen = false">Записаться</a>
       </div>
     </header>
 
-    <!-- SECTION 1: HERO -->
+    <!-- Hero -->
     <section class="hero">
-      <div class="hero-bg">
-        <div class="hero-gradient"></div>
-        <div class="hero-grid-overlay"></div>
-      </div>
-      <div class="hero-content">
-        <div class="hero-text">
-          <span class="tagline">AI-АНАЛИЗ КОЖИ</span>
-          <h1>Ваша кожа рассказывает историю.<br><span class="hero-highlight">Мы поможем её прочитать.</span></h1>
-          <p class="subtitle">Передовые AI-технологии, которые понимают уникальные потребности вашей кожи и дают персональные рекомендации по уходу, основанные на дерматологической науке.</p>
-          <form class="waitlist-form" @submit.prevent="submitWaitlist">
-            <input
-              type="email"
-              v-model="email"
-              placeholder="Введите ваш email"
-              required
-              class="waitlist-input"
-            />
-            <button type="submit" class="btn btn-primary">Получить доступ</button>
-          </form>
-          <p class="waitlist-note">Уже 2 400+ человек в листе ожидания. Никакого спама.</p>
+      <div class="hero-overlay">
+        <span class="tagline">КАЖДАЯ ЛИНИЯ — ИСТОРИЯ</span>
+        <h1>Персональные консультации<br>по уходу за кожей</h1>
+        <p class="subtitle">Получите профессиональные рекомендации от квалифицированных специалистов<br>онлайн через Telegram</p>
+        <div class="hero-buttons">
+          <a :href="telegramBotLink" target="_blank" class="btn btn-primary">Начать консультацию</a>
+          <a href="#how-it-works" class="btn btn-secondary">Узнать больше</a>
         </div>
-        <div class="hero-mockup">
-          <div class="app-mockup">
-            <div class="mockup-screen">
-              <div class="mockup-header">
-                <span class="mockup-time">9:41</span>
-                <span class="mockup-title">Skin.Stories</span>
-                <div class="mockup-icons">
-                  <span>📶</span>
-                  <span>🔋</span>
-                </div>
-              </div>
-              <div class="mockup-content">
-                <div class="mockup-face">
-                  <div class="scan-line"></div>
-                  <div class="scan-point scan-point-1"></div>
-                  <div class="scan-point scan-point-2"></div>
-                  <div class="scan-point scan-point-3"></div>
-                </div>
-                <div class="mockup-analysis">
-                  <div class="analysis-item">
-                    <span class="analysis-label">Увлажнение</span>
-                    <div class="analysis-bar">
-                      <div class="analysis-fill" style="width: 72%"></div>
-                    </div>
-                    <span class="analysis-value">72%</span>
-                  </div>
-                  <div class="analysis-item">
-                    <span class="analysis-label">Упругость</span>
-                    <div class="analysis-bar">
-                      <div class="analysis-fill" style="width: 85%"></div>
-                    </div>
-                    <span class="analysis-value">85%</span>
-                  </div>
-                  <div class="analysis-item">
-                    <span class="analysis-label">Баланс</span>
-                    <div class="analysis-bar">
-                      <div class="analysis-fill" style="width: 68%"></div>
-                    </div>
-                    <span class="analysis-value">68%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="hero-scroll-indicator">
-        <span>Листайте вниз</span>
-        <div class="scroll-arrow"></div>
       </div>
     </section>
 
-    <!-- SECTION 2: HOW IT WORKS -->
+    <!-- How it works -->
     <section id="how-it-works" class="how-it-works">
       <div class="section-header">
         <span class="tagline">ПРОЦЕСС</span>
-        <h2>Просто. Научно. Персонально.</h2>
-        <p class="section-desc">Три шага к пониманию уникальной истории вашей кожи</p>
+        <h2>Как это работает</h2>
+        <p class="section-desc">Простой путь к здоровой и красивой коже</p>
       </div>
       <div class="steps">
         <div class="step-card">
-          <div class="step-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <rect x="3" y="3" width="18" height="18" rx="2"/>
-              <circle cx="12" cy="10" r="3"/>
-              <path d="M6 21v-1a6 6 0 0 1 12 0v1"/>
-            </svg>
-          </div>
-          <div class="step-number">01</div>
-          <h3>Фото</h3>
-          <p>Сделайте фото кожи с помощью нашей системы. AI обеспечит оптимальное освещение и угол для точного анализа.</p>
-          <div class="step-indicator">
-            <span class="step-dot active"></span>
-            <span class="step-line"></span>
-          </div>
+          <span class="step-num">01</span>
+          <h3>Заполните анкету</h3>
+          <p>Ответьте на несколько вопросов о вашей коже и текущем уходе</p>
         </div>
         <div class="step-card">
-          <div class="step-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-              <path d="M2 17l10 5 10-5"/>
-              <path d="M2 12l10 5 10-5"/>
-            </svg>
-          </div>
-          <div class="step-number">02</div>
-          <h3>Анализ</h3>
-          <p>Наш AI анализирует 47 параметров кожи: от уровня увлажнения до плотности пор, создавая ваш уникальный профиль.</p>
-          <div class="step-indicator">
-            <span class="step-dot"></span>
-            <span class="step-line"></span>
-          </div>
+          <span class="step-num">02</span>
+          <h3>Загрузите фото</h3>
+          <p>Прикрепите 2-6 фотографий вашей кожи для анализа</p>
         </div>
         <div class="step-card">
-          <div class="step-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M12 20h9"/>
-              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-            </svg>
-          </div>
-          <div class="step-number">03</div>
-          <h3>Рекомендации</h3>
-          <p>Получите персональную программу ухода с рекомендациями средств, которые адаптируются по мере изменения вашей кожи.</p>
-          <div class="step-indicator">
-            <span class="step-dot"></span>
-            <span class="step-line-end"></span>
-          </div>
+          <span class="step-num">03</span>
+          <h3>Анализ специалиста</h3>
+          <p>Наш косметолог изучит вашу анкету и фотографии</p>
+        </div>
+        <div class="step-card">
+          <span class="step-num">04</span>
+          <h3>Получите план</h3>
+          <p>Персональные рекомендации по уходу и подбору средств</p>
         </div>
       </div>
     </section>
 
-    <!-- SECTION 3: INTERACTIVE DEMO -->
-    <section id="demo" class="demo">
-      <div class="demo-container">
-        <div class="demo-header">
-          <span class="tagline">ПОПРОБУЙТЕ</span>
-          <h2>Посмотрите магию в действии</h2>
-          <p class="section-desc">Как наш AI превращает простое фото в глубокий анализ кожи</p>
-        </div>
-        <div class="demo-interface">
-          <div class="demo-upload-area">
-            <div class="upload-box">
-              <div class="upload-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="17 8 12 3 7 8"/>
-                  <line x1="12" y1="3" x2="12" y2="15"/>
-                </svg>
-              </div>
-              <p class="upload-text">Перетащите фото сюда</p>
-              <span class="upload-hint">или нажмите для выбора</span>
+    <!-- Benefits -->
+    <section class="benefits">
+      <div class="benefits-content">
+        <span class="tagline">ПРЕИМУЩЕСТВА</span>
+        <h2>Почему выбирают нас</h2>
+        <div class="benefits-list">
+          <div class="benefit-item">
+            <span class="benefit-dash">—</span>
+            <div class="benefit-text">
+              <h4>Квалифицированные специалисты</h4>
+              <p>Консультации от опытных дерматологов и косметологов</p>
             </div>
           </div>
-          <div class="demo-scanning">
-            <div class="scan-visual">
-              <div class="face-outline">
-                <div class="scan-beam"></div>
-              </div>
-              <div class="scan-data">
-                <div class="data-point" v-for="n in 6" :key="n" :style="{ animationDelay: `${n * 0.3}s` }">
-                  <span class="data-dot"></span>
-                </div>
-              </div>
-            </div>
-            <div class="scan-progress">
-              <div class="progress-bar">
-                <div class="progress-fill"></div>
-              </div>
-              <span class="progress-text">Анализируем параметры кожи...</span>
+          <div class="benefit-item">
+            <span class="benefit-dash">—</span>
+            <div class="benefit-text">
+              <h4>Удобный формат</h4>
+              <p>Через Telegram — консультация там, где вам удобно</p>
             </div>
           </div>
-          <div class="demo-results">
-            <div class="result-card">
-              <div class="result-header">
-                <h4>Ваш профиль кожи</h4>
-                <span class="result-badge">AI-анализ завершён</span>
-              </div>
-              <div class="result-metrics">
-                <div class="metric">
-                  <div class="metric-circle" style="--progress: 78">
-                    <span class="metric-value">78</span>
-                  </div>
-                  <span class="metric-label">Увлажнение</span>
-                </div>
-                <div class="metric">
-                  <div class="metric-circle" style="--progress: 85">
-                    <span class="metric-value">85</span>
-                  </div>
-                  <span class="metric-label">Упругость</span>
-                </div>
-                <div class="metric">
-                  <div class="metric-circle" style="--progress: 62">
-                    <span class="metric-value">62</span>
-                  </div>
-                  <span class="metric-label">Чистота</span>
-                </div>
-                <div class="metric">
-                  <div class="metric-circle" style="--progress: 71">
-                    <span class="metric-value">71</span>
-                  </div>
-                  <span class="metric-label">Текстура</span>
-                </div>
-              </div>
-              <div class="result-insights">
-                <h5>Ключевые выводы</h5>
-                <ul>
-                  <li><span class="insight-icon insight-hydration">💧</span> Лёгкое обезвоживание в Т-зоне</li>
-                  <li><span class="insight-icon insight-balance">🌿</span> Хороший баланс жирности в целом</li>
-                  <li><span class="insight-icon insight-sensitivity">🌸</span> Лёгкая чувствительность в области щёк</li>
-                </ul>
-              </div>
+          <div class="benefit-item">
+            <span class="benefit-dash">—</span>
+            <div class="benefit-text">
+              <h4>Быстрый результат</h4>
+              <p>Рекомендации в течение 24-48 часов</p>
+            </div>
+          </div>
+          <div class="benefit-item">
+            <span class="benefit-dash">—</span>
+            <div class="benefit-text">
+              <h4>Индивидуальный подход</h4>
+              <p>Учитываем особенности именно вашей кожи</p>
             </div>
           </div>
         </div>
       </div>
+      <div class="benefits-image"></div>
     </section>
 
-    <!-- SECTION 4: SKIN JOURNEY -->
-    <section class="skin-journey">
-      <div class="journey-content">
-        <div class="section-header">
-          <span class="tagline tagline-light">ВАШ ПУТЬ</span>
-          <h2 class="light-text">У каждой кожи есть история, достойная рассказа</h2>
-          <p class="section-desc light-text">Настоящая трансформация начинается с понимания. Мы ценим кожу во всех её проявлениях — не идеальность, а прогресс.</p>
-        </div>
-        <div class="journey-phases">
-          <div class="phase">
-            <div class="phase-image phase-before"></div>
-            <div class="phase-content">
-              <span class="phase-label">До</span>
-              <h4>Неопределённость</h4>
-              <p>Не знаете, что нужно вашей коже, пробуете средства, которые не работают, чувствуете разочарование.</p>
-            </div>
-          </div>
-          <div class="phase phase-center">
-            <div class="phase-image phase-during"></div>
-            <div class="phase-content">
-              <span class="phase-label">Процесс</span>
-              <h4>Открытие</h4>
-              <p>Понимание уникального профиля вашей кожи, изучение того, что работает именно для вас.</p>
-            </div>
-          </div>
-          <div class="phase">
-            <div class="phase-image phase-after"></div>
-            <div class="phase-content">
-              <span class="phase-label">После</span>
-              <h4>Уверенность</h4>
-              <p>Персональный уход, которому вы доверяете, кожа, которая выглядит здоровой и ухоженной.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION 5: TECHNOLOGY -->
-    <section id="technology" class="technology">
-      <div class="tech-content">
-        <div class="tech-visual">
-          <div class="tech-grid">
-            <div class="grid-cell" v-for="n in 25" :key="n"></div>
-          </div>
-          <div class="tech-overlay">
-            <div class="data-stream">
-              <div class="stream-line" v-for="n in 8" :key="n" :style="{ animationDelay: `${n * 0.2}s` }"></div>
-            </div>
-          </div>
-          <div class="tech-center">
-            <div class="ai-core">
-              <div class="core-ring ring-1"></div>
-              <div class="core-ring ring-2"></div>
-              <div class="core-ring ring-3"></div>
-              <div class="core-icon">AI</div>
-            </div>
-          </div>
-        </div>
-        <div class="tech-info">
-          <span class="tagline">ОСНОВАНО НА НАУКЕ</span>
-          <h2>Продвинутый AI + дерматологическая экспертиза</h2>
-          <div class="tech-cards">
-            <div class="tech-card glass-card">
-              <div class="tech-card-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                  <path d="M2 17l10 5 10-5"/>
-                  <path d="M2 12l10 5 10-5"/>
-                </svg>
-              </div>
-              <h4>Глубокое обучение</h4>
-              <p>Обучен на 2M+ изображений кожи всех типов, оттенков и состояний</p>
-            </div>
-            <div class="tech-card glass-card">
-              <div class="tech-card-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <circle cx="12" cy="12" r="10"/>
-                  <path d="M12 6v6l4 2"/>
-                </svg>
-              </div>
-              <h4>Анализ в реальном времени</h4>
-              <p>47 параметров кожи анализируются за 3 секунды с точностью 94%</p>
-            </div>
-            <div class="tech-card glass-card">
-              <div class="tech-card-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                </svg>
-              </div>
-              <h4>Персональный уход</h4>
-              <p>Рекомендации, которые адаптируются к изменяющимся потребностям кожи</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION 6: SOCIAL PROOF -->
-    <section class="social-proof">
+    <!-- Concept -->
+    <section class="concept">
       <div class="section-header">
-        <span class="tagline">ОТЗЫВЫ</span>
-        <h2>Что говорят наши первые пользователи</h2>
+        <span class="tagline tagline-dark">КОНЦЕПТ</span>
+        <h2 class="dark-text">Кожа как микроландшафт</h2>
+        <p class="section-desc dark-text">Каждая пора — отпечаток времени. Мы видим красоту в деталях и помогаем<br>раскрыть потенциал вашей кожи.</p>
       </div>
-      <div class="testimonials">
-        <div class="testimonial-card glass-card">
-          <div class="testimonial-content">
-            <p>«Наконец-то приложение, которое понимает мою комбинированную кожу. Персональная программа изменила всё — моя кожа никогда не была такой здоровой.»</p>
-          </div>
-          <div class="testimonial-author">
-            <div class="author-avatar avatar-1"></div>
-            <div class="author-info">
-              <span class="author-name">Анна М.</span>
-              <span class="author-detail">Бета-тестер, 3 месяца</span>
-            </div>
-          </div>
-        </div>
-        <div class="testimonial-card glass-card">
-          <div class="testimonial-content">
-            <p>«У меня чувствительная кожа, и я была скептически настроена. Но AI обнаружил проблемы, которые пропустил мой дерматолог. Это прорыв.»</p>
-          </div>
-          <div class="testimonial-author">
-            <div class="author-avatar avatar-2"></div>
-            <div class="author-info">
-              <span class="author-name">Дмитрий Л.</span>
-              <span class="author-detail">Ранний доступ</span>
-            </div>
-          </div>
-        </div>
-        <div class="testimonial-card glass-card">
-          <div class="testimonial-content">
-            <p>«Обожаю, как приложение отслеживает прогресс моей кожи. Видеть данные об улучшениях — это мотивирует придерживаться своего ухода.»</p>
-          </div>
-          <div class="testimonial-author">
-            <div class="author-avatar avatar-3"></div>
-            <div class="author-info">
-              <span class="author-name">Мария К.</span>
-              <span class="author-detail">Основатель</span>
-            </div>
-          </div>
-        </div>
+      <div class="concept-grid">
+        <div class="concept-img concept-img-1"></div>
+        <div class="concept-img concept-img-2"></div>
+        <div class="concept-img concept-img-3"></div>
+        <div class="concept-img concept-img-4"></div>
       </div>
     </section>
 
-    <!-- SECTION 7: PRICING -->
-    <section id="pricing" class="pricing">
+    <!-- Target Audience -->
+    <section class="target">
       <div class="section-header">
-        <span class="tagline">РАННИЙ ДОСТУП</span>
-        <h2>Присоединяйтесь к революции в уходе за кожей</h2>
-        <p class="section-desc">Ограниченное количество мест для первых участников</p>
+        <span class="tagline">ДЛЯ КОГО</span>
+        <h2>Кому подойдёт наш сервис</h2>
       </div>
-      <div class="pricing-cards">
-        <div class="pricing-card glass-card">
-          <div class="pricing-header">
-            <h4>Бета-доступ</h4>
-            <div class="price">
-              <span class="price-amount">Бесплатно</span>
-              <span class="price-period">для первых пользователей</span>
-            </div>
-          </div>
-          <ul class="pricing-features">
-            <li><span class="check">✓</span> Базовый анализ кожи</li>
-            <li><span class="check">✓</span> Еженедельный трекинг</li>
-            <li><span class="check">✓</span> Рекомендации средств</li>
-            <li><span class="check">✓</span> Доступ к сообществу</li>
-          </ul>
-          <button class="btn btn-secondary">Записаться в бету</button>
+      <div class="target-grid">
+        <div class="target-card">
+          <svg class="target-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 3l1.5 4.5h4.5l-3.5 2.5 1.5 4.5-4-3-4 3 1.5-4.5-3.5-2.5h4.5z"/>
+          </svg>
+          <h4>Начинающим</h4>
+          <p>Тем, кто не знает с чего начать уход за кожей</p>
         </div>
-        <div class="pricing-card glass-card pricing-featured">
-          <div class="pricing-badge">Популярный</div>
-          <div class="pricing-header">
-            <h4>Основатель</h4>
-            <div class="price">
-              <span class="price-amount">990 ₽</span>
-              <span class="price-period">/месяц навсегда</span>
-            </div>
-          </div>
-          <ul class="pricing-features">
-            <li><span class="check">✓</span> Продвинутый AI-анализ</li>
-            <li><span class="check">✓</span> Ежедневный трекинг</li>
-            <li><span class="check">✓</span> Персональные программы</li>
-            <li><span class="check">✓</span> Консультации экспертов</li>
-            <li><span class="check">✓</span> Приоритетная поддержка</li>
-            <li><span class="check">✓</span> Фиксированная цена</li>
-          </ul>
-          <button class="btn btn-primary">Стать основателем</button>
+        <div class="target-card">
+          <svg class="target-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <h4>Ищущим решение</h4>
+          <p>Тем, кто столкнулся с проблемами кожи</p>
         </div>
-        <div class="pricing-card glass-card">
-          <div class="pricing-header">
-            <h4>Ранний Pro</h4>
-            <div class="price">
-              <span class="price-amount">1 990 ₽</span>
-              <span class="price-period">/месяц навсегда</span>
-            </div>
-          </div>
-          <ul class="pricing-features">
-            <li><span class="check">✓</span> Всё из тарифа Основатель</li>
-            <li><span class="check">✓</span> Безлимитные анализы</li>
-            <li><span class="check">✓</span> Доступ к API</li>
-            <li><span class="check">✓</span> Отчёты white-label</li>
-            <li><span class="check">✓</span> Командные функции</li>
-          </ul>
-          <button class="btn btn-secondary">Записаться в Pro</button>
+        <div class="target-card">
+          <svg class="target-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+          <h4>Экспертам</h4>
+          <p>Тем, кто хочет профессиональную оценку текущего ухода</p>
+        </div>
+        <div class="target-card">
+          <svg class="target-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <h4>Заботливым</h4>
+          <p>Тем, кто хочет подобрать правильный уход</p>
         </div>
       </div>
     </section>
 
-    <!-- SECTION 8: FINAL CTA -->
-    <section id="final-cta" class="final-cta">
-      <div class="cta-content">
-        <h2>История вашей кожи<br>начинается здесь</h2>
-        <p class="cta-subtitle">Присоединяйтесь к тысячам людей, которые открывают новый способ понимать и заботиться о своей коже.</p>
-        <form class="cta-form" @submit.prevent="submitWaitlist">
-          <input
-            type="email"
-            v-model="emailCta"
-            placeholder="Введите ваш email"
-            required
-            class="cta-input"
-          />
-          <button type="submit" class="btn btn-cta">Получить доступ</button>
-        </form>
-        <div class="cta-trust">
-          <span class="trust-item">✓ Без привязки карты</span>
-          <span class="trust-item">✓ Отмена в любой момент</span>
-          <span class="trust-item">✓ Конфиденциальность</span>
+    <!-- Team -->
+    <section id="team" class="team">
+      <div class="section-header">
+        <span class="tagline">КОМАНДА</span>
+        <h2>Наши специалисты</h2>
+        <p class="section-desc">Квалифицированные косметологи и дерматологи с многолетним опытом</p>
+      </div>
+      <div class="team-grid">
+        <div class="specialist">
+          <div class="specialist-img specialist-img-1"></div>
+          <h4>Анна Петрова</h4>
+          <p>Косметолог-эстетист</p>
+        </div>
+        <div class="specialist">
+          <div class="specialist-img specialist-img-2"></div>
+          <h4>Елена Козырева</h4>
+          <p>Дерматолог</p>
+        </div>
+        <div class="specialist">
+          <div class="specialist-img specialist-img-3"></div>
+          <h4>Мария Иванова</h4>
+          <p>Мастер по лицу и телу</p>
+        </div>
+        <div class="specialist">
+          <div class="specialist-img specialist-img-4"></div>
+          <h4>Ольга Смирнова</h4>
+          <p>Косметолог-эстетист</p>
         </div>
       </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta">
+      <h2>Готовы начать свой путь<br>к здоровой коже?</h2>
+      <p class="cta-subtitle">Получите персональные рекомендации от наших специалистов</p>
+      <div class="cta-buttons">
+        <a :href="telegramBotLink" target="_blank" class="btn btn-primary">Начать консультацию</a>
+        <a :href="telegramBotLink" target="_blank" class="btn btn-secondary-light">Написать в Telegram</a>
+      </div>
+      <span class="cta-trust">Ответ в течение 24-48 часов</span>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
       <div class="footer-main">
         <div class="footer-brand">
-          <div class="footer-logo">
-            <img src="/logo.jpg" alt="Skin Stories" class="footer-logo-img" />
-          </div>
-          <p>AI-анализ кожи, который помогает понимать и заботиться о вашей уникальной коже.</p>
+          <div class="footer-logo">SKIN.STORIES</div>
+          <p>Персональные консультации по уходу за кожей от квалифицированных специалистов</p>
         </div>
         <div class="footer-nav">
           <div class="footer-col">
-            <h5>Продукт</h5>
+            <h5>Навигация</h5>
+            <a href="#how-it-works">О нас</a>
             <a href="#how-it-works">Как это работает</a>
-            <a href="#demo">Демо</a>
-            <a href="#technology">Технологии</a>
-            <a href="#pricing">Тарифы</a>
+            <a href="#team">Специалисты</a>
+            <a href="#form">Контакты</a>
           </div>
           <div class="footer-col">
-            <h5>Компания</h5>
-            <a href="#">О нас</a>
-            <a href="#">Блог</a>
-            <a href="#">Карьера</a>
-            <a href="#">Пресса</a>
-          </div>
-          <div class="footer-col">
-            <h5>Поддержка</h5>
-            <a href="mailto:hello@skin.stories">Контакты</a>
-            <a href="#">FAQ</a>
-            <a href="#">Конфиденциальность</a>
-            <a href="#">Условия</a>
+            <h5>Контакты</h5>
+            <a :href="telegramBotLink" target="_blank">Telegram: @skinstories_bot</a>
+            <a href="mailto:hello@skin.stories">Email: hello@skin.stories</a>
           </div>
         </div>
       </div>
@@ -514,14 +218,11 @@
       <div class="footer-bottom">
         <span>© 2024 Skin.Stories. Все права защищены.</span>
         <div class="footer-social">
-          <a href="#" target="_blank" aria-label="Twitter">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+          <a :href="telegramBotLink" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="m22 2-11 11"/></svg>
           </a>
-          <a href="#" target="_blank" aria-label="Instagram">
+          <a href="#" target="_blank">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/></svg>
-          </a>
-          <a href="#" target="_blank" aria-label="LinkedIn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           </a>
         </div>
       </div>
@@ -530,132 +231,39 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-
-const email = ref('');
-const emailCta = ref('');
-const mobileMenuOpen = ref(false);
-
-const submitWaitlist = () => {
-  // Placeholder for waitlist submission
-  console.log('Email submitted:', email.value || emailCta.value);
-  alert('Спасибо за регистрацию! Мы скоро свяжемся с вами.');
-  email.value = '';
-  emailCta.value = '';
-};
+const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@400;500;600&display=swap');
 
 :root {
-  /* Base Colors - Skin Tone Inspired */
-  --color-porcelain: #FAF8F5;
-  --color-soft-ivory: #F5F0EB;
-  --color-warm-nude: #D4A574;
-  --color-natural-beige: #E8DED4;
-  --color-cocoa: #5C4A3D;
-  --color-rich-ebony: #2D2420;
+  --bg-primary: #1A1A1C;
+  --bg-surface: #242426;
+  --bg-maroon: #5D1A2D;
+  --bg-cream: #F5EDE6;
 
-  /* Emotional Signals */
-  --color-blush: #E8B4B8;
-  --color-terracotta: #C67B5C;
-  --color-olive: #8B9A6D;
-  --color-honey: #E5B769;
+  --text-primary: #F5F5F0;
+  --text-secondary: #A0A0A0;
+  --text-muted: #6E6E70;
+  --text-dark: #1A1A1C;
 
-  /* Functional */
-  --color-overlay: rgba(45, 36, 32, 0.6);
-  --color-glass: rgba(255, 255, 255, 0.7);
-  --color-glass-border: rgba(255, 255, 255, 0.3);
+  --accent-gold: #C9A962;
+  --accent-beige: #D4B5A0;
 
-  /* Typography */
-  --font-primary: 'Manrope', sans-serif;
-  --font-editorial: 'Playfair Display', serif;
+  --border-subtle: #3A3A3C;
 
-  /* Spacing */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
-  --space-2xl: 48px;
-  --space-3xl: 64px;
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'Inter', sans-serif;
 }
 </style>
 
 <style scoped>
-/* Base */
 .landing {
   min-height: 100vh;
-  background: var(--color-porcelain);
-  color: var(--color-cocoa);
-  font-family: var(--font-primary);
-  overflow-x: hidden;
-}
-
-/* Glassmorphism */
-.glass-card {
-  background: var(--color-glass);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--color-glass-border);
-  border-radius: 24px;
-}
-
-/* Typography */
-h1, h2, h3, h4 {
-  font-family: var(--font-editorial);
-  color: var(--color-rich-ebony);
-}
-
-/* Buttons */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-md) var(--space-xl);
-  font-family: var(--font-primary);
-  font-size: 16px;
-  font-weight: 600;
-  border-radius: 24px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.4s ease-out;
-  text-decoration: none;
-}
-
-.btn-primary {
-  background: var(--color-warm-nude);
-  color: white;
-  box-shadow: 0 4px 20px rgba(212, 165, 116, 0.3);
-}
-
-.btn-primary:hover {
-  background: #C49564;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(212, 165, 116, 0.4);
-}
-
-.btn-secondary {
-  background: transparent;
-  color: var(--color-cocoa);
-  border: 2px solid var(--color-natural-beige);
-}
-
-.btn-secondary:hover {
-  background: var(--color-natural-beige);
-  border-color: var(--color-natural-beige);
-}
-
-.btn-cta {
-  background: white;
-  color: var(--color-rich-ebony);
-  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
-}
-
-.btn-cta:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(255, 255, 255, 0.4);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
 }
 
 /* Header */
@@ -665,15 +273,14 @@ h1, h2, h3, h4 {
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(250, 248, 245, 0.9);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(26, 26, 28, 0.95);
+  backdrop-filter: blur(10px);
 }
 
 .header-content {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0 var(--space-3xl);
+  padding: 0 120px;
   height: 80px;
   display: flex;
   justify-content: space-between;
@@ -681,1259 +288,407 @@ h1, h2, h3, h4 {
 }
 
 .logo {
-  display: flex;
-  align-items: center;
-}
-
-.logo-img {
-  height: 64px;
-  width: auto;
-  object-fit: contain;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  color: var(--text-primary);
 }
 
 .nav {
   display: flex;
   align-items: center;
-  gap: var(--space-2xl);
+  gap: 48px;
 }
 
 .nav a {
   font-size: 14px;
-  font-weight: 500;
-  color: var(--color-cocoa);
-  text-decoration: none;
-  transition: color 0.3s ease;
+  color: var(--text-secondary);
+  transition: color 0.2s;
 }
 
 .nav a:hover {
-  color: var(--color-rich-ebony);
+  color: var(--text-primary);
 }
 
 .nav-cta {
   padding: 12px 24px;
-  background: var(--color-warm-nude);
-  color: white !important;
-  border-radius: 24px;
+  border: 1px solid var(--accent-gold);
+  border-radius: 4px;
+  color: var(--accent-gold) !important;
+  font-weight: 500;
 }
 
 .nav-cta:hover {
-  background: #C49564;
+  background: var(--accent-gold);
+  color: var(--bg-primary) !important;
 }
 
-.mobile-menu-btn {
-  display: none;
-  flex-direction: column;
-  gap: 5px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-}
-
-.mobile-menu-btn span {
-  width: 24px;
-  height: 2px;
-  background: var(--color-rich-ebony);
-  transition: all 0.3s ease;
-}
-
-.mobile-menu {
-  display: none;
-  flex-direction: column;
-  padding: var(--space-lg);
-  background: var(--color-porcelain);
-  border-top: 1px solid var(--color-natural-beige);
-}
-
-.mobile-menu a {
-  padding: var(--space-md) 0;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--color-cocoa);
-  text-decoration: none;
-  border-bottom: 1px solid var(--color-natural-beige);
-}
-
-.mobile-cta {
-  margin-top: var(--space-md);
-  padding: var(--space-md) !important;
-  background: var(--color-warm-nude);
-  color: white !important;
-  border-radius: 24px;
-  text-align: center;
-  border: none !important;
-}
-
-/* SECTION 1: HERO */
+/* Hero */
 .hero {
-  min-height: 100vh;
-  position: relative;
+  min-height: 800px;
+  background: linear-gradient(180deg, rgba(26,26,28,0) 0%, rgba(26,26,28,1) 100%),
+              url('https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?w=1920&q=80') center/cover;
   display: flex;
-  align-items: center;
-  padding-top: 80px;
-  overflow: hidden;
+  align-items: flex-end;
 }
 
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-.hero-gradient {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, var(--color-porcelain) 0%, var(--color-soft-ivory) 50%, var(--color-natural-beige) 100%);
-  animation: breathe 8s ease-in-out infinite;
-}
-
-@keyframes breathe {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 1; }
-}
-
-.hero-grid-overlay {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(212, 165, 116, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(212, 165, 116, 0.1) 1px, transparent 1px);
-  background-size: 50px 50px;
-  opacity: 0.5;
-}
-
-.hero-content {
-  position: relative;
-  z-index: 1;
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: var(--space-3xl);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-3xl);
-  align-items: center;
-}
-
-.hero-text {
-  max-width: 600px;
+.hero-overlay {
+  width: 100%;
+  padding: 120px;
+  padding-top: 200px;
 }
 
 .tagline {
-  display: inline-block;
-  font-family: var(--font-primary);
+  display: block;
+  font-family: var(--font-body);
   font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 3px;
-  color: var(--color-warm-nude);
-  margin-bottom: var(--space-md);
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 4px;
+  color: var(--accent-gold);
+  margin-bottom: 16px;
 }
 
-.tagline-light {
-  color: var(--color-honey);
+.tagline-dark {
+  color: var(--bg-maroon);
 }
 
 .hero h1 {
-  font-size: 56px;
-  font-weight: 400;
-  line-height: 1.2;
-  margin-bottom: var(--space-lg);
-}
-
-.hero-highlight {
-  color: var(--color-warm-nude);
+  font-family: var(--font-display);
+  font-size: 72px;
+  font-weight: 300;
+  line-height: 1.1;
+  margin-bottom: 24px;
 }
 
 .subtitle {
   font-size: 18px;
-  line-height: 1.7;
-  color: var(--color-cocoa);
-  margin-bottom: var(--space-xl);
-  opacity: 0.9;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 600px;
+  margin-bottom: 32px;
 }
 
-.waitlist-form {
+.hero-buttons {
   display: flex;
-  gap: var(--space-md);
-  margin-bottom: var(--space-md);
+  gap: 16px;
 }
 
-.waitlist-input {
-  flex: 1;
-  padding: var(--space-md) var(--space-lg);
-  font-family: var(--font-primary);
+.btn {
+  display: inline-block;
+  padding: 18px 40px;
   font-size: 16px;
-  border: 2px solid var(--color-natural-beige);
-  border-radius: 24px;
-  background: white;
-  color: var(--color-rich-ebony);
-  outline: none;
-  transition: border-color 0.3s ease;
-}
-
-.waitlist-input:focus {
-  border-color: var(--color-warm-nude);
-}
-
-.waitlist-input::placeholder {
-  color: var(--color-cocoa);
-  opacity: 0.5;
-}
-
-.waitlist-note {
-  font-size: 14px;
-  color: var(--color-cocoa);
-  opacity: 0.7;
-}
-
-/* App Mockup */
-.hero-mockup {
-  display: flex;
-  justify-content: center;
-}
-
-.app-mockup {
-  width: 280px;
-  height: 560px;
-  background: var(--color-rich-ebony);
-  border-radius: 40px;
-  padding: 12px;
-  box-shadow:
-    0 50px 100px rgba(45, 36, 32, 0.3),
-    0 20px 40px rgba(45, 36, 32, 0.2);
-}
-
-.mockup-screen {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(180deg, var(--color-soft-ivory) 0%, var(--color-porcelain) 100%);
-  border-radius: 32px;
-  overflow: hidden;
-}
-
-.mockup-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-md) var(--space-lg);
-  font-size: 12px;
-  color: var(--color-cocoa);
-}
-
-.mockup-title {
-  font-weight: 600;
-}
-
-.mockup-icons {
-  display: flex;
-  gap: var(--space-xs);
-  font-size: 10px;
-}
-
-.mockup-content {
-  padding: var(--space-lg);
-}
-
-.mockup-face {
-  position: relative;
-  width: 180px;
-  height: 180px;
-  margin: 0 auto var(--space-lg);
-  background: linear-gradient(135deg, var(--color-natural-beige) 0%, var(--color-soft-ivory) 100%);
-  border-radius: 50%;
-  overflow: hidden;
-}
-
-.scan-line {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, var(--color-warm-nude), transparent);
-  animation: scanMove 2s ease-in-out infinite;
-}
-
-@keyframes scanMove {
-  0%, 100% { top: 10%; }
-  50% { top: 90%; }
-}
-
-.scan-point {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background: var(--color-warm-nude);
-  border-radius: 50%;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-.scan-point-1 { top: 30%; left: 25%; animation-delay: 0s; }
-.scan-point-2 { top: 45%; right: 20%; animation-delay: 0.5s; }
-.scan-point-3 { bottom: 30%; left: 50%; animation-delay: 1s; }
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 0.6; }
-  50% { transform: scale(1.5); opacity: 1; }
-}
-
-.mockup-analysis {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-}
-
-.analysis-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.analysis-label {
-  font-size: 11px;
   font-weight: 500;
-  color: var(--color-cocoa);
-  width: 60px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  text-align: center;
 }
 
-.analysis-bar {
-  flex: 1;
-  height: 6px;
-  background: var(--color-natural-beige);
-  border-radius: 3px;
-  overflow: hidden;
+.btn-primary {
+  background: var(--accent-gold);
+  color: var(--bg-primary);
 }
 
-.analysis-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--color-olive), var(--color-honey));
-  border-radius: 3px;
-  animation: fillGrow 2s ease-out forwards;
+.btn-primary:hover {
+  background: #D4B06A;
 }
 
-@keyframes fillGrow {
-  from { width: 0 !important; }
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--text-primary);
+  color: var(--text-primary);
 }
 
-.analysis-value {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--color-rich-ebony);
-  width: 30px;
-  text-align: right;
+.btn-secondary:hover {
+  background: var(--text-primary);
+  color: var(--bg-primary);
 }
 
-.hero-scroll-indicator {
-  position: absolute;
-  bottom: var(--space-xl);
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-sm);
-  color: var(--color-cocoa);
-  font-size: 12px;
-  opacity: 0.6;
+.btn-secondary-light {
+  background: transparent;
+  border: 1px solid var(--text-primary);
+  color: var(--text-primary);
 }
 
-.scroll-arrow {
-  width: 20px;
-  height: 20px;
-  border-right: 2px solid var(--color-cocoa);
-  border-bottom: 2px solid var(--color-cocoa);
-  transform: rotate(45deg);
-  animation: bounce 2s ease-in-out infinite;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: rotate(45deg) translateY(0); }
-  50% { transform: rotate(45deg) translateY(5px); }
-}
-
-/* SECTION 2: HOW IT WORKS */
+/* How it works */
 .how-it-works {
-  padding: var(--space-3xl);
-  background: white;
+  padding: 120px;
+  background: var(--bg-primary);
 }
 
 .section-header {
   text-align: center;
-  margin-bottom: var(--space-3xl);
+  margin-bottom: 64px;
 }
 
 .section-header h2 {
+  font-family: var(--font-display);
   font-size: 48px;
   font-weight: 400;
-  margin: var(--space-md) 0;
+  margin: 16px 0;
 }
 
 .section-desc {
   font-size: 18px;
-  color: var(--color-cocoa);
-  opacity: 0.8;
+  color: var(--text-muted);
 }
 
-.light-text {
-  color: var(--color-porcelain);
+.dark-text {
+  color: var(--text-dark);
 }
 
 .steps {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-xl);
-  max-width: 1200px;
-  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
 }
 
 .step-card {
-  background: var(--color-soft-ivory);
-  padding: var(--space-xl);
-  border-radius: 24px;
-  position: relative;
-  transition: all 0.4s ease-out;
+  width: 260px;
+  background: var(--bg-surface);
+  padding: 32px;
+  border-radius: 8px;
 }
 
-.step-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(45, 36, 32, 0.1);
-}
-
-.step-icon {
-  width: 48px;
-  height: 48px;
-  margin-bottom: var(--space-lg);
-}
-
-.step-icon svg {
-  width: 100%;
-  height: 100%;
-  stroke: var(--color-warm-nude);
-}
-
-.step-number {
-  font-family: var(--font-editorial);
-  font-size: 64px;
-  font-weight: 400;
-  color: var(--color-natural-beige);
-  position: absolute;
-  top: var(--space-lg);
-  right: var(--space-lg);
-  line-height: 1;
+.step-num {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 300;
+  color: var(--accent-gold);
+  display: block;
+  margin-bottom: 20px;
 }
 
 .step-card h3 {
-  font-size: 28px;
+  font-family: var(--font-display);
+  font-size: 22px;
   font-weight: 500;
-  margin-bottom: var(--space-md);
+  margin-bottom: 12px;
 }
 
 .step-card p {
-  font-size: 15px;
-  line-height: 1.7;
-  color: var(--color-cocoa);
-  opacity: 0.85;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
 }
 
-.step-indicator {
+/* Benefits */
+.benefits {
   display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin-top: var(--space-lg);
+  min-height: 600px;
+  background: var(--bg-maroon);
 }
 
-.step-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--color-natural-beige);
-}
-
-.step-dot.active {
-  background: var(--color-warm-nude);
-}
-
-.step-line {
+.benefits-content {
   flex: 1;
-  height: 2px;
-  background: linear-gradient(90deg, var(--color-natural-beige), transparent);
-}
-
-.step-line-end {
-  width: 20px;
-  height: 2px;
-  background: var(--color-natural-beige);
-}
-
-/* SECTION 3: DEMO */
-.demo {
-  padding: var(--space-3xl);
-  background: var(--color-soft-ivory);
-}
-
-.demo-container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.demo-header {
-  text-align: center;
-  margin-bottom: var(--space-3xl);
-}
-
-.demo-header h2 {
-  font-size: 48px;
-  font-weight: 400;
-  margin: var(--space-md) 0;
-}
-
-.demo-interface {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: var(--space-xl);
-  align-items: start;
-}
-
-.demo-upload-area,
-.demo-scanning,
-.demo-results {
-  background: white;
-  border-radius: 24px;
-  padding: var(--space-xl);
-  box-shadow: 0 10px 40px rgba(45, 36, 32, 0.08);
-}
-
-.upload-box {
-  border: 2px dashed var(--color-natural-beige);
-  border-radius: 16px;
-  padding: var(--space-2xl);
-  text-align: center;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.upload-box:hover {
-  border-color: var(--color-warm-nude);
-  background: var(--color-soft-ivory);
-}
-
-.upload-icon {
-  width: 48px;
-  height: 48px;
-  margin: 0 auto var(--space-md);
-}
-
-.upload-icon svg {
-  width: 100%;
-  height: 100%;
-  stroke: var(--color-warm-nude);
-}
-
-.upload-text {
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--color-rich-ebony);
-  margin-bottom: var(--space-xs);
-}
-
-.upload-hint {
-  font-size: 13px;
-  color: var(--color-cocoa);
-  opacity: 0.6;
-}
-
-.scan-visual {
-  position: relative;
-  height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.face-outline {
-  width: 120px;
-  height: 150px;
-  border: 2px solid var(--color-natural-beige);
-  border-radius: 60px 60px 50px 50px;
-  position: relative;
-  overflow: hidden;
-}
-
-.scan-beam {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, transparent, var(--color-warm-nude), transparent);
-  animation: beamScan 1.5s ease-in-out infinite;
-}
-
-@keyframes beamScan {
-  0%, 100% { top: 0; }
-  50% { top: calc(100% - 4px); }
-}
-
-.scan-data {
-  position: absolute;
-  inset: 0;
-}
-
-.data-point {
-  position: absolute;
-  animation: dataAppear 3s ease-in-out infinite;
-}
-
-.data-point:nth-child(1) { top: 20%; left: 10%; }
-.data-point:nth-child(2) { top: 30%; right: 15%; }
-.data-point:nth-child(3) { top: 50%; left: 20%; }
-.data-point:nth-child(4) { top: 60%; right: 25%; }
-.data-point:nth-child(5) { bottom: 30%; left: 15%; }
-.data-point:nth-child(6) { bottom: 20%; right: 10%; }
-
-.data-dot {
-  display: block;
-  width: 8px;
-  height: 8px;
-  background: var(--color-honey);
-  border-radius: 50%;
-  box-shadow: 0 0 10px var(--color-honey);
-}
-
-@keyframes dataAppear {
-  0%, 100% { opacity: 0; transform: scale(0); }
-  50% { opacity: 1; transform: scale(1); }
-}
-
-.scan-progress {
-  margin-top: var(--space-lg);
-}
-
-.progress-bar {
-  height: 6px;
-  background: var(--color-natural-beige);
-  border-radius: 3px;
-  overflow: hidden;
-  margin-bottom: var(--space-sm);
-}
-
-.progress-fill {
-  height: 100%;
-  width: 65%;
-  background: linear-gradient(90deg, var(--color-warm-nude), var(--color-honey));
-  border-radius: 3px;
-  animation: progressPulse 2s ease-in-out infinite;
-}
-
-@keyframes progressPulse {
-  0%, 100% { width: 55%; }
-  50% { width: 75%; }
-}
-
-.progress-text {
-  font-size: 12px;
-  color: var(--color-cocoa);
-  text-align: center;
-  display: block;
-}
-
-.result-card {
-  height: 100%;
-}
-
-.result-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-lg);
-}
-
-.result-header h4 {
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.result-badge {
-  font-size: 11px;
-  font-weight: 600;
-  padding: var(--space-xs) var(--space-sm);
-  background: var(--color-olive);
-  color: white;
-  border-radius: 12px;
-}
-
-.result-metrics {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-md);
-  margin-bottom: var(--space-lg);
-}
-
-.metric {
-  text-align: center;
-}
-
-.metric-circle {
-  width: 50px;
-  height: 50px;
-  margin: 0 auto var(--space-xs);
-  border-radius: 50%;
-  background: conic-gradient(
-    var(--color-warm-nude) calc(var(--progress) * 3.6deg),
-    var(--color-natural-beige) calc(var(--progress) * 3.6deg)
-  );
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.metric-circle::before {
-  content: '';
-  position: absolute;
-  inset: 5px;
-  background: white;
-  border-radius: 50%;
-}
-
-.metric-value {
-  position: relative;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--color-rich-ebony);
-}
-
-.metric-label {
-  font-size: 11px;
-  color: var(--color-cocoa);
-}
-
-.result-insights h5 {
-  font-family: var(--font-primary);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-rich-ebony);
-  margin-bottom: var(--space-sm);
-}
-
-.result-insights ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.result-insights li {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  font-size: 12px;
-  color: var(--color-cocoa);
-  padding: var(--space-xs) 0;
-}
-
-.insight-icon {
-  font-size: 14px;
-}
-
-/* SECTION 4: SKIN JOURNEY */
-.skin-journey {
-  padding: var(--space-3xl);
-  background: var(--color-rich-ebony);
-}
-
-.journey-content {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.journey-phases {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-xl);
-  margin-top: var(--space-3xl);
-}
-
-.phase {
-  text-align: center;
-}
-
-.phase-image {
-  width: 100%;
-  height: 300px;
-  border-radius: 24px;
-  background-size: cover;
-  background-position: center;
-  margin-bottom: var(--space-lg);
-  opacity: 0.9;
-  transition: all 0.4s ease-out;
-}
-
-.phase:hover .phase-image {
-  opacity: 1;
-  transform: scale(1.02);
-}
-
-.phase-before {
-  background-image: url('https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=600&q=80');
-}
-
-.phase-during {
-  background-image: url('https://images.unsplash.com/photo-1552693673-1bf958298935?w=600&q=80');
-}
-
-.phase-after {
-  background-image: url('https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=600&q=80');
-}
-
-.phase-content {
-  color: var(--color-porcelain);
-}
-
-.phase-label {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  color: var(--color-honey);
-  text-transform: uppercase;
-  margin-bottom: var(--space-sm);
-  display: block;
-}
-
-.phase-content h4 {
-  font-size: 24px;
-  font-weight: 500;
-  color: var(--color-porcelain);
-  margin-bottom: var(--space-sm);
-}
-
-.phase-content p {
-  font-size: 14px;
-  line-height: 1.6;
-  opacity: 0.8;
-}
-
-/* SECTION 5: TECHNOLOGY */
-.technology {
-  padding: var(--space-3xl);
-  background: var(--color-porcelain);
-  overflow: hidden;
-}
-
-.tech-content {
-  max-width: 1440px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-3xl);
-  align-items: center;
-}
-
-.tech-visual {
-  position: relative;
-  height: 500px;
-}
-
-.tech-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 4px;
-  position: absolute;
-  inset: 0;
-  opacity: 0.3;
-}
-
-.grid-cell {
-  background: var(--color-natural-beige);
-  border-radius: 4px;
-  animation: cellPulse 4s ease-in-out infinite;
-}
-
-.grid-cell:nth-child(odd) {
-  animation-delay: 0.5s;
-}
-
-@keyframes cellPulse {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.6; }
-}
-
-.tech-overlay {
-  position: absolute;
-  inset: 0;
-}
-
-.data-stream {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  justify-content: space-around;
-}
-
-.stream-line {
-  width: 2px;
-  height: 100%;
-  background: linear-gradient(180deg, transparent, var(--color-warm-nude), transparent);
-  animation: streamFlow 3s linear infinite;
-}
-
-@keyframes streamFlow {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
-}
-
-.tech-center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.ai-core {
-  position: relative;
-  width: 150px;
-  height: 150px;
-}
-
-.core-ring {
-  position: absolute;
-  border: 2px solid var(--color-warm-nude);
-  border-radius: 50%;
-  animation: ringRotate 10s linear infinite;
-}
-
-.ring-1 {
-  inset: 0;
-  opacity: 0.3;
-}
-
-.ring-2 {
-  inset: 20px;
-  opacity: 0.5;
-  animation-direction: reverse;
-  animation-duration: 8s;
-}
-
-.ring-3 {
-  inset: 40px;
-  opacity: 0.8;
-  animation-duration: 6s;
-}
-
-@keyframes ringRotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.core-icon {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-family: var(--font-editorial);
-  font-size: 32px;
-  font-weight: 600;
-  color: var(--color-warm-nude);
-}
-
-.tech-info h2 {
-  font-size: 42px;
-  font-weight: 400;
-  margin: var(--space-md) 0 var(--space-xl);
-}
-
-.tech-cards {
+  padding: 100px 80px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  justify-content: center;
 }
 
-.tech-card {
+.benefits h2 {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 400;
+  margin: 16px 0 40px;
+}
+
+.benefits-list {
   display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.benefit-item {
+  display: flex;
+  gap: 16px;
   align-items: flex-start;
-  gap: var(--space-lg);
-  padding: var(--space-lg);
 }
 
-.tech-card-icon {
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
+.benefit-dash {
+  font-family: var(--font-display);
+  font-size: 24px;
+  color: var(--accent-gold);
 }
 
-.tech-card-icon svg {
-  width: 100%;
-  height: 100%;
-  stroke: var(--color-warm-nude);
+.benefit-text h4 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 8px;
 }
 
-.tech-card h4 {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: var(--space-xs);
-}
-
-.tech-card p {
+.benefit-text p {
   font-size: 14px;
-  color: var(--color-cocoa);
-  line-height: 1.6;
+  color: var(--accent-beige);
+  line-height: 1.5;
 }
 
-/* SECTION 6: SOCIAL PROOF */
-.social-proof {
-  padding: var(--space-3xl);
-  background: var(--color-soft-ivory);
+.benefits-image {
+  width: 600px;
+  background: url('https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&q=80') center/cover;
 }
 
-.testimonials {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-xl);
-  max-width: 1200px;
-  margin: 0 auto;
+/* Concept */
+.concept {
+  padding: 100px 120px;
+  background: var(--bg-cream);
 }
 
-.testimonial-card {
-  padding: var(--space-xl);
-  transition: all 0.4s ease-out;
-}
-
-.testimonial-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(45, 36, 32, 0.1);
-}
-
-.testimonial-content p {
-  font-size: 16px;
-  line-height: 1.7;
-  color: var(--color-cocoa);
-  margin-bottom: var(--space-lg);
-  font-style: italic;
-}
-
-.testimonial-author {
+.concept-grid {
   display: flex;
-  align-items: center;
-  gap: var(--space-md);
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
 }
 
-.author-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+.concept-img {
+  width: 280px;
+  height: 350px;
+  border-radius: 8px;
   background-size: cover;
   background-position: center;
 }
 
-.avatar-1 {
-  background-image: url('https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80');
+.concept-img-1 { background-image: url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&q=80'); }
+.concept-img-2 { background-image: url('https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=400&q=80'); }
+.concept-img-3 { background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80'); }
+.concept-img-4 { background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80'); }
+
+/* Target */
+.target {
+  padding: 100px 120px;
+  background: var(--bg-primary);
 }
 
-.avatar-2 {
-  background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80');
-}
-
-.avatar-3 {
-  background-image: url('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80');
-}
-
-.author-info {
+.target-grid {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
 }
 
-.author-name {
-  font-weight: 600;
-  color: var(--color-rich-ebony);
+.target-card {
+  width: 260px;
+  background: var(--bg-surface);
+  padding: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
 }
 
-.author-detail {
-  font-size: 13px;
-  color: var(--color-cocoa);
-  opacity: 0.7;
+.target-icon {
+  width: 32px;
+  height: 32px;
+  color: var(--accent-gold);
+  margin-bottom: 16px;
 }
 
-/* SECTION 7: PRICING */
-.pricing {
-  padding: var(--space-3xl);
-  background: var(--color-porcelain);
+.target-card h4 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 12px;
 }
 
-.pricing-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-xl);
-  max-width: 1100px;
-  margin: 0 auto;
-  align-items: start;
+.target-card p {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
 }
 
-.pricing-card {
-  padding: var(--space-xl);
-  position: relative;
-  transition: all 0.4s ease-out;
+/* Team */
+.team {
+  padding: 100px 120px;
+  background: var(--bg-surface);
 }
 
-.pricing-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(45, 36, 32, 0.1);
+.team-grid {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
 }
 
-.pricing-featured {
-  border: 2px solid var(--color-warm-nude);
-  transform: scale(1.05);
-}
-
-.pricing-featured:hover {
-  transform: scale(1.05) translateY(-8px);
-}
-
-.pricing-badge {
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: var(--space-xs) var(--space-md);
-  background: var(--color-warm-nude);
-  color: white;
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 12px;
-}
-
-.pricing-header {
+.specialist {
+  width: 270px;
   text-align: center;
-  margin-bottom: var(--space-lg);
-  padding-bottom: var(--space-lg);
-  border-bottom: 1px solid var(--color-natural-beige);
 }
 
-.pricing-header h4 {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: var(--space-md);
+.specialist-img {
+  width: 270px;
+  height: 320px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 16px;
 }
 
-.price {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.specialist-img-1 { background-image: url('https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&q=80'); }
+.specialist-img-2 { background-image: url('https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&q=80'); }
+.specialist-img-3 { background-image: url('https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400&q=80'); }
+.specialist-img-4 { background-image: url('https://images.unsplash.com/photo-1580281657702-257584239a55?w=400&q=80'); }
+
+.specialist h4 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 8px;
 }
 
-.price-amount {
-  font-family: var(--font-editorial);
-  font-size: 48px;
-  font-weight: 400;
-  color: var(--color-rich-ebony);
-}
-
-.price-period {
+.specialist p {
   font-size: 14px;
-  color: var(--color-cocoa);
+  color: var(--text-muted);
 }
 
-.pricing-features {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 var(--space-xl);
-}
-
-.pricing-features li {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) 0;
-  font-size: 14px;
-  color: var(--color-cocoa);
-}
-
-.pricing-features .check {
-  color: var(--color-olive);
-  font-weight: bold;
-}
-
-.pricing-card .btn {
-  width: 100%;
-}
-
-/* SECTION 8: FINAL CTA */
+/* Final CTA */
 .final-cta {
-  padding: var(--space-3xl) var(--space-xl);
-  background: var(--color-rich-ebony);
+  padding: 120px;
+  background: var(--bg-maroon);
   text-align: center;
-  min-height: 500px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-.cta-content {
-  max-width: 600px;
+  min-height: 500px;
 }
 
 .final-cta h2 {
+  font-family: var(--font-display);
   font-size: 56px;
   font-weight: 400;
-  color: var(--color-porcelain);
   line-height: 1.2;
-  margin-bottom: var(--space-lg);
+  margin-bottom: 24px;
 }
 
 .cta-subtitle {
   font-size: 18px;
-  color: var(--color-natural-beige);
-  margin-bottom: var(--space-xl);
-  line-height: 1.6;
+  color: var(--accent-beige);
+  margin-bottom: 40px;
 }
 
-.cta-form {
+.cta-buttons {
   display: flex;
-  gap: var(--space-md);
-  margin-bottom: var(--space-lg);
-}
-
-.cta-input {
-  flex: 1;
-  padding: var(--space-md) var(--space-lg);
-  font-family: var(--font-primary);
-  font-size: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  outline: none;
-  transition: all 0.3s ease;
-}
-
-.cta-input:focus {
-  border-color: var(--color-warm-nude);
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.cta-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  gap: 20px;
+  margin-bottom: 24px;
 }
 
 .cta-trust {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-lg);
-  flex-wrap: wrap;
-}
-
-.trust-item {
-  font-size: 13px;
-  color: var(--color-natural-beige);
-  opacity: 0.7;
+  font-size: 14px;
+  color: #A08070;
 }
 
 /* Footer */
 .footer {
-  padding: var(--space-3xl) var(--space-3xl) var(--space-xl);
-  background: var(--color-rich-ebony);
+  padding: 80px 120px 40px;
+  background: var(--bg-primary);
 }
 
 .footer-main {
   display: flex;
   justify-content: space-between;
-  margin-bottom: var(--space-2xl);
+  margin-bottom: 60px;
 }
 
 .footer-brand {
@@ -1941,61 +696,52 @@ h1, h2, h3, h4 {
 }
 
 .footer-logo {
-  margin-bottom: var(--space-md);
-}
-
-.footer-logo-img {
-  height: 72px;
-  width: auto;
-  object-fit: contain;
-  filter: brightness(1.2);
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  margin-bottom: 20px;
 }
 
 .footer-brand p {
   font-size: 14px;
-  color: var(--color-natural-beige);
+  color: var(--text-muted);
   line-height: 1.6;
-  opacity: 0.7;
 }
 
 .footer-nav {
   display: flex;
-  gap: var(--space-3xl);
+  gap: 80px;
 }
 
 .footer-col {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: 16px;
 }
 
 .footer-col h5 {
-  font-family: var(--font-primary);
   font-size: 12px;
-  font-weight: 600;
-  color: var(--color-warm-nude);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-bottom: var(--space-sm);
+  font-weight: 500;
+  color: var(--accent-gold);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
 }
 
 .footer-col a {
   font-size: 14px;
-  color: var(--color-natural-beige);
-  text-decoration: none;
-  opacity: 0.7;
-  transition: all 0.3s ease;
+  color: var(--text-muted);
+  transition: color 0.2s;
 }
 
 .footer-col a:hover {
-  opacity: 1;
-  color: var(--color-porcelain);
+  color: var(--text-primary);
 }
 
 .footer-divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.1);
-  margin-bottom: var(--space-lg);
+  background: var(--border-subtle);
+  margin-bottom: 40px;
 }
 
 .footer-bottom {
@@ -2006,24 +752,21 @@ h1, h2, h3, h4 {
 
 .footer-bottom span {
   font-size: 13px;
-  color: var(--color-natural-beige);
-  opacity: 0.5;
+  color: #4A4A4C;
 }
 
 .footer-social {
   display: flex;
-  gap: var(--space-lg);
+  gap: 20px;
 }
 
 .footer-social a {
-  color: var(--color-natural-beige);
-  opacity: 0.5;
-  transition: all 0.3s ease;
+  color: var(--text-muted);
+  transition: color 0.2s;
 }
 
 .footer-social a:hover {
-  opacity: 1;
-  color: var(--color-porcelain);
+  color: var(--text-primary);
 }
 
 .footer-social svg {
@@ -2031,301 +774,425 @@ h1, h2, h3, h4 {
   height: 20px;
 }
 
-/* Responsive - Tablet */
+/* Responsive */
 @media (max-width: 1200px) {
-  .header-content {
-    padding: 0 var(--space-xl);
-  }
-
-  .hero-content {
-    padding: var(--space-xl);
-    gap: var(--space-xl);
-  }
-
-  .hero h1 {
-    font-size: 44px;
-  }
-
-  .section-header h2,
-  .demo-header h2,
-  .tech-info h2 {
-    font-size: 36px;
-  }
-
+  .header-content,
+  .hero-overlay,
   .how-it-works,
-  .demo,
-  .skin-journey,
-  .technology,
-  .social-proof,
-  .pricing,
+  .concept,
+  .target,
+  .team,
+  .final-cta,
   .footer {
-    padding: var(--space-2xl);
+    padding-left: 40px;
+    padding-right: 40px;
   }
 
-  .tech-content {
-    gap: var(--space-xl);
+  .benefits-content {
+    padding: 60px 40px;
   }
 
-  .tech-visual {
-    height: 400px;
+  .benefits-image {
+    width: 400px;
   }
 }
 
-/* Responsive - Mobile */
 @media (max-width: 768px) {
   .nav {
     display: none;
   }
 
-  .mobile-menu-btn {
+  .hero h1 {
+    font-size: 40px;
+  }
+
+  .section-header h2,
+  .benefits h2 {
+    font-size: 36px;
+  }
+
+  .final-cta h2 {
+    font-size: 36px;
+  }
+
+  .benefits {
+    flex-direction: column;
+  }
+
+  .benefits-image {
+    width: 100%;
+    height: 300px;
+  }
+
+  .steps,
+  .target-grid,
+  .team-grid,
+  .concept-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+  }
+
+  .footer-main {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .footer-nav {
+    flex-direction: column;
+    gap: 32px;
+  }
+}
+
+/* Mobile-first design - iOS HIG compliant */
+@media (max-width: 480px) {
+  /* Header - compact with safe area */
+  .header {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .header-content {
+    padding: 0 16px;
+    height: 60px;
+  }
+
+  .logo {
+    font-size: 18px;
+    letter-spacing: 2px;
+  }
+
+  /* Hero - full screen mobile optimized */
+  .hero {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .hero-overlay {
+    padding: 24px;
+    padding-top: 100px;
+    padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
     display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
   }
 
-  .mobile-menu {
-    display: none;
-  }
-
-  .mobile-menu-open {
-    display: flex;
-  }
-
-  .hero-content {
-    grid-template-columns: 1fr;
-    text-align: center;
+  .tagline {
+    font-size: 11px;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
   }
 
   .hero h1 {
-    font-size: 36px;
+    font-size: 32px;
+    margin-bottom: 16px;
   }
 
   .hero h1 br {
     display: none;
   }
 
-  .waitlist-form {
+  .subtitle {
+    font-size: 15px;
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  .subtitle br {
+    display: none;
+  }
+
+  .hero-buttons {
     flex-direction: column;
+    gap: 12px;
   }
 
-  .hero-mockup {
-    order: -1;
+  /* Buttons - touch friendly */
+  .btn {
+    padding: 16px 32px;
+    font-size: 15px;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
 
-  .app-mockup {
-    width: 220px;
-    height: 440px;
+  .btn:active {
+    transform: scale(0.98);
   }
 
-  .hero-scroll-indicator {
+  /* How it works */
+  .how-it-works {
+    padding: 60px 20px;
+  }
+
+  .section-header {
+    margin-bottom: 40px;
+  }
+
+  .section-header h2 {
+    font-size: 28px;
+    margin: 12px 0;
+  }
+
+  .section-desc {
+    font-size: 15px;
+    padding: 0 10px;
+  }
+
+  .section-desc br {
     display: none;
   }
 
   .steps {
-    grid-template-columns: 1fr;
+    gap: 16px;
+    width: 100%;
   }
 
-  .demo-interface {
-    grid-template-columns: 1fr;
+  .step-card {
+    width: 100%;
+    padding: 24px;
+    border-radius: 12px;
   }
 
-  .journey-phases {
-    grid-template-columns: 1fr;
-    gap: var(--space-2xl);
+  .step-num {
+    font-size: 36px;
+    margin-bottom: 12px;
   }
 
-  .tech-content {
-    grid-template-columns: 1fr;
+  .step-card h3 {
+    font-size: 20px;
+    margin-bottom: 8px;
   }
 
-  .tech-visual {
-    height: 300px;
+  .step-card p {
+    font-size: 14px;
   }
 
-  .testimonials {
-    grid-template-columns: 1fr;
+  /* Benefits */
+  .benefits {
+    flex-direction: column;
   }
 
-  .pricing-cards {
-    grid-template-columns: 1fr;
+  .benefits-content {
+    padding: 48px 20px;
   }
 
-  .pricing-featured {
-    transform: none;
+  .benefits h2 {
+    font-size: 28px;
+    margin: 12px 0 32px;
   }
 
-  .pricing-featured:hover {
-    transform: translateY(-8px);
+  .benefits-list {
+    gap: 20px;
+  }
+
+  .benefit-item {
+    gap: 12px;
+  }
+
+  .benefit-dash {
+    font-size: 20px;
+  }
+
+  .benefit-text h4 {
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+
+  .benefit-text p {
+    font-size: 14px;
+  }
+
+  .benefits-image {
+    width: 100%;
+    height: 280px;
+  }
+
+  /* Concept */
+  .concept {
+    padding: 60px 20px;
+  }
+
+  .concept-grid {
+    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .concept-img {
+    width: 100%;
+    height: 180px;
+    border-radius: 8px;
+  }
+
+  /* Target */
+  .target {
+    padding: 60px 20px;
+  }
+
+  .target-grid {
+    gap: 12px;
+    width: 100%;
+  }
+
+  .target-card {
+    width: 100%;
+    padding: 24px;
+    border-radius: 12px;
+  }
+
+  .target-icon {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 12px;
+  }
+
+  .target-card h4 {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  .target-card p {
+    font-size: 14px;
+  }
+
+  /* Team */
+  .team {
+    padding: 60px 20px;
+  }
+
+  .team-grid {
+    gap: 24px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .specialist {
+    width: 100%;
+  }
+
+  .specialist-img {
+    width: 100%;
+    height: 200px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+
+  .specialist h4 {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+
+  .specialist p {
+    font-size: 12px;
+  }
+
+  /* Final CTA */
+  .final-cta {
+    padding: 60px 24px;
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+    min-height: auto;
   }
 
   .final-cta h2 {
-    font-size: 36px;
+    font-size: 28px;
+    margin-bottom: 16px;
   }
 
   .final-cta h2 br {
     display: none;
   }
 
-  .cta-form {
-    flex-direction: column;
+  .cta-subtitle {
+    font-size: 15px;
+    margin-bottom: 32px;
+  }
+
+  .cta-buttons {
+    width: 100%;
+    gap: 12px;
+  }
+
+  .cta-buttons .btn {
+    width: 100%;
+  }
+
+  .cta-trust {
+    font-size: 13px;
+    margin-top: 8px;
+  }
+
+  /* Footer */
+  .footer {
+    padding: 48px 20px 24px;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
   }
 
   .footer-main {
     flex-direction: column;
-    gap: var(--space-xl);
+    gap: 32px;
+    margin-bottom: 32px;
+  }
+
+  .footer-brand {
+    max-width: 100%;
+  }
+
+  .footer-logo {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .footer-brand p {
+    font-size: 13px;
   }
 
   .footer-nav {
     flex-direction: column;
-    gap: var(--space-lg);
+    gap: 24px;
+  }
+
+  .footer-col {
+    gap: 12px;
+  }
+
+  .footer-col h5 {
+    font-size: 11px;
+    margin-bottom: 4px;
+  }
+
+  .footer-col a {
+    font-size: 14px;
+    padding: 4px 0;
+  }
+
+  .footer-divider {
+    margin-bottom: 24px;
   }
 
   .footer-bottom {
     flex-direction: column;
-    gap: var(--space-md);
+    gap: 16px;
     text-align: center;
   }
-}
 
-/* Mobile Small (iOS) */
-@media (max-width: 480px) {
-  .header {
-    padding-top: env(safe-area-inset-top, 0px);
+  .footer-bottom span {
+    font-size: 12px;
   }
 
-  .header-content {
-    padding: 0 var(--space-md);
-    height: 60px;
+  .footer-social {
+    gap: 24px;
   }
 
-  .logo-img {
-    height: 36px;
-  }
-
-  .hero {
-    min-height: 100vh;
-    min-height: 100dvh;
-  }
-
-  .hero-content {
-    padding: var(--space-lg);
-    padding-top: 80px;
-  }
-
-  .hero h1 {
-    font-size: 28px;
-  }
-
-  .subtitle {
-    font-size: 15px;
-  }
-
-  .app-mockup {
-    width: 200px;
-    height: 400px;
-  }
-
-  .btn {
-    padding: var(--space-md) var(--space-lg);
-    min-height: 52px;
-    font-size: 15px;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .section-header h2,
-  .demo-header h2,
-  .tech-info h2 {
-    font-size: 28px;
-  }
-
-  .section-desc {
-    font-size: 15px;
-  }
-
-  .how-it-works,
-  .demo,
-  .skin-journey,
-  .technology,
-  .social-proof,
-  .pricing {
-    padding: var(--space-2xl) var(--space-lg);
-  }
-
-  .step-card {
-    padding: var(--space-lg);
-  }
-
-  .step-number {
-    font-size: 48px;
-  }
-
-  .step-card h3 {
-    font-size: 22px;
-  }
-
-  .demo-upload-area,
-  .demo-scanning,
-  .demo-results {
-    padding: var(--space-lg);
-  }
-
-  .result-metrics {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .phase-image {
-    height: 200px;
-  }
-
-  .tech-visual {
-    height: 250px;
-  }
-
-  .ai-core {
-    width: 100px;
-    height: 100px;
-  }
-
-  .core-icon {
-    font-size: 24px;
-  }
-
-  .tech-card {
-    padding: var(--space-md);
-  }
-
-  .testimonial-card {
-    padding: var(--space-lg);
-  }
-
-  .pricing-card {
-    padding: var(--space-lg);
-  }
-
-  .price-amount {
-    font-size: 36px;
-  }
-
-  .final-cta {
-    padding: var(--space-2xl) var(--space-lg);
-    padding-bottom: calc(var(--space-2xl) + env(safe-area-inset-bottom, 0px));
-    min-height: auto;
-  }
-
-  .final-cta h2 {
-    font-size: 28px;
-  }
-
-  .cta-subtitle {
-    font-size: 15px;
-  }
-
-  .cta-trust {
-    flex-direction: column;
-    gap: var(--space-sm);
-  }
-
-  .footer {
-    padding: var(--space-xl) var(--space-lg);
-    padding-bottom: calc(var(--space-lg) + env(safe-area-inset-bottom, 0px));
+  .footer-social svg {
+    width: 24px;
+    height: 24px;
   }
 }
 </style>
