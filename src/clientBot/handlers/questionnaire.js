@@ -159,12 +159,15 @@ export async function handleProblemsHelp(ctx) {
   }
 
   await ctx.answerCbQuery();
+
+  const selectedList = session.selectedProblems?.length > 0
+    ? `✓ ${session.selectedProblems.join('\n✓ ')}`
+    : '';
+
   await ctx.reply(
-    'Выберите проблемы из списка (можно несколько):\n\n' +
-    (session.selectedProblems?.length > 0
-      ? `Выбрано: ${session.selectedProblems.join(', ')}\n\n`
-      : ''),
-    problemsHelpKeyboard()
+    'Выберите проблемы из списка:' +
+    (selectedList ? `\n\n${selectedList}` : ''),
+    problemsHelpKeyboard(session.selectedProblems || [])
   );
 }
 
@@ -184,25 +187,20 @@ export async function handleProblemSelection(ctx) {
     session.selectedProblems = [];
   }
 
-  const index = session.selectedProblems.indexOf(problem);
-  if (index === -1) {
+  // Only add, don't toggle (item disappears from list)
+  if (!session.selectedProblems.includes(problem)) {
     session.selectedProblems.push(problem);
-  } else {
-    session.selectedProblems.splice(index, 1);
   }
 
   clientSessions.set(telegramId, session);
 
-  await ctx.answerCbQuery(
-    index === -1 ? `Добавлено: ${problem}` : `Убрано: ${problem}`
-  );
+  await ctx.answerCbQuery(`✓ ${problem}`);
+
+  const selectedList = `✓ ${session.selectedProblems.join('\n✓ ')}`;
 
   await ctx.editMessageText(
-    'Выберите проблемы из списка (можно несколько):\n\n' +
-    (session.selectedProblems.length > 0
-      ? `Выбрано: ${session.selectedProblems.join(', ')}\n\n`
-      : 'Пока ничего не выбрано\n\n'),
-    problemsHelpKeyboard()
+    `Выберите проблемы из списка:\n\n${selectedList}`,
+    problemsHelpKeyboard(session.selectedProblems)
   );
 }
 

@@ -30,12 +30,19 @@ export function priceRangeKeyboard() {
   ]);
 }
 
-export function problemsHelpKeyboard() {
-  const buttons = SKIN_PROBLEMS.map(problem =>
+export function problemsHelpKeyboard(selectedProblems = []) {
+  // Filter out already selected problems
+  const availableProblems = SKIN_PROBLEMS.filter(p => !selectedProblems.includes(p));
+
+  const buttons = availableProblems.map(problem =>
     [Markup.button.callback(problem, `problem_${problem}`)]
   );
 
-  buttons.push([Markup.button.callback('Готово', 'problems_done')]);
+  // Show done button with count if any selected
+  const doneText = selectedProblems.length > 0
+    ? `✓ Готово (${selectedProblems.length})`
+    : '✓ Готово';
+  buttons.push([Markup.button.callback(doneText, 'problems_done')]);
   buttons.push([Markup.button.callback('Отмена', 'cancel')]);
 
   return Markup.inlineKeyboard(buttons);
