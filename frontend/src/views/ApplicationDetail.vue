@@ -876,4 +876,221 @@ function formatDate(date) {
     grid-template-columns: 1fr;
   }
 }
+
+/* Mobile-first compact design */
+@media (max-width: 480px) {
+  .detail-page {
+    padding: 12px;
+  }
+
+  .page-header {
+    margin-bottom: 16px;
+    gap: 10px;
+  }
+
+  .back-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+
+  .back-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .page-header h1 {
+    font-size: 22px;
+    margin-top: 8px;
+  }
+
+  .status {
+    padding: 5px 12px;
+    font-size: 11px;
+  }
+
+  .content-grid {
+    gap: 12px;
+  }
+
+  .section {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .section-header {
+    margin-bottom: 16px;
+    gap: 10px;
+  }
+
+  .section-header svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .section h2 {
+    font-size: 18px;
+  }
+
+  .section h3 {
+    font-size: 13px;
+    margin-bottom: 12px;
+    gap: 8px;
+  }
+
+  .section h3 svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .info-grid {
+    gap: 10px;
+  }
+
+  .info-item {
+    padding: 12px;
+    border-radius: 8px;
+    gap: 4px;
+  }
+
+  .info-item .label {
+    font-size: 10px;
+  }
+
+  .info-item .value {
+    font-size: 13px;
+  }
+
+  .photos-section {
+    margin-top: 20px;
+  }
+
+  .photos-grid {
+    gap: 8px;
+  }
+
+  .photo-thumb {
+    width: 70px;
+    height: 70px;
+    border-radius: 8px;
+  }
+
+  .photo-overlay svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .subsection {
+    padding: 14px 0;
+  }
+
+  .client-info {
+    padding: 12px;
+    gap: 12px;
+    border-radius: 8px;
+  }
+
+  .client-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .client-name {
+    font-size: 14px;
+  }
+
+  .client-contact {
+    font-size: 12px;
+  }
+
+  .select-doctor {
+    padding: 12px 36px 12px 14px;
+    font-size: 13px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+
+  .doctor-badge {
+    padding: 12px;
+    gap: 10px;
+    border-radius: 8px;
+  }
+
+  .doctor-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 12px;
+  }
+
+  .doctor-badge span {
+    font-size: 14px;
+  }
+
+  .btn {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .recommendation-box textarea {
+    padding: 12px;
+    font-size: 13px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    min-height: 150px;
+  }
+
+  .history-list {
+    padding-left: 16px;
+  }
+
+  .history-list::before {
+    left: 5px;
+  }
+
+  .history-item {
+    padding: 10px 0;
+    gap: 12px;
+  }
+
+  .history-dot {
+    left: -16px;
+    top: 14px;
+    width: 12px;
+    height: 12px;
+    border-width: 2px;
+  }
+
+  .history-status {
+    font-size: 13px;
+  }
+
+  .history-date {
+    font-size: 11px;
+  }
+
+  .history-comment {
+    font-size: 12px;
+  }
+
+  .modal-close {
+    top: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .modal-close svg {
+    width: 20px;
+    height: 20px;
+  }
+}
 </style>

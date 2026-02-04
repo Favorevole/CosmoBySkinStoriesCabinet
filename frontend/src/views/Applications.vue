@@ -812,4 +812,219 @@ function formatDate(date) {
     display: none;
   }
 }
+
+/* Mobile-first compact design */
+@media (max-width: 480px) {
+  .applications-page {
+    padding: 12px;
+  }
+
+  .page-header {
+    margin-bottom: 16px;
+    gap: 12px;
+  }
+
+  .page-header h1 {
+    font-size: 24px;
+    margin-bottom: 2px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  .filters select {
+    padding: 10px 36px 10px 12px;
+    font-size: 13px;
+    border-radius: 8px;
+    width: 100%;
+  }
+
+  /* Compact system overview - horizontal scroll */
+  .system-overview {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .system-overview::-webkit-scrollbar {
+    display: none;
+  }
+
+  .overview-card {
+    min-width: 120px;
+    padding: 12px;
+    border-radius: 10px;
+    gap: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .overview-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+  }
+
+  .overview-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .overview-value {
+    font-size: 22px;
+  }
+
+  .overview-label {
+    font-size: 11px;
+    margin-top: 2px;
+  }
+
+  .section-title {
+    font-size: 11px;
+    margin-bottom: 10px;
+  }
+
+  /* Compact stats row - horizontal scroll */
+  .stats-row {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .stats-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .stat-card {
+    min-width: 100px;
+    padding: 12px;
+    border-radius: 10px;
+    gap: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 0 0 auto;
+  }
+
+  .stat-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+
+  .stat-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+  }
+
+  /* Compact application cards */
+  .applications-list {
+    gap: 8px;
+  }
+
+  .application-card {
+    padding: 12px;
+    border-radius: 10px;
+    gap: 10px;
+  }
+
+  .app-header {
+    gap: 8px;
+    min-width: auto;
+  }
+
+  .app-id {
+    font-size: 16px;
+  }
+
+  .status {
+    padding: 3px 8px;
+    font-size: 9px;
+    border-radius: 12px;
+  }
+
+  .app-info {
+    gap: 8px 16px;
+  }
+
+  .info-row {
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  .info-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .app-meta {
+    flex-direction: row;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+
+  .meta-item {
+    font-size: 11px;
+  }
+
+  /* Empty state */
+  .empty-state {
+    padding: 40px 20px;
+  }
+
+  .empty-icon {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 16px;
+  }
+
+  .empty-icon svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .empty-state h3 {
+    font-size: 18px;
+  }
+
+  .empty-state p {
+    font-size: 13px;
+  }
+
+  /* Pagination */
+  .pagination {
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .pagination-btn {
+    padding: 10px 14px;
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  .pagination-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .pagination-info {
+    font-size: 12px;
+  }
+}
 </style>

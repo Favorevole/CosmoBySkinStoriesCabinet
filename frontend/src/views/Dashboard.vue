@@ -242,4 +242,117 @@ nav {
   background: #1A1A1C;
   min-height: 100vh;
 }
+
+/* Mobile bottom navigation */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    border-right: none;
+    border-top: 1px solid rgba(201, 169, 98, 0.15);
+    background: #1A1A1C;
+    z-index: 100;
+    padding: 0;
+  }
+
+  .logo {
+    display: none;
+  }
+
+  nav {
+    flex: 1;
+    display: flex;
+    padding: 0;
+    gap: 0;
+  }
+
+  .nav-item {
+    flex: 1;
+    flex-direction: column;
+    padding: 10px 8px;
+    margin: 0;
+    border-radius: 0;
+    font-size: 10px;
+    gap: 4px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .nav-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .badge {
+    position: absolute;
+    top: 4px;
+    right: 50%;
+    margin-right: -20px;
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+
+  .nav-item.router-link-active {
+    background: linear-gradient(180deg, rgba(93, 26, 45, 0.3) 0%, transparent 100%);
+    box-shadow: none;
+  }
+
+  .sidebar-footer {
+    display: flex;
+    padding: 0;
+    border-top: none;
+    border-left: 1px solid rgba(201, 169, 98, 0.1);
+  }
+
+  .admin-info {
+    display: none;
+  }
+
+  .logout-btn {
+    flex-direction: column;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 0;
+    font-size: 10px;
+    gap: 4px;
+  }
+
+  .logout-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .main {
+    margin-left: 0;
+    padding-bottom: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-item {
+    padding: 8px 6px;
+    font-size: 9px;
+  }
+
+  .nav-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .logout-btn {
+    padding: 8px 12px;
+    font-size: 9px;
+  }
+
+  .logout-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+}
 </style>

@@ -895,4 +895,228 @@ async function addDoctor() {
     width: 100%;
   }
 }
+
+/* Mobile compact design */
+@media (max-width: 480px) {
+  .doctors-page {
+    padding: 12px;
+  }
+
+  .page-header {
+    margin-bottom: 16px;
+    gap: 12px;
+  }
+
+  .page-header h1 {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  .add-btn {
+    padding: 10px 16px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+
+  .add-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .stats-row {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .stats-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .stat-card {
+    min-width: 100px;
+    padding: 12px;
+    border-radius: 10px;
+    gap: 10px;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stat-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+
+  .stat-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+  }
+
+  .section-title {
+    font-size: 11px;
+    margin-bottom: 10px;
+  }
+
+  .doctors-list {
+    gap: 8px;
+  }
+
+  .doctor-card {
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  .doctor-header {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .doctor-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .doctor-name {
+    font-size: 14px;
+  }
+
+  .doctor-username {
+    font-size: 11px;
+  }
+
+  .status {
+    padding: 3px 8px;
+    font-size: 9px;
+  }
+
+  .doctor-meta {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .meta-item {
+    font-size: 11px;
+    gap: 4px;
+  }
+
+  .meta-item svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .doctor-actions {
+    gap: 6px;
+  }
+
+  .btn {
+    padding: 10px 14px;
+    font-size: 12px;
+    border-radius: 6px;
+    gap: 6px;
+  }
+
+  .btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .empty-state {
+    padding: 40px 20px;
+  }
+
+  .empty-icon {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 16px;
+  }
+
+  .empty-icon svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .empty-state h3 {
+    font-size: 18px;
+  }
+
+  .empty-state p {
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  .modal {
+    border-radius: 16px;
+    margin: 12px;
+  }
+
+  .modal-header {
+    padding: 16px 20px;
+  }
+
+  .modal-header h2 {
+    font-size: 20px;
+  }
+
+  .modal-close {
+    width: 32px;
+    height: 32px;
+  }
+
+  .modal-close svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
+
+  .modal-hint {
+    font-size: 13px;
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-group label {
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+
+  .form-group input {
+    padding: 12px 14px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+
+  .modal-footer {
+    padding: 16px 20px;
+    gap: 8px;
+  }
+
+  .modal-footer .btn {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+}
 </style>
