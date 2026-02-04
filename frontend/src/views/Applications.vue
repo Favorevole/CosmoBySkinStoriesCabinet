@@ -813,103 +813,68 @@ function formatDate(date) {
   }
 }
 
-/* Mobile-first compact design */
+/* Mobile-first compact design - iOS HIG / MD3 compliant */
 @media (max-width: 480px) {
   .applications-page {
-    padding: 12px;
+    padding: 16px;
+    padding-top: calc(16px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
 
   .page-header {
-    margin-bottom: 16px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
     gap: 12px;
   }
 
   .page-header h1 {
-    font-size: 24px;
-    margin-bottom: 2px;
+    font-size: 28px;
+    margin-bottom: 0;
   }
 
   .subtitle {
-    font-size: 13px;
-  }
-
-  .filters select {
-    padding: 10px 36px 10px 12px;
-    font-size: 13px;
-    border-radius: 8px;
-    width: 100%;
-  }
-
-  /* Compact system overview - horizontal scroll */
-  .system-overview {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
-    overflow-x: auto;
-    padding-bottom: 8px;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .system-overview::-webkit-scrollbar {
     display: none;
   }
 
-  .overview-card {
-    min-width: 120px;
-    padding: 12px;
+  /* Filter as compact dropdown */
+  .filters select {
+    padding: 10px 36px 10px 14px;
+    font-size: 13px;
     border-radius: 10px;
-    gap: 10px;
-    flex-direction: column;
-    align-items: flex-start;
+    min-height: 44px;
+    background-size: 16px;
+    background-position: right 10px center;
   }
 
-  .overview-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-  }
-
-  .overview-icon svg {
-    width: 18px;
-    height: 18px;
-  }
-
-  .overview-value {
-    font-size: 22px;
-  }
-
-  .overview-label {
-    font-size: 11px;
-    margin-top: 2px;
+  /* Hide system overview on mobile - too much space */
+  .system-overview {
+    display: none;
   }
 
   .section-title {
-    font-size: 11px;
-    margin-bottom: 10px;
+    font-size: 12px;
+    margin-bottom: 12px;
+    letter-spacing: 0.08em;
   }
 
-  /* Compact stats row - horizontal scroll */
+  /* Compact inline stats */
   .stats-row {
     display: flex;
     flex-direction: row;
     gap: 8px;
-    margin-bottom: 16px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .stats-row::-webkit-scrollbar {
-    display: none;
+    margin-bottom: 20px;
   }
 
   .stat-card {
-    min-width: 100px;
-    padding: 12px;
-    border-radius: 10px;
-    gap: 10px;
+    flex: 1;
+    min-width: 0;
+    padding: 14px 12px;
+    border-radius: 12px;
+    gap: 8px;
     flex-direction: column;
     align-items: flex-start;
-    flex: 0 0 auto;
   }
 
   .stat-icon {
@@ -931,39 +896,79 @@ function formatDate(date) {
     font-size: 11px;
   }
 
-  /* Compact application cards */
+  /* Redesigned application cards */
   .applications-list {
-    gap: 8px;
-  }
-
-  .application-card {
-    padding: 12px;
-    border-radius: 10px;
     gap: 10px;
   }
 
+  .application-card {
+    padding: 0;
+    border-radius: 14px;
+    gap: 0;
+    flex-direction: column;
+    overflow: hidden;
+    /* Touch feedback */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .application-card:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .application-card:hover {
+    transform: none;
+  }
+
   .app-header {
-    gap: 8px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid rgba(201, 169, 98, 0.05);
+    width: 100%;
     min-width: auto;
+    gap: 12px;
   }
 
   .app-id {
-    font-size: 16px;
+    font-size: 18px;
   }
 
+  /* Larger, more visible status badges */
   .status {
-    padding: 3px 8px;
-    font-size: 9px;
-    border-radius: 12px;
+    padding: 6px 12px;
+    font-size: 11px;
+    border-radius: 16px;
+    font-weight: 600;
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+  }
+
+  .app-body {
+    flex-direction: column;
+    width: 100%;
+    padding: 12px 16px 14px;
+    gap: 12px;
   }
 
   .app-info {
-    gap: 8px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
+  /* Info pills style */
   .info-row {
-    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
     gap: 6px;
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    font-size: 12px;
   }
 
   .info-icon {
@@ -972,59 +977,101 @@ function formatDate(date) {
   }
 
   .app-meta {
+    display: flex;
     flex-direction: row;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 4px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background: rgba(0, 0, 0, 0.15);
+    margin: 0 -16px -14px;
+    width: calc(100% + 32px);
+    text-align: left;
   }
 
   .meta-item {
-    font-size: 11px;
+    font-size: 12px;
+  }
+
+  .meta-item .label {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .meta-item .value {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .app-arrow {
+    display: none;
   }
 
   /* Empty state */
   .empty-state {
-    padding: 40px 20px;
+    padding: 48px 24px;
+    border-radius: 14px;
   }
 
   .empty-icon {
-    width: 56px;
-    height: 56px;
-    margin-bottom: 16px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 20px;
   }
 
   .empty-icon svg {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
   }
 
   .empty-state h3 {
-    font-size: 18px;
+    font-size: 20px;
   }
 
   .empty-state p {
-    font-size: 13px;
+    font-size: 14px;
+    line-height: 1.5;
   }
 
-  /* Pagination */
+  /* Fixed pagination at bottom */
   .pagination {
-    gap: 12px;
-    margin-top: 20px;
+    position: fixed;
+    bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    background: linear-gradient(180deg, transparent 0%, #1A1A1C 30%);
+    z-index: 40;
+    margin-top: 0;
   }
 
   .pagination-btn {
-    padding: 10px 14px;
-    font-size: 12px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px 16px;
+    font-size: 13px;
     gap: 6px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .pagination-btn:active:not(:disabled) {
+    background: rgba(201, 169, 98, 0.2);
   }
 
   .pagination-btn svg {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
   }
 
   .pagination-info {
-    font-size: 12px;
+    font-size: 14px;
+    font-weight: 500;
   }
 }
 </style>

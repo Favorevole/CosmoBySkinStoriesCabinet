@@ -388,40 +388,165 @@ function showMessage(text, type) {
   }
 }
 
+/* Mobile design - iOS HIG / MD3 compliant */
 @media (max-width: 480px) {
   .settings {
-    padding: 12px;
+    padding: 16px;
+    padding-top: calc(16px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+    max-width: 100%;
+  }
+
+  .page-header {
+    margin-bottom: 20px;
   }
 
   .page-header h1 {
-    font-size: 18px;
+    font-size: 28px;
   }
 
+  /* iOS-style grouped list */
   .settings-section {
-    padding: 12px;
+    background: #222224;
+    border: none;
+    border-radius: 14px;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .settings-section > h2 {
+    padding: 16px 16px 8px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .section-description {
-    font-size: 12px;
+    padding: 0 16px 12px;
+    font-size: 13px;
+  }
+
+  .problems-list {
+    margin: 0;
+    gap: 0;
+    padding: 0;
   }
 
   .problem-item {
-    gap: 6px;
+    padding: 12px 16px;
+    gap: 12px;
+    border-bottom: 1px solid rgba(201, 169, 98, 0.08);
+    margin: 0;
+    background: transparent;
   }
 
+  .problem-item:last-of-type {
+    border-bottom: none;
+  }
+
+  /* Larger inputs to prevent iOS zoom */
   .problem-input {
-    padding: 8px 10px;
-    font-size: 12px;
+    min-height: 48px;
+    padding: 14px 16px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.2);
   }
 
+  .problem-input:focus {
+    background: rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 0 2px rgba(201, 169, 98, 0.3);
+  }
+
+  /* Touch-friendly remove button */
   .remove-btn {
-    width: 32px;
-    height: 32px;
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .remove-btn:active {
+    background: rgba(255, 100, 100, 0.2);
   }
 
   .remove-btn svg {
-    width: 14px;
-    height: 14px;
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Add button */
+  .add-btn {
+    margin: 0 16px 16px;
+    min-height: 48px;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .add-btn:active {
+    background: rgba(201, 169, 98, 0.1);
+  }
+
+  /* Fixed action bar */
+  .actions {
+    position: fixed;
+    bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    background: linear-gradient(180deg, transparent 0%, #1A1A1C 30%);
+    border-top: none;
+    display: flex;
+    gap: 10px;
+    z-index: 90;
+  }
+
+  .save-btn,
+  .reset-btn {
+    flex: 1;
+    min-height: 48px;
+    padding: 14px 20px;
+    font-size: 15px;
+    border-radius: 12px;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .save-btn:active:not(:disabled),
+  .reset-btn:active {
+    transform: scale(0.98);
+  }
+
+  /* Toast-style message */
+  .message {
+    position: fixed;
+    bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+    left: 16px;
+    right: 16px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    z-index: 100;
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 </style>

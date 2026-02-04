@@ -250,7 +250,7 @@ nav {
   min-height: 100vh;
 }
 
-/* Mobile bottom navigation */
+/* Mobile bottom navigation - iOS HIG / MD3 compliant */
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
@@ -263,9 +263,13 @@ nav {
     flex-direction: row;
     border-right: none;
     border-top: 1px solid rgba(201, 169, 98, 0.15);
-    background: #1A1A1C;
-    z-index: 100;
+    background: rgba(26, 26, 28, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 1000;
     padding: 0;
+    /* Safe area support */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   .logo {
@@ -277,37 +281,78 @@ nav {
     display: flex;
     padding: 0;
     gap: 0;
+    justify-content: space-around;
   }
 
   .nav-item {
     flex: 1;
     flex-direction: column;
-    padding: 10px 8px;
+    /* Touch target minimum 44px */
+    min-height: 56px;
+    padding: 8px 4px 6px;
     margin: 0;
     border-radius: 0;
     font-size: 10px;
     gap: 4px;
     justify-content: center;
+    align-items: center;
     text-align: center;
+    position: relative;
+    /* Touch feedback */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .nav-item:active {
+    background: rgba(201, 169, 98, 0.1);
   }
 
   .nav-icon {
-    width: 22px;
-    height: 22px;
+    width: 26px;
+    height: 26px;
+    transition: transform 0.2s ease;
   }
 
-  .badge {
-    position: absolute;
-    top: 4px;
-    right: 50%;
-    margin-right: -20px;
-    font-size: 9px;
-    padding: 2px 6px;
+  .nav-item.router-link-active .nav-icon {
+    transform: scale(1.1);
+    color: #C9A962;
   }
 
   .nav-item.router-link-active {
-    background: linear-gradient(180deg, rgba(93, 26, 45, 0.3) 0%, transparent 100%);
+    color: #C9A962;
+    background: transparent;
     box-shadow: none;
+  }
+
+  /* MD3-style active pill indicator */
+  .nav-item.router-link-active::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 56px;
+    height: 32px;
+    background: linear-gradient(135deg, rgba(93, 26, 45, 0.6) 0%, rgba(122, 35, 57, 0.4) 100%);
+    border-radius: 16px;
+    z-index: -1;
+  }
+
+  /* Improved badge positioning */
+  .badge {
+    position: absolute;
+    top: 2px;
+    left: 50%;
+    margin-left: 6px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .sidebar-footer {
@@ -323,43 +368,31 @@ nav {
 
   .logout-btn {
     flex-direction: column;
-    padding: 10px 16px;
+    min-height: 56px;
+    padding: 8px 16px 6px;
     border: none;
     border-radius: 0;
     font-size: 10px;
     gap: 4px;
+    justify-content: center;
+    align-items: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .logout-btn:active {
+    background: rgba(201, 169, 98, 0.1);
   }
 
   .logout-btn svg {
-    width: 22px;
-    height: 22px;
+    width: 26px;
+    height: 26px;
   }
 
   .main {
     margin-left: 0;
-    padding-bottom: 70px;
-  }
-}
-
-@media (max-width: 480px) {
-  .nav-item {
-    padding: 8px 6px;
-    font-size: 9px;
-  }
-
-  .nav-icon {
-    width: 20px;
-    height: 20px;
-  }
-
-  .logout-btn {
-    padding: 8px 12px;
-    font-size: 9px;
-  }
-
-  .logout-btn svg {
-    width: 20px;
-    height: 20px;
+    /* Account for bottom nav + safe area */
+    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px) + 16px);
   }
 }
 </style>

@@ -896,55 +896,69 @@ async function addDoctor() {
   }
 }
 
-/* Mobile compact design */
+/* Mobile compact design - iOS HIG / MD3 compliant */
 @media (max-width: 480px) {
   .doctors-page {
-    padding: 12px;
+    padding: 16px;
+    padding-top: calc(16px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
 
   .page-header {
-    margin-bottom: 16px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
     gap: 12px;
   }
 
   .page-header h1 {
-    font-size: 24px;
+    font-size: 28px;
+    margin-bottom: 0;
   }
 
   .subtitle {
-    font-size: 13px;
+    display: none;
   }
 
+  /* Compact add button - icon only on mobile */
   .add-btn {
-    padding: 10px 16px;
-    font-size: 13px;
-    border-radius: 8px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    border-radius: 12px;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .add-btn:active {
+    transform: scale(0.95);
+  }
+
+  .add-btn span {
+    display: none;
   }
 
   .add-btn svg {
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
   }
 
+  /* Compact inline stats */
   .stats-row {
     display: flex;
     flex-direction: row;
     gap: 8px;
-    margin-bottom: 16px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .stats-row::-webkit-scrollbar {
-    display: none;
+    margin-bottom: 20px;
   }
 
   .stat-card {
-    min-width: 100px;
-    padding: 12px;
-    border-radius: 10px;
-    gap: 10px;
-    flex: 0 0 auto;
+    flex: 1;
+    min-width: 0;
+    padding: 14px 12px;
+    border-radius: 12px;
+    gap: 8px;
     flex-direction: column;
     align-items: flex-start;
   }
@@ -969,105 +983,143 @@ async function addDoctor() {
   }
 
   .section-title {
-    font-size: 11px;
-    margin-bottom: 10px;
+    font-size: 12px;
+    margin-bottom: 12px;
+    letter-spacing: 0.08em;
   }
 
   .doctors-list {
-    gap: 8px;
+    gap: 10px;
   }
 
+  /* Redesigned doctor cards */
   .doctor-card {
-    padding: 12px;
-    border-radius: 10px;
+    padding: 14px;
+    border-radius: 14px;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .doctor-header {
-    gap: 10px;
-    margin-bottom: 12px;
+    gap: 12px;
+    margin-bottom: 14px;
   }
 
   .doctor-avatar {
-    width: 40px;
-    height: 40px;
-    font-size: 14px;
+    width: 48px;
+    height: 48px;
+    font-size: 16px;
   }
 
   .doctor-name {
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .doctor-username {
-    font-size: 11px;
+    font-size: 13px;
   }
 
+  /* Larger status badges */
   .status {
-    padding: 3px 8px;
-    font-size: 9px;
+    padding: 6px 12px;
+    font-size: 11px;
+    border-radius: 14px;
+    min-height: 28px;
+    display: flex;
+    align-items: center;
   }
 
   .doctor-meta {
-    gap: 10px;
-    margin-bottom: 12px;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
   }
 
   .meta-item {
-    font-size: 11px;
-    gap: 4px;
+    font-size: 12px;
+    gap: 6px;
   }
 
   .meta-item svg {
-    width: 12px;
-    height: 12px;
-  }
-
-  .doctor-actions {
-    gap: 6px;
-  }
-
-  .btn {
-    padding: 10px 14px;
-    font-size: 12px;
-    border-radius: 6px;
-    gap: 6px;
-  }
-
-  .btn svg {
     width: 14px;
     height: 14px;
   }
 
+  /* Touch-friendly action buttons */
+  .doctor-actions {
+    gap: 8px;
+    display: flex;
+  }
+
+  .btn {
+    flex: 1;
+    min-height: 44px;
+    padding: 12px 14px;
+    font-size: 13px;
+    border-radius: 10px;
+    gap: 6px;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  .btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
   .empty-state {
-    padding: 40px 20px;
+    padding: 48px 24px;
+    border-radius: 14px;
   }
 
   .empty-icon {
-    width: 56px;
-    height: 56px;
-    margin-bottom: 16px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 20px;
   }
 
   .empty-icon svg {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
   }
 
   .empty-state h3 {
-    font-size: 18px;
+    font-size: 20px;
   }
 
   .empty-state p {
-    font-size: 13px;
-    margin-bottom: 16px;
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  /* Bottom sheet modal on mobile */
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
   }
 
   .modal {
-    border-radius: 16px;
-    margin: 12px;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 20px 20px 0 0;
+    margin: 0;
+    max-height: 90vh;
+    padding-bottom: env(safe-area-inset-bottom, 20px);
   }
 
   .modal-header {
-    padding: 16px 20px;
+    padding: 20px;
+    position: sticky;
+    top: 0;
+    background: #222224;
+    border-radius: 20px 20px 0 0;
   }
 
   .modal-header h2 {
@@ -1075,43 +1127,51 @@ async function addDoctor() {
   }
 
   .modal-close {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
   }
 
   .modal-close svg {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
   }
 
   .modal-body {
     padding: 20px;
+    overflow-y: auto;
   }
 
   .modal-hint {
-    font-size: 13px;
-    padding: 12px;
-    margin-bottom: 16px;
+    font-size: 14px;
+    padding: 14px;
+    margin-bottom: 20px;
+    border-radius: 12px;
   }
 
   .form-group {
-    margin-bottom: 16px;
+    margin-bottom: 18px;
   }
 
   .form-group label {
-    font-size: 11px;
-    margin-bottom: 6px;
+    font-size: 12px;
+    margin-bottom: 8px;
   }
 
+  /* Larger inputs to prevent iOS zoom */
   .form-group input {
-    padding: 12px 14px;
-    font-size: 14px;
-    border-radius: 8px;
+    min-height: 48px;
+    padding: 14px 16px;
+    font-size: 16px;
+    border-radius: 12px;
   }
 
   .modal-footer {
     padding: 16px 20px;
-    gap: 8px;
+    gap: 10px;
+    position: sticky;
+    bottom: 0;
+    background: #222224;
   }
 
   .modal-footer .btn {
