@@ -3,227 +3,237 @@
     <!-- Header -->
     <header class="header">
       <div class="header-content">
-        <div class="logo">SKIN.STORIES</div>
+        <div class="logo">
+          <div class="logo-icon">
+            <span>SK</span>
+          </div>
+          <span class="logo-text">stories</span>
+        </div>
         <nav class="nav">
-          <a href="#how-it-works">О нас</a>
           <a href="#how-it-works">Как это работает</a>
-          <a href="#team">Специалисты</a>
-          <a href="#form">Контакты</a>
-          <a :href="telegramBotLink" target="_blank" class="nav-cta">Записаться</a>
+          <a href="#experts">Эксперты</a>
+          <a href="#about">О проекте</a>
+          <a :href="telegramBotLink" target="_blank" class="nav-cta">Начать</a>
         </nav>
+        <a :href="telegramBotLink" target="_blank" class="mobile-cta">Начать</a>
       </div>
     </header>
 
     <!-- Hero -->
     <section class="hero">
-      <div class="hero-overlay">
-        <span class="tagline">КАЖДАЯ ЛИНИЯ — ИСТОРИЯ</span>
-        <h1>Персональные консультации<br>по уходу за кожей</h1>
-        <p class="subtitle">Получите профессиональные рекомендации от квалифицированных специалистов<br>онлайн через Telegram</p>
-        <div class="hero-buttons">
-          <a :href="telegramBotLink" target="_blank" class="btn btn-primary">Начать консультацию</a>
-          <a href="#how-it-works" class="btn btn-secondary">Узнать больше</a>
+      <div class="hero-content">
+        <div class="hero-text">
+          <span class="badge">AI Research Phase</span>
+          <h1>Мы обучаем AI<br>понимать настоящую кожу</h1>
+          <p class="hero-subtitle">Загрузите фото кожи через Telegram.<br>Получите экспертные рекомендации — пока наш AI учится.</p>
+          <a :href="telegramBotLink" target="_blank" class="btn btn-primary">
+            <span class="btn-icon">✈️</span>
+            Загрузить фото в Telegram
+          </a>
+        </div>
+        <div class="hero-visual">
+          <img src="https://images.unsplash.com/photo-1551890113-88bebc4b4d8c?w=800&q=80" alt="Skin care" />
         </div>
       </div>
     </section>
 
-    <!-- How it works -->
+    <!-- How It Works -->
     <section id="how-it-works" class="how-it-works">
       <div class="section-header">
         <span class="tagline">ПРОЦЕСС</span>
         <h2>Как это работает</h2>
-        <p class="section-desc">Простой путь к здоровой и красивой коже</p>
+        <p class="section-desc">Три простых шага к персональным рекомендациям</p>
       </div>
       <div class="steps">
         <div class="step-card">
+          <div class="step-icon">📸</div>
           <span class="step-num">01</span>
-          <h3>Заполните анкету</h3>
-          <p>Ответьте на несколько вопросов о вашей коже и текущем уходе</p>
-        </div>
-        <div class="step-card">
-          <span class="step-num">02</span>
           <h3>Загрузите фото</h3>
-          <p>Прикрепите 2-6 фотографий вашей кожи для анализа</p>
+          <p>Отправьте фото кожи в наш Telegram-бот</p>
         </div>
         <div class="step-card">
+          <div class="step-icon">👩‍⚕️</div>
+          <span class="step-num">02</span>
+          <h3>Эксперты анализируют</h3>
+          <p>Косметологи изучают ваше фото и дают рекомендации</p>
+        </div>
+        <div class="step-card">
+          <div class="step-icon">🤖</div>
           <span class="step-num">03</span>
-          <h3>Анализ специалиста</h3>
-          <p>Наш косметолог изучит вашу анкету и фотографии</p>
-        </div>
-        <div class="step-card">
-          <span class="step-num">04</span>
-          <h3>Получите план</h3>
-          <p>Персональные рекомендации по уходу и подбору средств</p>
+          <h3>AI учится</h3>
+          <p>Ваши данные помогают обучить умного помощника</p>
         </div>
       </div>
     </section>
 
-    <!-- Benefits -->
-    <section class="benefits">
-      <div class="benefits-content">
-        <span class="tagline">ПРЕИМУЩЕСТВА</span>
-        <h2>Почему выбирают нас</h2>
-        <div class="benefits-list">
-          <div class="benefit-item">
-            <span class="benefit-dash">—</span>
-            <div class="benefit-text">
-              <h4>Квалифицированные специалисты</h4>
-              <p>Консультации от опытных дерматологов и косметологов</p>
-            </div>
-          </div>
-          <div class="benefit-item">
-            <span class="benefit-dash">—</span>
-            <div class="benefit-text">
-              <h4>Удобный формат</h4>
-              <p>Через Telegram — консультация там, где вам удобно</p>
-            </div>
-          </div>
-          <div class="benefit-item">
-            <span class="benefit-dash">—</span>
-            <div class="benefit-text">
-              <h4>Быстрый результат</h4>
-              <p>Рекомендации в течение 24-48 часов</p>
-            </div>
-          </div>
-          <div class="benefit-item">
-            <span class="benefit-dash">—</span>
-            <div class="benefit-text">
-              <h4>Индивидуальный подход</h4>
-              <p>Учитываем особенности именно вашей кожи</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="benefits-image"></div>
-    </section>
-
-    <!-- Concept -->
-    <section class="concept">
+    <!-- Why Join -->
+    <section class="why-join">
       <div class="section-header">
-        <span class="tagline tagline-dark">КОНЦЕПТ</span>
-        <h2 class="dark-text">Кожа как микроландшафт</h2>
-        <p class="section-desc dark-text">Каждая пора — отпечаток времени. Мы видим красоту в деталях и помогаем<br>раскрыть потенциал вашей кожи.</p>
+        <span class="tagline">ЗАЧЕМ УЧАСТВОВАТЬ</span>
+        <h2>Почему стоит присоединиться</h2>
+        <p class="section-desc">Станьте частью этичного AI-проекта и получите реальную пользу</p>
       </div>
-      <div class="concept-grid">
-        <div class="concept-img concept-img-1"></div>
-        <div class="concept-img concept-img-2"></div>
-        <div class="concept-img concept-img-3"></div>
-        <div class="concept-img concept-img-4"></div>
-      </div>
-    </section>
-
-    <!-- Target Audience -->
-    <section class="target">
-      <div class="section-header">
-        <span class="tagline">ДЛЯ КОГО</span>
-        <h2>Кому подойдёт наш сервис</h2>
-      </div>
-      <div class="target-grid">
-        <div class="target-card">
-          <svg class="target-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 3l1.5 4.5h4.5l-3.5 2.5 1.5 4.5-4-3-4 3 1.5-4.5-3.5-2.5h4.5z"/>
-          </svg>
-          <h4>Начинающим</h4>
-          <p>Тем, кто не знает с чего начать уход за кожей</p>
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="benefit-icon">🔬</div>
+          <h3>Экспертный анализ</h3>
+          <p>Ваши фото анализируют реальные косметологи и дерматологи, не автоматика</p>
         </div>
-        <div class="target-card">
-          <svg class="target-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-          </svg>
-          <h4>Ищущим решение</h4>
-          <p>Тем, кто столкнулся с проблемами кожи</p>
+        <div class="benefit-card">
+          <div class="benefit-icon">🌍</div>
+          <h3>Этичный AI</h3>
+          <p>Помогаете создать AI, который понимает разнообразие типов кожи, а не только идеальные фото</p>
         </div>
-        <div class="target-card">
-          <svg class="target-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-          </svg>
-          <h4>Экспертам</h4>
-          <p>Тем, кто хочет профессиональную оценку текущего ухода</p>
-        </div>
-        <div class="target-card">
-          <svg class="target-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-          <h4>Заботливым</h4>
-          <p>Тем, кто хочет подобрать правильный уход</p>
+        <div class="benefit-card">
+          <div class="benefit-icon">🎁</div>
+          <h3>Бесплатные рекомендации</h3>
+          <p>Получаете персональные советы по уходу за кожей в благодарность за участие</p>
         </div>
       </div>
     </section>
 
-    <!-- Team -->
-    <section id="team" class="team">
+    <!-- Experts -->
+    <section id="experts" class="experts">
       <div class="section-header">
         <span class="tagline">КОМАНДА</span>
-        <h2>Наши специалисты</h2>
-        <p class="section-desc">Квалифицированные косметологи и дерматологи с многолетним опытом</p>
+        <h2>Эксперты, которым можно доверять</h2>
+        <p class="section-desc">Сертифицированные косметологи и дерматологи с многолетним опытом</p>
       </div>
-      <div class="team-grid">
-        <div class="specialist">
-          <div class="specialist-img specialist-img-1"></div>
-          <h4>Анна Петрова</h4>
-          <p>Косметолог-эстетист</p>
+      <div class="experts-grid">
+        <div class="expert-card">
+          <div class="expert-photo">
+            <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&q=80" alt="Анна Соколова" />
+          </div>
+          <h3>Анна Соколова</h3>
+          <span class="expert-role">Косметолог, 12 лет опыта</span>
+          <p>Специализация на проблемной коже и антивозрастных процедурах</p>
         </div>
-        <div class="specialist">
-          <div class="specialist-img specialist-img-2"></div>
-          <h4>Елена Козырева</h4>
-          <p>Дерматолог</p>
+        <div class="expert-card">
+          <div class="expert-photo">
+            <img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&q=80" alt="Мария Иванова" />
+          </div>
+          <h3>Мария Иванова</h3>
+          <span class="expert-role">Дерматолог, к.м.н.</span>
+          <p>Эксперт по заболеваниям кожи и восстановлению кожного барьера</p>
         </div>
-        <div class="specialist">
-          <div class="specialist-img specialist-img-3"></div>
-          <h4>Мария Иванова</h4>
-          <p>Мастер по лицу и телу</p>
+        <div class="expert-card">
+          <div class="expert-photo">
+            <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400&q=80" alt="Елена Петрова" />
+          </div>
+          <h3>Елена Петрова</h3>
+          <span class="expert-role">Косметолог-эстетист</span>
+          <p>Специалист по пигментации и текстуре кожи</p>
         </div>
-        <div class="specialist">
-          <div class="specialist-img specialist-img-4"></div>
-          <h4>Ольга Смирнова</h4>
-          <p>Косметолог-эстетист</p>
+      </div>
+    </section>
+
+    <!-- AI Trust -->
+    <section id="about" class="ai-trust">
+      <div class="section-header">
+        <span class="tagline">ЧЕСТНОСТЬ</span>
+        <h2>Мы честны о нашем AI</h2>
+      </div>
+      <div class="ai-content">
+        <div class="ai-text">
+          <p class="ai-highlight">Наш AI ещё учится. Мы не притворяемся, что он идеален.</p>
+          <p>Каждое загруженное фото помогает нашей модели лучше понимать реальную кожу — с её текстурами, оттенками и особенностями. Пока AI обучается, ваши снимки анализируют живые эксперты.</p>
+          <p>В будущем вы получите доступ к умному AI-помощнику, который знает вашу кожу — потому что учился на реальных данных, а не на отфотошопленных картинках.</p>
+        </div>
+        <div class="ai-visual">
+          <div class="neural-animation">
+            <div class="node n1"></div>
+            <div class="node n2"></div>
+            <div class="node n3"></div>
+            <div class="node n4"></div>
+            <div class="node n5"></div>
+            <div class="connection c1"></div>
+            <div class="connection c2"></div>
+            <div class="connection c3"></div>
+            <div class="connection c4"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Telegram Flow -->
+    <section class="telegram-flow">
+      <div class="section-header">
+        <span class="tagline">ПРОСТО И БЫСТРО</span>
+        <h2>Всё через Telegram</h2>
+        <p class="section-desc">Никаких приложений и регистраций — просто отправьте фото в бот</p>
+      </div>
+      <div class="telegram-content">
+        <div class="phone-mockup">
+          <div class="phone-screen">
+            <div class="tg-header">
+              <div class="tg-avatar">SK</div>
+              <span class="tg-name">Skin.Stories Bot</span>
+            </div>
+            <div class="tg-chat">
+              <div class="tg-message bot">
+                <p>Привет! 👋 Отправьте фото вашей кожи, и наши эксперты проанализируют его.</p>
+              </div>
+              <div class="tg-message user">
+                <div class="tg-photo"></div>
+              </div>
+              <div class="tg-message bot">
+                <p>Отлично! Фото получено ✓ Наш эксперт проанализирует его в течение 24 часов.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="telegram-features">
+          <div class="feature">
+            <div class="feature-icon">📱</div>
+            <div class="feature-text">
+              <h4>Без установки приложений</h4>
+              <p>Telegram уже есть у миллионов</p>
+            </div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">🔒</div>
+            <div class="feature-text">
+              <h4>Приватность</h4>
+              <p>Ваши данные защищены</p>
+            </div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-text">
+              <h4>Быстрый ответ</h4>
+              <p>Рекомендации в течение 24 часов</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Final CTA -->
     <section class="final-cta">
-      <h2>Готовы начать свой путь<br>к здоровой коже?</h2>
-      <p class="cta-subtitle">Получите персональные рекомендации от наших специалистов</p>
-      <div class="cta-buttons">
-        <a :href="telegramBotLink" target="_blank" class="btn btn-primary">Начать консультацию</a>
-        <a :href="telegramBotLink" target="_blank" class="btn btn-secondary-light">Написать в Telegram</a>
-      </div>
-      <span class="cta-trust">Ответ в течение 24-48 часов</span>
+      <h2>Готовы помочь AI понять кожу?</h2>
+      <p class="cta-subtitle">Загрузите фото — получите экспертный анализ бесплатно</p>
+      <a :href="telegramBotLink" target="_blank" class="btn btn-white">
+        <span class="btn-icon">✈️</span>
+        Открыть Telegram
+      </a>
+      <span class="cta-note">Бесплатно • Конфиденциально • Без регистрации</span>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
-      <div class="footer-main">
+      <div class="footer-content">
         <div class="footer-brand">
-          <div class="footer-logo">SKIN.STORIES</div>
-          <p>Персональные консультации по уходу за кожей от квалифицированных специалистов</p>
-        </div>
-        <div class="footer-nav">
-          <div class="footer-col">
-            <h5>Навигация</h5>
-            <a href="#how-it-works">О нас</a>
-            <a href="#how-it-works">Как это работает</a>
-            <a href="#team">Специалисты</a>
-            <a href="#form">Контакты</a>
-          </div>
-          <div class="footer-col">
-            <h5>Контакты</h5>
-            <a :href="telegramBotLink" target="_blank">Telegram: @skinstories_bot</a>
-            <a href="mailto:hello@skin.stories">Email: hello@skin.stories</a>
+          <div class="logo logo-footer">
+            <div class="logo-icon">
+              <span>SK</span>
+            </div>
+            <span class="logo-text">Skin.Stories</span>
           </div>
         </div>
-      </div>
-      <div class="footer-divider"></div>
-      <div class="footer-bottom">
-        <span>© 2024 Skin.Stories. Все права защищены.</span>
-        <div class="footer-social">
-          <a :href="telegramBotLink" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="m22 2-11 11"/></svg>
-          </a>
-          <a href="#" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/></svg>
-          </a>
+        <div class="footer-links">
+          <a href="#">Политика конфиденциальности</a>
+          <a href="#">Условия использования</a>
+          <span>© 2024 Skin.Stories</span>
         </div>
       </div>
     </footer>
@@ -235,34 +245,38 @@ const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg-primary: #1A1A1C;
-  --bg-surface: #242426;
-  --bg-maroon: #5D1A2D;
-  --bg-cream: #F5EDE6;
+  /* Skin-tone inspired palette */
+  --color-porcelain: #FAF8F5;
+  --color-soft-ivory: #F5F0EB;
+  --color-warm-nude: #E8DED4;
+  --color-blush: #F5EBE6;
 
-  --text-primary: #F5F5F0;
-  --text-secondary: #A0A0A0;
-  --text-muted: #6E6E70;
-  --text-dark: #1A1A1C;
+  /* Brand */
+  --color-burgundy: #8B3A4A;
+  --color-burgundy-dark: #6E2E3B;
 
-  --accent-gold: #C9A962;
-  --accent-beige: #D4B5A0;
+  /* Text */
+  --color-cocoa: #5C4A3D;
+  --color-rich-ebony: #2D2420;
 
-  --border-subtle: #3A3A3C;
+  /* Functional */
+  --color-white: #FFFFFF;
+  --color-dark: #2D2420;
 
-  --font-display: 'Cormorant Garamond', serif;
-  --font-body: 'Inter', sans-serif;
+  /* Fonts */
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Manrope', sans-serif;
 }
 </style>
 
 <style scoped>
 .landing {
   min-height: 100vh;
-  background: var(--bg-primary);
-  color: var(--text-primary);
+  background: var(--color-porcelain);
+  color: var(--color-rich-ebony);
   font-family: var(--font-body);
 }
 
@@ -273,14 +287,14 @@ const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(26, 26, 28, 0.95);
-  backdrop-filter: blur(10px);
+  background: var(--color-white);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.05);
 }
 
 .header-content {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0 120px;
+  padding: 0 80px;
   height: 80px;
   display: flex;
   justify-content: space-between;
@@ -288,512 +302,699 @@ const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
 }
 
 .logo {
-  font-family: var(--font-display);
-  font-size: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--color-burgundy);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-icon span {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.logo-text {
+  font-family: var(--font-body);
+  font-size: 18px;
   font-weight: 500;
-  letter-spacing: 3px;
-  color: var(--text-primary);
+  color: var(--color-burgundy);
 }
 
 .nav {
   display: flex;
   align-items: center;
-  gap: 48px;
+  gap: 40px;
 }
 
 .nav a {
-  font-size: 14px;
-  color: var(--text-secondary);
-  transition: color 0.2s;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-cocoa);
+  transition: color 0.3s;
 }
 
 .nav a:hover {
-  color: var(--text-primary);
+  color: var(--color-burgundy);
 }
 
 .nav-cta {
-  padding: 12px 24px;
-  border: 1px solid var(--accent-gold);
-  border-radius: 4px;
-  color: var(--accent-gold) !important;
-  font-weight: 500;
+  padding: 14px 28px;
+  background: var(--color-burgundy);
+  color: var(--color-white) !important;
+  border-radius: 24px;
+  transition: background 0.3s;
 }
 
 .nav-cta:hover {
-  background: var(--accent-gold);
-  color: var(--bg-primary) !important;
+  background: var(--color-burgundy-dark);
+}
+
+.mobile-cta {
+  display: none;
+  padding: 10px 20px;
+  background: var(--color-burgundy);
+  color: var(--color-white);
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 /* Hero */
 .hero {
-  min-height: 800px;
-  background: linear-gradient(180deg, rgba(26,26,28,0) 0%, rgba(26,26,28,1) 100%),
-              url('https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?w=1920&q=80') center/cover;
+  padding: 160px 80px 80px;
+  background: var(--color-porcelain);
+}
+
+.hero-content {
+  max-width: 1280px;
+  margin: 0 auto;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  gap: 60px;
 }
 
-.hero-overlay {
-  width: 100%;
-  padding: 120px;
-  padding-top: 200px;
+.hero-text {
+  flex: 1;
 }
 
-.tagline {
-  display: block;
-  font-family: var(--font-body);
+.badge {
+  display: inline-block;
+  padding: 8px 16px;
+  background: var(--color-blush);
+  border-radius: 20px;
   font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 4px;
-  color: var(--accent-gold);
-  margin-bottom: 16px;
-}
-
-.tagline-dark {
-  color: var(--bg-maroon);
+  font-weight: 600;
+  color: var(--color-burgundy);
+  margin-bottom: 24px;
 }
 
 .hero h1 {
   font-family: var(--font-display);
-  font-size: 72px;
-  font-weight: 300;
-  line-height: 1.1;
+  font-size: 56px;
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--color-rich-ebony);
   margin-bottom: 24px;
 }
 
-.subtitle {
-  font-size: 18px;
-  color: var(--text-secondary);
+.hero-subtitle {
+  font-size: 20px;
+  color: var(--color-cocoa);
   line-height: 1.6;
-  max-width: 600px;
   margin-bottom: 32px;
+  max-width: 500px;
 }
 
-.hero-buttons {
-  display: flex;
-  gap: 16px;
+.hero-visual {
+  width: 520px;
+  height: 520px;
+  border-radius: 32px;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
+.hero-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Buttons */
 .btn {
-  display: inline-block;
-  padding: 18px 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 36px;
   font-size: 16px;
-  font-weight: 500;
-  border-radius: 4px;
-  transition: all 0.2s;
-  text-align: center;
+  font-weight: 600;
+  border-radius: 28px;
+  transition: all 0.4s ease-out;
+  cursor: pointer;
+}
+
+.btn-icon {
+  font-size: 20px;
 }
 
 .btn-primary {
-  background: var(--accent-gold);
-  color: var(--bg-primary);
+  background: var(--color-burgundy);
+  color: var(--color-white);
+  box-shadow: 0 4px 20px rgba(139, 58, 74, 0.3);
 }
 
 .btn-primary:hover {
-  background: #D4B06A;
+  background: var(--color-burgundy-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(139, 58, 74, 0.4);
 }
 
-.btn-secondary {
-  background: transparent;
-  border: 1px solid var(--text-primary);
-  color: var(--text-primary);
+.btn-white {
+  background: var(--color-white);
+  color: var(--color-burgundy);
 }
 
-.btn-secondary:hover {
-  background: var(--text-primary);
-  color: var(--bg-primary);
+.btn-white:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(255, 255, 255, 0.3);
 }
 
-.btn-secondary-light {
-  background: transparent;
-  border: 1px solid var(--text-primary);
-  color: var(--text-primary);
-}
-
-/* How it works */
-.how-it-works {
-  padding: 120px;
-  background: var(--bg-primary);
-}
-
+/* Sections */
 .section-header {
   text-align: center;
-  margin-bottom: 64px;
+  margin-bottom: 60px;
+}
+
+.tagline {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: var(--color-burgundy);
+  margin-bottom: 16px;
 }
 
 .section-header h2 {
   font-family: var(--font-display);
-  font-size: 48px;
+  font-size: 44px;
   font-weight: 400;
-  margin: 16px 0;
+  color: var(--color-rich-ebony);
+  margin-bottom: 16px;
 }
 
 .section-desc {
   font-size: 18px;
-  color: var(--text-muted);
+  color: var(--color-cocoa);
 }
 
-.dark-text {
-  color: var(--text-dark);
+/* How It Works */
+.how-it-works {
+  padding: 100px 80px;
+  background: var(--color-white);
 }
 
 .steps {
   display: flex;
   justify-content: center;
-  gap: 40px;
-  flex-wrap: wrap;
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .step-card {
-  width: 260px;
-  background: var(--bg-surface);
+  width: 360px;
   padding: 32px;
-  border-radius: 8px;
+  background: var(--color-porcelain);
+  border-radius: 24px;
+}
+
+.step-icon {
+  font-size: 32px;
+  margin-bottom: 16px;
 }
 
 .step-num {
-  font-family: var(--font-display);
-  font-size: 48px;
-  font-weight: 300;
-  color: var(--accent-gold);
   display: block;
-  margin-bottom: 20px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--color-burgundy);
+  margin-bottom: 12px;
 }
 
 .step-card h3 {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 22px;
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--color-rich-ebony);
   margin-bottom: 12px;
 }
 
 .step-card p {
-  font-size: 14px;
-  color: var(--text-muted);
+  font-size: 16px;
+  color: var(--color-cocoa);
   line-height: 1.6;
 }
 
-/* Benefits */
-.benefits {
-  display: flex;
-  min-height: 600px;
-  background: var(--bg-maroon);
-}
-
-.benefits-content {
-  flex: 1;
+/* Why Join */
+.why-join {
   padding: 100px 80px;
+  background: var(--color-porcelain);
+}
+
+.benefits-grid {
   display: flex;
-  flex-direction: column;
   justify-content: center;
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.benefits h2 {
-  font-family: var(--font-display);
-  font-size: 48px;
-  font-weight: 400;
-  margin: 16px 0 40px;
+.benefit-card {
+  width: 360px;
+  padding: 32px;
+  background: var(--color-white);
+  border-radius: 24px;
 }
 
-.benefits-list {
+.benefit-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--color-blush);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.benefit-card h3 {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--color-rich-ebony);
+  margin-bottom: 12px;
+}
+
+.benefit-card p {
+  font-size: 16px;
+  color: var(--color-cocoa);
+  line-height: 1.6;
+}
+
+/* Experts */
+.experts {
+  padding: 100px 80px;
+  background: var(--color-white);
+}
+
+.experts-grid {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.expert-card {
+  width: 280px;
+  text-align: center;
+}
+
+.expert-photo {
+  width: 180px;
+  height: 180px;
+  border-radius: 90px;
+  overflow: hidden;
+  margin: 0 auto 20px;
+}
+
+.expert-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.expert-card h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-rich-ebony);
+  margin-bottom: 4px;
+}
+
+.expert-role {
+  display: block;
+  font-size: 15px;
+  color: var(--color-burgundy);
+  margin-bottom: 12px;
+}
+
+.expert-card p {
+  font-size: 14px;
+  color: var(--color-cocoa);
+  line-height: 1.5;
+}
+
+/* AI Trust */
+.ai-trust {
+  padding: 100px 80px;
+  background: var(--color-blush);
+}
+
+.ai-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.ai-text {
+  max-width: 560px;
+}
+
+.ai-highlight {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-rich-ebony);
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.ai-text p {
+  font-size: 17px;
+  color: var(--color-cocoa);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.ai-visual {
+  width: 400px;
+  height: 300px;
+  background: var(--color-white);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.neural-animation {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.node {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: var(--color-burgundy);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.n1 { top: 20%; left: 10%; animation-delay: 0s; }
+.n2 { top: 10%; left: 50%; animation-delay: 0.3s; }
+.n3 { top: 30%; left: 80%; animation-delay: 0.6s; }
+.n4 { top: 70%; left: 30%; animation-delay: 0.9s; }
+.n5 { top: 60%; left: 70%; animation-delay: 1.2s; }
+
+.connection {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-burgundy) 0%, transparent 100%);
+  animation: connect 2s ease-in-out infinite;
+}
+
+.c1 { top: 25%; left: 15%; width: 80px; transform: rotate(15deg); }
+.c2 { top: 20%; left: 55%; width: 60px; transform: rotate(45deg); }
+.c3 { top: 55%; left: 35%; width: 70px; transform: rotate(-20deg); }
+.c4 { top: 45%; left: 60%; width: 50px; transform: rotate(30deg); }
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.3); opacity: 1; }
+}
+
+@keyframes connect {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+/* Telegram Flow */
+.telegram-flow {
+  padding: 100px 80px;
+  background: var(--color-white);
+}
+
+.telegram-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 80px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.phone-mockup {
+  width: 320px;
+  height: 640px;
+  background: #1A1A1A;
+  border-radius: 40px;
+  padding: 12px;
+}
+
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  background: var(--color-white);
+  border-radius: 32px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 24px;
 }
 
-.benefit-item {
+.tg-header {
+  background: #229ED9;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tg-avatar {
+  width: 40px;
+  height: 40px;
+  background: var(--color-burgundy);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.tg-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-white);
+}
+
+.tg-chat {
+  flex: 1;
+  background: #E5DDD5;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tg-message {
+  max-width: 80%;
+  padding: 12px 16px;
+  border-radius: 16px;
+}
+
+.tg-message.bot {
+  background: var(--color-white);
+  border-bottom-left-radius: 4px;
+  align-self: flex-start;
+}
+
+.tg-message.user {
+  background: #DCF8C6;
+  border-bottom-right-radius: 4px;
+  align-self: flex-end;
+}
+
+.tg-message p {
+  font-size: 14px;
+  color: var(--color-rich-ebony);
+  line-height: 1.4;
+}
+
+.tg-photo {
+  width: 140px;
+  height: 100px;
+  background: linear-gradient(135deg, #E8B4B8 0%, #D4A574 100%);
+  border-radius: 8px;
+}
+
+.telegram-features {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.feature {
   display: flex;
   gap: 16px;
   align-items: flex-start;
 }
 
-.benefit-dash {
-  font-family: var(--font-display);
+.feature-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--color-blush);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 24px;
-  color: var(--accent-gold);
+  flex-shrink: 0;
 }
 
-.benefit-text h4 {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 500;
-  margin-bottom: 8px;
+.feature-text h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-rich-ebony);
+  margin-bottom: 4px;
 }
 
-.benefit-text p {
-  font-size: 14px;
-  color: var(--accent-beige);
-  line-height: 1.5;
-}
-
-.benefits-image {
-  width: 600px;
-  background: url('https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&q=80') center/cover;
-}
-
-/* Concept */
-.concept {
-  padding: 100px 120px;
-  background: var(--bg-cream);
-}
-
-.concept-grid {
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-
-.concept-img {
-  width: 280px;
-  height: 350px;
-  border-radius: 8px;
-  background-size: cover;
-  background-position: center;
-}
-
-.concept-img-1 { background-image: url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&q=80'); }
-.concept-img-2 { background-image: url('https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=400&q=80'); }
-.concept-img-3 { background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80'); }
-.concept-img-4 { background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80'); }
-
-/* Target */
-.target {
-  padding: 100px 120px;
-  background: var(--bg-primary);
-}
-
-.target-grid {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  flex-wrap: wrap;
-}
-
-.target-card {
-  width: 260px;
-  background: var(--bg-surface);
-  padding: 32px;
-  border-radius: 8px;
-  border: 1px solid var(--border-subtle);
-}
-
-.target-icon {
-  width: 32px;
-  height: 32px;
-  color: var(--accent-gold);
-  margin-bottom: 16px;
-}
-
-.target-card h4 {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 500;
-  margin-bottom: 12px;
-}
-
-.target-card p {
-  font-size: 14px;
-  color: var(--text-muted);
-  line-height: 1.5;
-}
-
-/* Team */
-.team {
-  padding: 100px 120px;
-  background: var(--bg-surface);
-}
-
-.team-grid {
-  display: flex;
-  justify-content: center;
-  gap: 32px;
-  flex-wrap: wrap;
-}
-
-.specialist {
-  width: 270px;
-  text-align: center;
-}
-
-.specialist-img {
-  width: 270px;
-  height: 320px;
-  border-radius: 8px;
-  background-size: cover;
-  background-position: center;
-  margin-bottom: 16px;
-}
-
-.specialist-img-1 { background-image: url('https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&q=80'); }
-.specialist-img-2 { background-image: url('https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&q=80'); }
-.specialist-img-3 { background-image: url('https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400&q=80'); }
-.specialist-img-4 { background-image: url('https://images.unsplash.com/photo-1580281657702-257584239a55?w=400&q=80'); }
-
-.specialist h4 {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 500;
-  margin-bottom: 8px;
-}
-
-.specialist p {
-  font-size: 14px;
-  color: var(--text-muted);
+.feature-text p {
+  font-size: 15px;
+  color: var(--color-cocoa);
 }
 
 /* Final CTA */
 .final-cta {
-  padding: 120px;
-  background: var(--bg-maroon);
+  padding: 120px 80px;
+  background: var(--color-burgundy);
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 500px;
 }
 
 .final-cta h2 {
   font-family: var(--font-display);
-  font-size: 56px;
+  font-size: 52px;
   font-weight: 400;
-  line-height: 1.2;
-  margin-bottom: 24px;
+  color: var(--color-white);
+  margin-bottom: 16px;
 }
 
 .cta-subtitle {
-  font-size: 18px;
-  color: var(--accent-beige);
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.85);
   margin-bottom: 40px;
 }
 
-.cta-buttons {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 24px;
-}
-
-.cta-trust {
+.cta-note {
+  display: block;
+  margin-top: 24px;
   font-size: 14px;
-  color: #A08070;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 /* Footer */
 .footer {
-  padding: 80px 120px 40px;
-  background: var(--bg-primary);
+  padding: 60px 80px;
+  background: var(--color-dark);
 }
 
-.footer-main {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 60px;
-}
-
-.footer-brand {
-  max-width: 300px;
-}
-
-.footer-logo {
-  font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 500;
-  letter-spacing: 3px;
-  margin-bottom: 20px;
-}
-
-.footer-brand p {
-  font-size: 14px;
-  color: var(--text-muted);
-  line-height: 1.6;
-}
-
-.footer-nav {
-  display: flex;
-  gap: 80px;
-}
-
-.footer-col {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.footer-col h5 {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--accent-gold);
-  letter-spacing: 2px;
-  margin-bottom: 8px;
-}
-
-.footer-col a {
-  font-size: 14px;
-  color: var(--text-muted);
-  transition: color 0.2s;
-}
-
-.footer-col a:hover {
-  color: var(--text-primary);
-}
-
-.footer-divider {
-  height: 1px;
-  background: var(--border-subtle);
-  margin-bottom: 40px;
-}
-
-.footer-bottom {
+.footer-content {
+  max-width: 1280px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.footer-bottom span {
-  font-size: 13px;
-  color: #4A4A4C;
+.logo-footer .logo-text {
+  color: var(--color-white);
 }
 
-.footer-social {
+.footer-links {
   display: flex;
-  gap: 20px;
+  align-items: center;
+  gap: 32px;
 }
 
-.footer-social a {
-  color: var(--text-muted);
-  transition: color 0.2s;
+.footer-links a,
+.footer-links span {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.3s;
 }
 
-.footer-social a:hover {
-  color: var(--text-primary);
-}
-
-.footer-social svg {
-  width: 20px;
-  height: 20px;
+.footer-links a:hover {
+  color: var(--color-white);
 }
 
 /* Responsive */
 @media (max-width: 1200px) {
   .header-content,
-  .hero-overlay,
+  .hero,
   .how-it-works,
-  .concept,
-  .target,
-  .team,
+  .why-join,
+  .experts,
+  .ai-trust,
+  .telegram-flow,
   .final-cta,
   .footer {
     padding-left: 40px;
     padding-right: 40px;
   }
 
-  .benefits-content {
-    padding: 60px 40px;
+  .hero-visual {
+    width: 400px;
+    height: 400px;
   }
 
-  .benefits-image {
-    width: 400px;
+  .steps,
+  .benefits-grid {
+    flex-wrap: wrap;
+  }
+
+  .step-card,
+  .benefit-card {
+    width: calc(50% - 16px);
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-visual {
+    width: 100%;
+    max-width: 400px;
+    height: 350px;
+  }
+
+  .ai-content,
+  .telegram-content {
+    flex-direction: column;
+  }
+
+  .ai-text {
+    text-align: center;
+  }
+
+  .experts-grid {
+    flex-wrap: wrap;
+  }
+
+  .expert-card {
+    width: calc(50% - 20px);
   }
 }
 
@@ -802,132 +1003,119 @@ const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
     display: none;
   }
 
-  .hero h1 {
-    font-size: 40px;
-  }
-
-  .section-header h2,
-  .benefits h2 {
-    font-size: 36px;
-  }
-
-  .final-cta h2 {
-    font-size: 36px;
-  }
-
-  .benefits {
-    flex-direction: column;
-  }
-
-  .benefits-image {
-    width: 100%;
-    height: 300px;
-  }
-
-  .steps,
-  .target-grid,
-  .team-grid,
-  .concept-grid {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .cta-buttons {
-    flex-direction: column;
-  }
-
-  .footer-main {
-    flex-direction: column;
-    gap: 40px;
-  }
-
-  .footer-nav {
-    flex-direction: column;
-    gap: 32px;
-  }
-}
-
-/* Mobile-first design - iOS HIG compliant */
-@media (max-width: 480px) {
-  /* Header - compact with safe area */
-  .header {
-    padding-top: env(safe-area-inset-top, 0px);
+  .mobile-cta {
+    display: block;
   }
 
   .header-content {
-    padding: 0 16px;
-    height: 60px;
+    padding: 0 20px;
+    height: 64px;
   }
 
-  .logo {
-    font-size: 18px;
-    letter-spacing: 2px;
-  }
-
-  /* Hero - full screen mobile optimized */
   .hero {
-    min-height: 100vh;
-    min-height: 100dvh;
-  }
-
-  .hero-overlay {
-    padding: 24px;
-    padding-top: 100px;
-    padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-  }
-
-  .tagline {
-    font-size: 11px;
-    letter-spacing: 3px;
-    margin-bottom: 12px;
+    padding: 100px 24px 60px;
   }
 
   .hero h1 {
-    font-size: 32px;
-    margin-bottom: 16px;
+    font-size: 36px;
   }
 
   .hero h1 br {
     display: none;
   }
 
-  .subtitle {
-    font-size: 15px;
-    margin-bottom: 28px;
-    line-height: 1.5;
+  .hero-subtitle {
+    font-size: 16px;
   }
 
-  .subtitle br {
+  .hero-subtitle br {
     display: none;
   }
 
-  .hero-buttons {
+  .section-header h2 {
+    font-size: 32px;
+  }
+
+  .step-card,
+  .benefit-card {
+    width: 100%;
+  }
+
+  .expert-card {
+    width: 100%;
+  }
+
+  .phone-mockup {
+    width: 280px;
+    height: 560px;
+  }
+
+  .telegram-features {
+    width: 100%;
+    padding: 0 20px;
+  }
+
+  .final-cta h2 {
+    font-size: 32px;
+  }
+
+  .footer-content {
     flex-direction: column;
-    gap: 12px;
+    gap: 24px;
+    text-align: center;
   }
 
-  /* Buttons - touch friendly */
+  .footer-links {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .logo-text {
+    font-size: 16px;
+  }
+
+  .hero {
+    padding: 90px 20px 48px;
+  }
+
+  .hero h1 {
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+
+  .badge {
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+
+  .hero-visual {
+    height: 280px;
+    border-radius: 20px;
+  }
+
   .btn {
-    padding: 16px 32px;
+    padding: 16px 28px;
     font-size: 15px;
-    min-height: 52px;
-    display: flex;
-    align-items: center;
+    width: 100%;
     justify-content: center;
-    border-radius: 8px;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
   }
 
-  .btn:active {
-    transform: scale(0.98);
-  }
-
-  /* How it works */
-  .how-it-works {
+  .how-it-works,
+  .why-join,
+  .experts,
+  .ai-trust,
+  .telegram-flow {
     padding: 60px 20px;
   }
 
@@ -936,263 +1124,90 @@ const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
   }
 
   .section-header h2 {
-    font-size: 28px;
-    margin: 12px 0;
+    font-size: 26px;
   }
 
   .section-desc {
     font-size: 15px;
-    padding: 0 10px;
   }
 
-  .section-desc br {
-    display: none;
-  }
-
-  .steps {
-    gap: 16px;
-    width: 100%;
-  }
-
-  .step-card {
-    width: 100%;
+  .step-card,
+  .benefit-card {
     padding: 24px;
-    border-radius: 12px;
+    border-radius: 20px;
   }
 
-  .step-num {
-    font-size: 36px;
-    margin-bottom: 12px;
-  }
-
-  .step-card h3 {
-    font-size: 20px;
-    margin-bottom: 8px;
-  }
-
-  .step-card p {
-    font-size: 14px;
-  }
-
-  /* Benefits */
-  .benefits {
-    flex-direction: column;
-  }
-
-  .benefits-content {
-    padding: 48px 20px;
-  }
-
-  .benefits h2 {
-    font-size: 28px;
-    margin: 12px 0 32px;
-  }
-
-  .benefits-list {
-    gap: 20px;
-  }
-
-  .benefit-item {
-    gap: 12px;
-  }
-
-  .benefit-dash {
-    font-size: 20px;
-  }
-
-  .benefit-text h4 {
+  .step-card h3,
+  .benefit-card h3 {
     font-size: 18px;
-    margin-bottom: 6px;
   }
 
-  .benefit-text p {
+  .step-card p,
+  .benefit-card p {
     font-size: 14px;
   }
 
-  .benefits-image {
-    width: 100%;
-    height: 280px;
+  .expert-photo {
+    width: 140px;
+    height: 140px;
   }
 
-  /* Concept */
-  .concept {
-    padding: 60px 20px;
-  }
-
-  .concept-grid {
-    gap: 12px;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .concept-img {
-    width: 100%;
-    height: 180px;
-    border-radius: 8px;
-  }
-
-  /* Target */
-  .target {
-    padding: 60px 20px;
-  }
-
-  .target-grid {
-    gap: 12px;
-    width: 100%;
-  }
-
-  .target-card {
-    width: 100%;
-    padding: 24px;
-    border-radius: 12px;
-  }
-
-  .target-icon {
-    width: 28px;
-    height: 28px;
-    margin-bottom: 12px;
-  }
-
-  .target-card h4 {
+  .expert-card h3 {
     font-size: 18px;
-    margin-bottom: 8px;
   }
 
-  .target-card p {
-    font-size: 14px;
-  }
-
-  /* Team */
-  .team {
-    padding: 60px 20px;
-  }
-
-  .team-grid {
-    gap: 24px;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .specialist {
-    width: 100%;
-  }
-
-  .specialist-img {
+  .ai-visual {
     width: 100%;
     height: 200px;
-    border-radius: 8px;
-    margin-bottom: 12px;
   }
 
-  .specialist h4 {
+  .phone-mockup {
+    width: 260px;
+    height: 500px;
+    border-radius: 32px;
+    padding: 8px;
+  }
+
+  .phone-screen {
+    border-radius: 26px;
+  }
+
+  .feature {
+    gap: 12px;
+  }
+
+  .feature-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+
+  .feature-text h4 {
     font-size: 16px;
-    margin-bottom: 4px;
   }
 
-  .specialist p {
-    font-size: 12px;
+  .feature-text p {
+    font-size: 14px;
   }
 
-  /* Final CTA */
   .final-cta {
     padding: 60px 24px;
     padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
-    min-height: auto;
   }
 
   .final-cta h2 {
-    font-size: 28px;
-    margin-bottom: 16px;
-  }
-
-  .final-cta h2 br {
-    display: none;
-  }
-
-  .cta-subtitle {
-    font-size: 15px;
-    margin-bottom: 32px;
-  }
-
-  .cta-buttons {
-    width: 100%;
-    gap: 12px;
-  }
-
-  .cta-buttons .btn {
-    width: 100%;
-  }
-
-  .cta-trust {
-    font-size: 13px;
-    margin-top: 8px;
-  }
-
-  /* Footer */
-  .footer {
-    padding: 48px 20px 24px;
-    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-  }
-
-  .footer-main {
-    flex-direction: column;
-    gap: 32px;
-    margin-bottom: 32px;
-  }
-
-  .footer-brand {
-    max-width: 100%;
-  }
-
-  .footer-logo {
-    font-size: 20px;
+    font-size: 26px;
     margin-bottom: 12px;
   }
 
-  .footer-brand p {
-    font-size: 13px;
+  .cta-subtitle {
+    font-size: 16px;
+    margin-bottom: 32px;
   }
 
-  .footer-nav {
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .footer-col {
-    gap: 12px;
-  }
-
-  .footer-col h5 {
-    font-size: 11px;
-    margin-bottom: 4px;
-  }
-
-  .footer-col a {
-    font-size: 14px;
-    padding: 4px 0;
-  }
-
-  .footer-divider {
-    margin-bottom: 24px;
-  }
-
-  .footer-bottom {
-    flex-direction: column;
-    gap: 16px;
-    text-align: center;
-  }
-
-  .footer-bottom span {
-    font-size: 12px;
-  }
-
-  .footer-social {
-    gap: 24px;
-  }
-
-  .footer-social svg {
-    width: 24px;
-    height: 24px;
+  .footer {
+    padding: 40px 20px;
+    padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
   }
 }
 </style>
