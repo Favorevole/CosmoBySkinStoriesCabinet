@@ -5,11 +5,11 @@
       <div class="header-content">
         <div class="logo">SKIN.STORIES</div>
         <nav class="nav">
-          <a href="#how-it-works">How It Works</a>
-          <a href="#demo">Demo</a>
-          <a href="#technology">Technology</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#final-cta" class="nav-cta">Join Waitlist</a>
+          <a href="#how-it-works">Как это работает</a>
+          <a href="#demo">Демо</a>
+          <a href="#technology">Технологии</a>
+          <a href="#pricing">Тарифы</a>
+          <a href="#final-cta" class="nav-cta">Записаться</a>
         </nav>
         <button class="mobile-menu-btn" @click="mobileMenuOpen = !mobileMenuOpen">
           <span></span>
@@ -19,11 +19,11 @@
       </div>
       <!-- Mobile Menu -->
       <div class="mobile-menu" :class="{ 'mobile-menu-open': mobileMenuOpen }">
-        <a href="#how-it-works" @click="mobileMenuOpen = false">How It Works</a>
-        <a href="#demo" @click="mobileMenuOpen = false">Demo</a>
-        <a href="#technology" @click="mobileMenuOpen = false">Technology</a>
-        <a href="#pricing" @click="mobileMenuOpen = false">Pricing</a>
-        <a href="#final-cta" class="mobile-cta" @click="mobileMenuOpen = false">Join Waitlist</a>
+        <a href="#how-it-works" @click="mobileMenuOpen = false">Как это работает</a>
+        <a href="#demo" @click="mobileMenuOpen = false">Демо</a>
+        <a href="#technology" @click="mobileMenuOpen = false">Технологии</a>
+        <a href="#pricing" @click="mobileMenuOpen = false">Тарифы</a>
+        <a href="#final-cta" class="mobile-cta" @click="mobileMenuOpen = false">Записаться</a>
       </div>
     </header>
 
@@ -35,20 +35,20 @@
       </div>
       <div class="hero-content">
         <div class="hero-text">
-          <span class="tagline">AI-POWERED SKIN ANALYSIS</span>
-          <h1>Your skin tells a story.<br><span class="hero-highlight">We help you read it.</span></h1>
-          <p class="subtitle">Advanced AI technology that understands your skin's unique needs, delivering personalized care recommendations backed by dermatological science.</p>
+          <span class="tagline">AI-АНАЛИЗ КОЖИ</span>
+          <h1>Ваша кожа рассказывает историю.<br><span class="hero-highlight">Мы поможем её прочитать.</span></h1>
+          <p class="subtitle">Передовые AI-технологии, которые понимают уникальные потребности вашей кожи и дают персональные рекомендации по уходу, основанные на дерматологической науке.</p>
           <form class="waitlist-form" @submit.prevent="submitWaitlist">
             <input
               type="email"
               v-model="email"
-              placeholder="Enter your email"
+              placeholder="Введите ваш email"
               required
               class="waitlist-input"
             />
-            <button type="submit" class="btn btn-primary">Get Early Access</button>
+            <button type="submit" class="btn btn-primary">Получить доступ</button>
           </form>
-          <p class="waitlist-note">Join 2,400+ people on the waitlist. No spam, ever.</p>
+          <p class="waitlist-note">Уже 2 400+ человек в листе ожидания. Никакого спама.</p>
         </div>
         <div class="hero-mockup">
           <div class="app-mockup">
@@ -70,21 +70,21 @@
                 </div>
                 <div class="mockup-analysis">
                   <div class="analysis-item">
-                    <span class="analysis-label">Hydration</span>
+                    <span class="analysis-label">Увлажнение</span>
                     <div class="analysis-bar">
                       <div class="analysis-fill" style="width: 72%"></div>
                     </div>
                     <span class="analysis-value">72%</span>
                   </div>
                   <div class="analysis-item">
-                    <span class="analysis-label">Elasticity</span>
+                    <span class="analysis-label">Упругость</span>
                     <div class="analysis-bar">
                       <div class="analysis-fill" style="width: 85%"></div>
                     </div>
                     <span class="analysis-value">85%</span>
                   </div>
                   <div class="analysis-item">
-                    <span class="analysis-label">Balance</span>
+                    <span class="analysis-label">Баланс</span>
                     <div class="analysis-bar">
                       <div class="analysis-fill" style="width: 68%"></div>
                     </div>
@@ -97,7 +97,7 @@
         </div>
       </div>
       <div class="hero-scroll-indicator">
-        <span>Scroll to explore</span>
+        <span>Листайте вниз</span>
         <div class="scroll-arrow"></div>
       </div>
     </section>
@@ -105,9 +105,9 @@
     <!-- SECTION 2: HOW IT WORKS -->
     <section id="how-it-works" class="how-it-works">
       <div class="section-header">
-        <span class="tagline">THE PROCESS</span>
-        <h2>Simple. Scientific. Personal.</h2>
-        <p class="section-desc">Three steps to understanding your skin's unique story</p>
+        <span class="tagline">ПРОЦЕСС</span>
+        <h2>Просто. Научно. Персонально.</h2>
+        <p class="section-desc">Три шага к пониманию уникальной истории вашей кожи</p>
       </div>
       <div class="steps">
         <div class="step-card">
@@ -119,8 +119,8 @@
             </svg>
           </div>
           <div class="step-number">01</div>
-          <h3>Capture</h3>
-          <p>Take a photo of your skin using our guided camera system. Our AI ensures optimal lighting and angle for accurate analysis.</p>
+          <h3>Фото</h3>
+          <p>Сделайте фото кожи с помощью нашей системы. AI обеспечит оптимальное освещение и угол для точного анализа.</p>
           <div class="step-indicator">
             <span class="step-dot active"></span>
             <span class="step-line"></span>
@@ -135,8 +135,8 @@
             </svg>
           </div>
           <div class="step-number">02</div>
-          <h3>Analyze</h3>
-          <p>Our AI examines 47 different skin parameters, from hydration levels to pore density, creating your unique skin profile.</p>
+          <h3>Анализ</h3>
+          <p>Наш AI анализирует 47 параметров кожи: от уровня увлажнения до плотности пор, создавая ваш уникальный профиль.</p>
           <div class="step-indicator">
             <span class="step-dot"></span>
             <span class="step-line"></span>
@@ -150,8 +150,8 @@
             </svg>
           </div>
           <div class="step-number">03</div>
-          <h3>Personalize</h3>
-          <p>Receive a tailored skincare routine with product recommendations that adapt as your skin evolves over time.</p>
+          <h3>Рекомендации</h3>
+          <p>Получите персональную программу ухода с рекомендациями средств, которые адаптируются по мере изменения вашей кожи.</p>
           <div class="step-indicator">
             <span class="step-dot"></span>
             <span class="step-line-end"></span>
@@ -164,9 +164,9 @@
     <section id="demo" class="demo">
       <div class="demo-container">
         <div class="demo-header">
-          <span class="tagline">EXPERIENCE IT</span>
-          <h2>See the magic in action</h2>
-          <p class="section-desc">Watch how our AI transforms a simple photo into deep skin insights</p>
+          <span class="tagline">ПОПРОБУЙТЕ</span>
+          <h2>Посмотрите магию в действии</h2>
+          <p class="section-desc">Как наш AI превращает простое фото в глубокий анализ кожи</p>
         </div>
         <div class="demo-interface">
           <div class="demo-upload-area">
@@ -178,8 +178,8 @@
                   <line x1="12" y1="3" x2="12" y2="15"/>
                 </svg>
               </div>
-              <p class="upload-text">Drop your photo here</p>
-              <span class="upload-hint">or click to browse</span>
+              <p class="upload-text">Перетащите фото сюда</p>
+              <span class="upload-hint">или нажмите для выбора</span>
             </div>
           </div>
           <div class="demo-scanning">
@@ -197,47 +197,47 @@
               <div class="progress-bar">
                 <div class="progress-fill"></div>
               </div>
-              <span class="progress-text">Analyzing skin parameters...</span>
+              <span class="progress-text">Анализируем параметры кожи...</span>
             </div>
           </div>
           <div class="demo-results">
             <div class="result-card">
               <div class="result-header">
-                <h4>Your Skin Profile</h4>
-                <span class="result-badge">AI Analysis Complete</span>
+                <h4>Ваш профиль кожи</h4>
+                <span class="result-badge">AI-анализ завершён</span>
               </div>
               <div class="result-metrics">
                 <div class="metric">
                   <div class="metric-circle" style="--progress: 78">
                     <span class="metric-value">78</span>
                   </div>
-                  <span class="metric-label">Hydration</span>
+                  <span class="metric-label">Увлажнение</span>
                 </div>
                 <div class="metric">
                   <div class="metric-circle" style="--progress: 85">
                     <span class="metric-value">85</span>
                   </div>
-                  <span class="metric-label">Elasticity</span>
+                  <span class="metric-label">Упругость</span>
                 </div>
                 <div class="metric">
                   <div class="metric-circle" style="--progress: 62">
                     <span class="metric-value">62</span>
                   </div>
-                  <span class="metric-label">Clarity</span>
+                  <span class="metric-label">Чистота</span>
                 </div>
                 <div class="metric">
                   <div class="metric-circle" style="--progress: 71">
                     <span class="metric-value">71</span>
                   </div>
-                  <span class="metric-label">Texture</span>
+                  <span class="metric-label">Текстура</span>
                 </div>
               </div>
               <div class="result-insights">
-                <h5>Key Insights</h5>
+                <h5>Ключевые выводы</h5>
                 <ul>
-                  <li><span class="insight-icon insight-hydration">💧</span> Slight dehydration in T-zone area</li>
-                  <li><span class="insight-icon insight-balance">🌿</span> Good oil balance overall</li>
-                  <li><span class="insight-icon insight-sensitivity">🌸</span> Mild sensitivity detected around cheeks</li>
+                  <li><span class="insight-icon insight-hydration">💧</span> Лёгкое обезвоживание в Т-зоне</li>
+                  <li><span class="insight-icon insight-balance">🌿</span> Хороший баланс жирности в целом</li>
+                  <li><span class="insight-icon insight-sensitivity">🌸</span> Лёгкая чувствительность в области щёк</li>
                 </ul>
               </div>
             </div>
@@ -250,33 +250,33 @@
     <section class="skin-journey">
       <div class="journey-content">
         <div class="section-header">
-          <span class="tagline tagline-light">YOUR JOURNEY</span>
-          <h2 class="light-text">Every skin has a story worth telling</h2>
-          <p class="section-desc light-text">Real transformation starts with understanding. We celebrate skin in all its forms—not perfection, but progress.</p>
+          <span class="tagline tagline-light">ВАШ ПУТЬ</span>
+          <h2 class="light-text">У каждой кожи есть история, достойная рассказа</h2>
+          <p class="section-desc light-text">Настоящая трансформация начинается с понимания. Мы ценим кожу во всех её проявлениях — не идеальность, а прогресс.</p>
         </div>
         <div class="journey-phases">
           <div class="phase">
             <div class="phase-image phase-before"></div>
             <div class="phase-content">
-              <span class="phase-label">Before</span>
-              <h4>Uncertainty</h4>
-              <p>Not knowing what your skin needs, trying products that don't work, feeling frustrated.</p>
+              <span class="phase-label">До</span>
+              <h4>Неопределённость</h4>
+              <p>Не знаете, что нужно вашей коже, пробуете средства, которые не работают, чувствуете разочарование.</p>
             </div>
           </div>
           <div class="phase phase-center">
             <div class="phase-image phase-during"></div>
             <div class="phase-content">
-              <span class="phase-label">During</span>
-              <h4>Discovery</h4>
-              <p>Understanding your unique skin profile, learning what works specifically for you.</p>
+              <span class="phase-label">Процесс</span>
+              <h4>Открытие</h4>
+              <p>Понимание уникального профиля вашей кожи, изучение того, что работает именно для вас.</p>
             </div>
           </div>
           <div class="phase">
             <div class="phase-image phase-after"></div>
             <div class="phase-content">
-              <span class="phase-label">After</span>
-              <h4>Confidence</h4>
-              <p>A personalized routine you trust, skin that feels healthy and cared for.</p>
+              <span class="phase-label">После</span>
+              <h4>Уверенность</h4>
+              <p>Персональный уход, которому вы доверяете, кожа, которая выглядит здоровой и ухоженной.</p>
             </div>
           </div>
         </div>
@@ -305,8 +305,8 @@
           </div>
         </div>
         <div class="tech-info">
-          <span class="tagline">POWERED BY SCIENCE</span>
-          <h2>Advanced AI meets dermatological expertise</h2>
+          <span class="tagline">ОСНОВАНО НА НАУКЕ</span>
+          <h2>Продвинутый AI + дерматологическая экспертиза</h2>
           <div class="tech-cards">
             <div class="tech-card glass-card">
               <div class="tech-card-icon">
@@ -316,8 +316,8 @@
                   <path d="M2 12l10 5 10-5"/>
                 </svg>
               </div>
-              <h4>Deep Learning</h4>
-              <p>Trained on 2M+ skin images across all types, tones, and conditions</p>
+              <h4>Глубокое обучение</h4>
+              <p>Обучен на 2M+ изображений кожи всех типов, оттенков и состояний</p>
             </div>
             <div class="tech-card glass-card">
               <div class="tech-card-icon">
@@ -326,8 +326,8 @@
                   <path d="M12 6v6l4 2"/>
                 </svg>
               </div>
-              <h4>Real-time Analysis</h4>
-              <p>47 skin parameters analyzed in under 3 seconds with 94% accuracy</p>
+              <h4>Анализ в реальном времени</h4>
+              <p>47 параметров кожи анализируются за 3 секунды с точностью 94%</p>
             </div>
             <div class="tech-card glass-card">
               <div class="tech-card-icon">
@@ -335,8 +335,8 @@
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                 </svg>
               </div>
-              <h4>Personalized Care</h4>
-              <p>Recommendations that evolve with your skin's changing needs</p>
+              <h4>Персональный уход</h4>
+              <p>Рекомендации, которые адаптируются к изменяющимся потребностям кожи</p>
             </div>
           </div>
         </div>
@@ -346,43 +346,43 @@
     <!-- SECTION 6: SOCIAL PROOF -->
     <section class="social-proof">
       <div class="section-header">
-        <span class="tagline">REAL STORIES</span>
-        <h2>What our early users say</h2>
+        <span class="tagline">ОТЗЫВЫ</span>
+        <h2>Что говорят наши первые пользователи</h2>
       </div>
       <div class="testimonials">
         <div class="testimonial-card glass-card">
           <div class="testimonial-content">
-            <p>"Finally, an app that understands my combination skin. The personalized routine changed everything—my skin has never been happier."</p>
+            <p>«Наконец-то приложение, которое понимает мою комбинированную кожу. Персональная программа изменила всё — моя кожа никогда не была такой здоровой.»</p>
           </div>
           <div class="testimonial-author">
             <div class="author-avatar avatar-1"></div>
             <div class="author-info">
-              <span class="author-name">Sarah M.</span>
-              <span class="author-detail">Beta Tester, 3 months</span>
+              <span class="author-name">Анна М.</span>
+              <span class="author-detail">Бета-тестер, 3 месяца</span>
             </div>
           </div>
         </div>
         <div class="testimonial-card glass-card">
           <div class="testimonial-content">
-            <p>"As someone with sensitive skin, I was skeptical. But the AI detected issues my dermatologist missed. Game changer."</p>
+            <p>«У меня чувствительная кожа, и я была скептически настроена. Но AI обнаружил проблемы, которые пропустил мой дерматолог. Это прорыв.»</p>
           </div>
           <div class="testimonial-author">
             <div class="author-avatar avatar-2"></div>
             <div class="author-info">
-              <span class="author-name">James L.</span>
-              <span class="author-detail">Early Access Member</span>
+              <span class="author-name">Дмитрий Л.</span>
+              <span class="author-detail">Ранний доступ</span>
             </div>
           </div>
         </div>
         <div class="testimonial-card glass-card">
           <div class="testimonial-content">
-            <p>"I love how it tracks my skin's progress over time. Seeing the improvement data keeps me motivated to stick with my routine."</p>
+            <p>«Обожаю, как приложение отслеживает прогресс моей кожи. Видеть данные об улучшениях — это мотивирует придерживаться своего ухода.»</p>
           </div>
           <div class="testimonial-author">
             <div class="author-avatar avatar-3"></div>
             <div class="author-info">
-              <span class="author-name">Priya K.</span>
-              <span class="author-detail">Founding Member</span>
+              <span class="author-name">Мария К.</span>
+              <span class="author-detail">Основатель</span>
             </div>
           </div>
         </div>
@@ -392,62 +392,62 @@
     <!-- SECTION 7: PRICING -->
     <section id="pricing" class="pricing">
       <div class="section-header">
-        <span class="tagline">EARLY ACCESS</span>
-        <h2>Join the skincare revolution</h2>
-        <p class="section-desc">Limited spots available for founding members</p>
+        <span class="tagline">РАННИЙ ДОСТУП</span>
+        <h2>Присоединяйтесь к революции в уходе за кожей</h2>
+        <p class="section-desc">Ограниченное количество мест для первых участников</p>
       </div>
       <div class="pricing-cards">
         <div class="pricing-card glass-card">
           <div class="pricing-header">
-            <h4>Beta Access</h4>
+            <h4>Бета-доступ</h4>
             <div class="price">
-              <span class="price-amount">Free</span>
-              <span class="price-period">for early adopters</span>
+              <span class="price-amount">Бесплатно</span>
+              <span class="price-period">для первых пользователей</span>
             </div>
           </div>
           <ul class="pricing-features">
-            <li><span class="check">✓</span> Basic skin analysis</li>
-            <li><span class="check">✓</span> Weekly skin tracking</li>
-            <li><span class="check">✓</span> Product recommendations</li>
-            <li><span class="check">✓</span> Community access</li>
+            <li><span class="check">✓</span> Базовый анализ кожи</li>
+            <li><span class="check">✓</span> Еженедельный трекинг</li>
+            <li><span class="check">✓</span> Рекомендации средств</li>
+            <li><span class="check">✓</span> Доступ к сообществу</li>
           </ul>
-          <button class="btn btn-secondary">Join Beta Waitlist</button>
+          <button class="btn btn-secondary">Записаться в бету</button>
         </div>
         <div class="pricing-card glass-card pricing-featured">
-          <div class="pricing-badge">Most Popular</div>
+          <div class="pricing-badge">Популярный</div>
           <div class="pricing-header">
-            <h4>Founding Member</h4>
+            <h4>Основатель</h4>
             <div class="price">
-              <span class="price-amount">$9</span>
-              <span class="price-period">/month forever</span>
+              <span class="price-amount">990 ₽</span>
+              <span class="price-period">/месяц навсегда</span>
             </div>
           </div>
           <ul class="pricing-features">
-            <li><span class="check">✓</span> Advanced AI analysis</li>
-            <li><span class="check">✓</span> Daily skin tracking</li>
-            <li><span class="check">✓</span> Personalized routines</li>
-            <li><span class="check">✓</span> Expert consultations</li>
-            <li><span class="check">✓</span> Priority support</li>
-            <li><span class="check">✓</span> Locked-in pricing</li>
+            <li><span class="check">✓</span> Продвинутый AI-анализ</li>
+            <li><span class="check">✓</span> Ежедневный трекинг</li>
+            <li><span class="check">✓</span> Персональные программы</li>
+            <li><span class="check">✓</span> Консультации экспертов</li>
+            <li><span class="check">✓</span> Приоритетная поддержка</li>
+            <li><span class="check">✓</span> Фиксированная цена</li>
           </ul>
-          <button class="btn btn-primary">Become a Founder</button>
+          <button class="btn btn-primary">Стать основателем</button>
         </div>
         <div class="pricing-card glass-card">
           <div class="pricing-header">
-            <h4>Early Pro</h4>
+            <h4>Ранний Pro</h4>
             <div class="price">
-              <span class="price-amount">$19</span>
-              <span class="price-period">/month forever</span>
+              <span class="price-amount">1 990 ₽</span>
+              <span class="price-period">/месяц навсегда</span>
             </div>
           </div>
           <ul class="pricing-features">
-            <li><span class="check">✓</span> Everything in Founding</li>
-            <li><span class="check">✓</span> Unlimited analyses</li>
-            <li><span class="check">✓</span> API access</li>
-            <li><span class="check">✓</span> White-label reports</li>
-            <li><span class="check">✓</span> Team features</li>
+            <li><span class="check">✓</span> Всё из тарифа Основатель</li>
+            <li><span class="check">✓</span> Безлимитные анализы</li>
+            <li><span class="check">✓</span> Доступ к API</li>
+            <li><span class="check">✓</span> Отчёты white-label</li>
+            <li><span class="check">✓</span> Командные функции</li>
           </ul>
-          <button class="btn btn-secondary">Join Pro Waitlist</button>
+          <button class="btn btn-secondary">Записаться в Pro</button>
         </div>
       </div>
     </section>
@@ -455,22 +455,22 @@
     <!-- SECTION 8: FINAL CTA -->
     <section id="final-cta" class="final-cta">
       <div class="cta-content">
-        <h2>Your skin's story<br>begins here</h2>
-        <p class="cta-subtitle">Join thousands who are discovering a new way to understand and care for their skin.</p>
+        <h2>История вашей кожи<br>начинается здесь</h2>
+        <p class="cta-subtitle">Присоединяйтесь к тысячам людей, которые открывают новый способ понимать и заботиться о своей коже.</p>
         <form class="cta-form" @submit.prevent="submitWaitlist">
           <input
             type="email"
             v-model="emailCta"
-            placeholder="Enter your email"
+            placeholder="Введите ваш email"
             required
             class="cta-input"
           />
-          <button type="submit" class="btn btn-cta">Get Early Access</button>
+          <button type="submit" class="btn btn-cta">Получить доступ</button>
         </form>
         <div class="cta-trust">
-          <span class="trust-item">✓ No credit card required</span>
-          <span class="trust-item">✓ Cancel anytime</span>
-          <span class="trust-item">✓ Privacy first</span>
+          <span class="trust-item">✓ Без привязки карты</span>
+          <span class="trust-item">✓ Отмена в любой момент</span>
+          <span class="trust-item">✓ Конфиденциальность</span>
         </div>
       </div>
     </section>
@@ -480,35 +480,35 @@
       <div class="footer-main">
         <div class="footer-brand">
           <div class="footer-logo">SKIN.STORIES</div>
-          <p>AI-powered skin analysis that helps you understand and care for your unique skin.</p>
+          <p>AI-анализ кожи, который помогает понимать и заботиться о вашей уникальной коже.</p>
         </div>
         <div class="footer-nav">
           <div class="footer-col">
-            <h5>Product</h5>
-            <a href="#how-it-works">How It Works</a>
-            <a href="#demo">Demo</a>
-            <a href="#technology">Technology</a>
-            <a href="#pricing">Pricing</a>
+            <h5>Продукт</h5>
+            <a href="#how-it-works">Как это работает</a>
+            <a href="#demo">Демо</a>
+            <a href="#technology">Технологии</a>
+            <a href="#pricing">Тарифы</a>
           </div>
           <div class="footer-col">
-            <h5>Company</h5>
-            <a href="#">About</a>
-            <a href="#">Blog</a>
-            <a href="#">Careers</a>
-            <a href="#">Press</a>
+            <h5>Компания</h5>
+            <a href="#">О нас</a>
+            <a href="#">Блог</a>
+            <a href="#">Карьера</a>
+            <a href="#">Пресса</a>
           </div>
           <div class="footer-col">
-            <h5>Support</h5>
-            <a href="mailto:hello@skin.stories">Contact</a>
+            <h5>Поддержка</h5>
+            <a href="mailto:hello@skin.stories">Контакты</a>
             <a href="#">FAQ</a>
-            <a href="#">Privacy</a>
-            <a href="#">Terms</a>
+            <a href="#">Конфиденциальность</a>
+            <a href="#">Условия</a>
           </div>
         </div>
       </div>
       <div class="footer-divider"></div>
       <div class="footer-bottom">
-        <span>© 2024 Skin.Stories. All rights reserved.</span>
+        <span>© 2024 Skin.Stories. Все права защищены.</span>
         <div class="footer-social">
           <a href="#" target="_blank" aria-label="Twitter">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
@@ -535,7 +535,7 @@ const mobileMenuOpen = ref(false);
 const submitWaitlist = () => {
   // Placeholder for waitlist submission
   console.log('Email submitted:', email.value || emailCta.value);
-  alert('Thanks for joining our waitlist! We\'ll be in touch soon.');
+  alert('Спасибо за регистрацию! Мы скоро свяжемся с вами.');
   email.value = '';
   emailCta.value = '';
 };
