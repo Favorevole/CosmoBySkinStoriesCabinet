@@ -147,19 +147,62 @@ ${recommendation.text}
   }
 }
 
-// Notify admins about doctor response
+// Notify admins about doctor response with interactive buttons
 export async function notifyAdminsDoctorResponse(application) {
-  const message = `
+  if (!doctorBot) {
+    console.log('[NOTIFICATIONS] Doctor bot not initialized, skipping notification');
+    return 0;
+  }
+
+  try {
+    const { Markup } = await import('telegraf');
+    const { formatSkinType } = await import('../clientBot/states/index.js');
+
+    const message = `
 *Врач дал ответ по заявке #${application.id}*
 
-Врач: ${application.doctor.fullName}
-Клиент: ${application.client.fullName || application.client.telegramUsername || 'Не указано'}
+*Врач:* ${application.doctor.fullName}
+*Клиент:* ${application.client.fullName || application.client.telegramUsername || 'Не указано'}
 
-Откройте админ-панель для проверки и одобрения.
+*Анкета:*
+• Возраст: ${application.age}
+• Тип кожи: ${formatSkinType(application.skinType)}
+• Проблемы: ${application.mainProblems}
+• Фото: ${application.photos?.length || 0}
 `;
 
-  // Primary: send via doctor bot
-  await sendToAdminsViaDoctorBot(message);
+    const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback('📋 Показать заявку', `admin_view_${application.id}`)],
+      [
+        Markup.button.callback('🖼 Фото', `admin_photos_${application.id}`),
+        Markup.button.callback('📝 Ответ врача', `admin_rec_${application.id}`)
+      ],
+      [Markup.button.callback('✅ Утвердить и отправить', `admin_approve_${application.id}`)]
+    ]);
+
+    const admins = await getAllAdmins();
+    const adminIds = new Set([
+      ...admins.map(a => a.telegramId),
+      ...config.adminTelegramIds
+    ]);
+
+    let sent = 0;
+    for (const adminId of adminIds) {
+      try {
+        await doctorBot.telegram.sendMessage(Number(adminId), message, {
+          parse_mode: 'Markdown',
+          ...keyboard
+        });
+        sent++;
+      } catch (error) {
+        console.log(`[NOTIFICATIONS] Could not send to admin ${adminId}:`, error.message);
+      }
+    }
+    return sent;
+  } catch (error) {
+    console.error('[NOTIFICATIONS] Error sending doctor response notification:', error);
+    return 0;
+  }
 }
 
 // Notify admins about declined application

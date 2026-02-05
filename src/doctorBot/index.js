@@ -23,6 +23,15 @@ import {
   handleConfirmDecline,
   handleCancelDecline
 } from './handlers/recommendation.js';
+import {
+  handleAdminViewApp,
+  handleAdminShowPhotos,
+  handleAdminPhotoNav,
+  handleAdminShowRec,
+  handleAdminApprove,
+  handleAdminConfirmApprove,
+  handleAdminCancelApprove
+} from './handlers/admin.js';
 import { DOCTOR_STATES } from './states/index.js';
 
 let bot = null;
@@ -80,6 +89,16 @@ export function createDoctorBot() {
   bot.action(/^decline_(\d+)$/, handleStartDecline);
   bot.action(/^confirm_decline_(\d+)$/, handleConfirmDecline);
   bot.action('cancel_decline', handleCancelDecline);
+
+  // Callback queries - admin review (from notification buttons)
+  bot.action(/^admin_view_(\d+)$/, handleAdminViewApp);
+  bot.action(/^admin_photos_(\d+)$/, handleAdminShowPhotos);
+  bot.action(/^admin_photo_next_/, (ctx) => handleAdminPhotoNav(ctx, 'next'));
+  bot.action(/^admin_photo_prev_/, (ctx) => handleAdminPhotoNav(ctx, 'prev'));
+  bot.action(/^admin_rec_(\d+)$/, handleAdminShowRec);
+  bot.action(/^admin_approve_(\d+)$/, handleAdminApprove);
+  bot.action(/^admin_confirm_approve_(\d+)$/, handleAdminConfirmApprove);
+  bot.action(/^admin_cancel_approve_(\d+)$/, handleAdminCancelApprove);
 
   // Text handler
   bot.on('text', async (ctx) => {
