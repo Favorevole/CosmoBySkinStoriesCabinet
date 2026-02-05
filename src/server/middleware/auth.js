@@ -17,7 +17,8 @@ export function generateToken(admin) {
 
 export function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+  const token = authHeader && authHeader.split(' ')[1] // Bearer TOKEN
+    || req.query.token; // Support token in query param for img tags
 
   if (!token) {
     return res.status(401).json({ error: 'Access token required' });

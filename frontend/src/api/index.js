@@ -57,8 +57,10 @@ export const getApplicationHistory = (id) =>
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
-export const getPhotoUrl = (applicationId, photoId) =>
-  `${API_BASE}/applications/${applicationId}/photos/${photoId}`;
+export const getPhotoUrl = (applicationId, photoId) => {
+  const token = localStorage.getItem('token');
+  return `${API_BASE}/applications/${applicationId}/photos/${photoId}${token ? `?token=${token}` : ''}`;
+};
 
 // Doctors
 export const getDoctors = () =>
