@@ -674,6 +674,7 @@ const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 15%;
 }
 
 .expert-card h3 {
