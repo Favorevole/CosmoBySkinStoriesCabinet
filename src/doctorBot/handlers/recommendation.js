@@ -17,6 +17,11 @@ export async function handleStartRecommendation(ctx) {
 
   try {
     const doctor = await getDoctorByTelegramId(telegramId);
+    if (!doctor) {
+      await ctx.answerCbQuery('Вы не зарегистрированы как врач');
+      return;
+    }
+
     const application = await getApplicationById(applicationId);
 
     if (!application || application.doctorId !== doctor.id) {
@@ -107,6 +112,11 @@ export async function handleConfirmRecommendation(ctx) {
 
   try {
     const doctor = await getDoctorByTelegramId(telegramId);
+    if (!doctor) {
+      await ctx.answerCbQuery('Вы не зарегистрированы как врач');
+      return;
+    }
+
     const application = await getApplicationById(applicationId);
 
     if (!application || application.doctorId !== doctor.id) {
@@ -189,6 +199,11 @@ export async function handleStartDecline(ctx) {
 
   try {
     const doctor = await getDoctorByTelegramId(telegramId);
+    if (!doctor) {
+      await ctx.answerCbQuery('Вы не зарегистрированы как врач');
+      return;
+    }
+
     const application = await getApplicationById(applicationId);
 
     if (!application || application.doctorId !== doctor.id) {
@@ -260,6 +275,10 @@ export async function handleConfirmDecline(ctx) {
 
   try {
     const doctor = await getDoctorByTelegramId(telegramId);
+    if (!doctor) {
+      await ctx.answerCbQuery('Вы не зарегистрированы как врач');
+      return;
+    }
 
     await declineApplication(applicationId, doctor.id, session.declineReason);
 

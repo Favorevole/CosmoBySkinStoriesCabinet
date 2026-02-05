@@ -27,7 +27,7 @@ export async function handleStart(ctx) {
     // If not found by ID, check if pre-registered by username
     if (!doctor && username) {
       const preRegistered = await getDoctorByUsername(username);
-      if (preRegistered && preRegistered.telegramId.toString() === '0') {
+      if (preRegistered && BigInt(preRegistered.telegramId) < 0n) {
         // Link telegram ID to pre-registered doctor
         doctor = await linkDoctorTelegramId(preRegistered.id, telegramId);
 
