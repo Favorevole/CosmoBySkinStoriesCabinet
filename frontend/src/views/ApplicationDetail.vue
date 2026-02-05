@@ -208,14 +208,49 @@
     </div>
 
     <!-- Photo Modal -->
-    <div class="modal" v-if="selectedPhoto" @click="selectedPhoto = null">
+    <div
+      class="modal"
+      v-if="selectedPhoto"
+      @click="selectedPhoto = null"
+      @touchstart="onTouchStart"
+      @touchend="onTouchEnd"
+    >
       <button class="modal-close" @click.stop="selectedPhoto = null">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"/>
           <line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>
-      <img :src="getPhotoUrl(application.id, selectedPhoto.id)" alt="">
+
+      <button
+        v-if="currentPhotoIndex > 0"
+        class="modal-nav modal-prev"
+        @click.stop="prevPhoto"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+
+      <img
+        :src="getPhotoUrl(application.id, selectedPhoto.id)"
+        alt=""
+        @click.stop
+      >
+
+      <button
+        v-if="currentPhotoIndex < application.photos.length - 1"
+        class="modal-nav modal-next"
+        @click.stop="nextPhoto"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+
+      <div class="modal-counter" @click.stop>
+        {{ currentPhotoIndex + 1 }} / {{ application.photos.length }}
+      </div>
     </div>
   </div>
 
@@ -226,7 +261,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import {
   getApplication,
@@ -247,6 +282,76 @@ const editedRecommendation = ref('');
 const assigning = ref(false);
 const saving = ref(false);
 const approving = ref(false);
+
+// Photo navigation
+const currentPhotoIndex = computed(() => {
+  if (!selectedPhoto.value || !application.value?.photos) return -1;
+  return application.value.photos.findIndex(p => p.id === selectedPhoto.value.id);
+});
+
+let touchStartX = 0;
+let touchStartY = 0;
+
+function nextPhoto() {
+  if (!application.value?.photos) return;
+  const idx = currentPhotoIndex.value;
+  if (idx < application.value.photos.length - 1) {
+    selectedPhoto.value = application.value.photos[idx + 1];
+  }
+}
+
+function prevPhoto() {
+  if (!application.value?.photos) return;
+  const idx = currentPhotoIndex.value;
+  if (idx > 0) {
+    selectedPhoto.value = application.value.photos[idx - 1];
+  }
+}
+
+function handleKeydown(e) {
+  if (!selectedPhoto.value) return;
+  if (e.key === 'ArrowRight') {
+    nextPhoto();
+  } else if (e.key === 'ArrowLeft') {
+    prevPhoto();
+  } else if (e.key === 'Escape') {
+    selectedPhoto.value = null;
+  }
+}
+
+function onTouchStart(e) {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}
+
+function onTouchEnd(e) {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  // Only trigger swipe if horizontal movement is dominant and > 50px
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) {
+      nextPhoto();
+    } else {
+      prevPhoto();
+    }
+  }
+}
+
+// Keyboard listener
+watch(selectedPhoto, (val) => {
+  if (val) {
+    document.addEventListener('keydown', handleKeydown);
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.removeEventListener('keydown', handleKeydown);
+    document.body.style.overflow = '';
+  }
+});
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeydown);
+  document.body.style.overflow = '';
+});
 
 const statusLabels = {
   NEW: 'Новая',
@@ -826,6 +931,62 @@ function formatDate(date) {
   max-height: 90%;
   object-fit: contain;
   border-radius: 8px;
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.modal-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.modal-nav svg {
+  width: 24px;
+  height: 24px;
+  color: #FFFFFF;
+}
+
+.modal-nav:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(201, 169, 98, 0.4);
+}
+
+.modal-prev {
+  left: 24px;
+}
+
+.modal-next {
+  right: 24px;
+}
+
+.modal-counter {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 20px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.05em;
+  cursor: default;
 }
 
 .loading {
@@ -1197,6 +1358,38 @@ function formatDate(date) {
     max-width: 100%;
     max-height: calc(100vh - 100px);
     border-radius: 0;
+  }
+
+  .modal-nav {
+    width: 44px;
+    height: 44px;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .modal-nav:active {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .modal-nav svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .modal-prev {
+    left: 12px;
+  }
+
+  .modal-next {
+    right: 12px;
+  }
+
+  .modal-counter {
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    padding: 6px 16px;
+    font-size: 13px;
   }
 }
 </style>
