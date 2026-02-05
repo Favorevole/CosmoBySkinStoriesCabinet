@@ -152,17 +152,7 @@
           <p>В будущем вы получите доступ к умному AI-помощнику, который знает вашу кожу — потому что учился на реальных данных, а не на отфотошопленных картинках.</p>
         </div>
         <div class="ai-visual">
-          <div class="neural-animation">
-            <div class="node n1"></div>
-            <div class="node n2"></div>
-            <div class="node n3"></div>
-            <div class="node n4"></div>
-            <div class="node n5"></div>
-            <div class="connection c1"></div>
-            <div class="connection c2"></div>
-            <div class="connection c3"></div>
-            <div class="connection c4"></div>
-          </div>
+          <img src="/ai-visual.png" alt="Skin care" />
         </div>
       </div>
     </section>
@@ -733,57 +723,16 @@ const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
 
 .ai-visual {
   width: 400px;
-  height: 300px;
-  background: var(--color-white);
+  height: 400px;
   border-radius: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
-.neural-animation {
-  position: relative;
-  width: 200px;
-  height: 200px;
-}
-
-.node {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background: var(--color-burgundy);
-  border-radius: 50%;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-.n1 { top: 20%; left: 10%; animation-delay: 0s; }
-.n2 { top: 10%; left: 50%; animation-delay: 0.3s; }
-.n3 { top: 30%; left: 80%; animation-delay: 0.6s; }
-.n4 { top: 70%; left: 30%; animation-delay: 0.9s; }
-.n5 { top: 60%; left: 70%; animation-delay: 1.2s; }
-
-.connection {
-  position: absolute;
-  height: 2px;
-  background: linear-gradient(90deg, var(--color-burgundy) 0%, transparent 100%);
-  animation: connect 2s ease-in-out infinite;
-}
-
-.c1 { top: 25%; left: 15%; width: 80px; transform: rotate(15deg); }
-.c2 { top: 20%; left: 55%; width: 60px; transform: rotate(45deg); }
-.c3 { top: 55%; left: 35%; width: 70px; transform: rotate(-20deg); }
-.c4 { top: 45%; left: 60%; width: 50px; transform: rotate(30deg); }
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 0.7; }
-  50% { transform: scale(1.3); opacity: 1; }
-}
-
-@keyframes connect {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.8; }
+.ai-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* Telegram Flow */
