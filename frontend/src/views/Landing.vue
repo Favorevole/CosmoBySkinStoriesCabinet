@@ -1161,7 +1161,11 @@ const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
 
   .ai-visual {
     width: 100%;
-    height: 200px;
+    height: 400px;
+  }
+
+  .ai-visual img {
+    transform: scale(1.15);
   }
 
   .phone-mockup {
