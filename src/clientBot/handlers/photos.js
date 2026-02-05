@@ -51,18 +51,29 @@ export async function handlePhotoUpload(ctx) {
 
     const photoCount = session.photos.length;
 
-    if (photoCount < MAX_PHOTOS) {
-      await ctx.reply(
-        `Фото ${photoCount} получено.\n\n` +
-        `Вы можете добавить ещё ${MAX_PHOTOS - photoCount} фото или нажать "Готово".`,
-        photoUploadKeyboard(photoCount)
-      );
-    } else {
-      await ctx.reply(
-        `Все ${MAX_PHOTOS} фотографий получены!`,
-        photoUploadKeyboard(photoCount)
-      );
+    const text = photoCount < MAX_PHOTOS
+      ? `Фото ${photoCount} получено.\n\nВы можете добавить ещё ${MAX_PHOTOS - photoCount} фото или нажать "Готово".`
+      : `Все ${MAX_PHOTOS} фотографий получены!`;
+
+    // Edit previous message instead of sending a new one
+    if (session.lastPhotoMsgId) {
+      try {
+        await ctx.telegram.editMessageText(
+          ctx.chat.id,
+          session.lastPhotoMsgId,
+          null,
+          text,
+          photoUploadKeyboard(photoCount)
+        );
+        return;
+      } catch (e) {
+        // Message might be too old or deleted — fall through to send new
+      }
     }
+
+    const sent = await ctx.reply(text, photoUploadKeyboard(photoCount));
+    session.lastPhotoMsgId = sent.message_id;
+    clientSessions.set(telegramId, session);
 
   } catch (error) {
     console.error('[CLIENT_BOT] Error downloading photo:', error);
@@ -143,13 +154,31 @@ async function handleAdditionalPhotoUpload(ctx, pendingRequest) {
 
     const photoCount = pendingRequest.photos.length;
 
-    await ctx.reply(
-      `Дополнительное фото ${photoCount} получено.\n\n` +
-      `Отправьте ещё фото или нажмите "Фото отправлены" когда закончите.`,
-      Markup.inlineKeyboard([
-        [Markup.button.callback(`Фото отправлены (${photoCount}) ✓`, `additional_photos_done_${pendingRequest.applicationId}`)]
-      ])
-    );
+    const text = `Дополнительное фото ${photoCount} получено.\n\n` +
+      `Отправьте ещё фото или нажмите "Фото отправлены" когда закончите.`;
+    const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback(`Фото отправлены (${photoCount}) ✓`, `additional_photos_done_${pendingRequest.applicationId}`)]
+    ]);
+
+    // Edit previous message instead of sending a new one
+    if (pendingRequest.lastMsgId) {
+      try {
+        await ctx.telegram.editMessageText(
+          ctx.chat.id,
+          pendingRequest.lastMsgId,
+          null,
+          text,
+          keyboard
+        );
+        return;
+      } catch (e) {
+        // Fall through to send new
+      }
+    }
+
+    const sent = await ctx.reply(text, keyboard);
+    pendingRequest.lastMsgId = sent.message_id;
+    pendingPhotoRequests.set(telegramId, pendingRequest);
 
   } catch (error) {
     console.error('[CLIENT_BOT] Error downloading additional photo:', error);
