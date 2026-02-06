@@ -6,7 +6,7 @@ import {
   assignDoctor,
   updateApplicationStatus
 } from '../../db/applications.js';
-import { getApplicationPhotos, getPhotoById } from '../../db/photos.js';
+import { getApplicationPhotos, getPhotoById, getPhotoData } from '../../db/photos.js';
 import {
   getRecommendationByApplicationId,
   updateRecommendation,
@@ -154,9 +154,15 @@ router.get('/:id/photos/:photoId', async (req, res) => {
       return res.status(404).json({ error: 'Photo not found' });
     }
 
+    const data = await getPhotoData(photo);
+    if (!data) {
+      return res.status(404).json({ error: 'Photo data not available' });
+    }
+
     res.set('Content-Type', photo.mimeType);
     res.set('Content-Disposition', `inline; filename="${photo.fileName}"`);
-    res.send(photo.data);
+    res.set('Cache-Control', 'private, max-age=86400');
+    res.send(data);
 
   } catch (error) {
     console.error('[APPLICATIONS] Error getting photo:', error);

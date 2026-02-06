@@ -1,6 +1,7 @@
 import { Markup } from 'telegraf';
 import { isAdmin } from '../../db/admins.js';
 import { getApplicationById, updateApplicationStatus } from '../../db/applications.js';
+import { getPhotoData } from '../../db/photos.js';
 import { approveRecommendation } from '../../db/recommendations.js';
 import { notifyClientRecommendation, notifyDoctorStatusApproved } from '../../services/notifications.js';
 import { formatSkinType, formatPriceRange } from '../../clientBot/states/index.js';
@@ -89,27 +90,32 @@ export async function handleAdminShowPhotos(ctx) {
     // Send first photo with navigation
     const photo = application.photos[0];
 
-    if (photo.data && photo.data.length > 0) {
-      const photoBuffer = Buffer.isBuffer(photo.data) ? photo.data : Buffer.from(photo.data);
+    try {
+      const photoBuffer = await getPhotoData(photo);
 
-      const navButtons = [];
-      const navRow = [];
-      navRow.push(Markup.button.callback(`1/${application.photos.length}`, 'noop'));
-      if (application.photos.length > 1) {
-        navRow.push(Markup.button.callback('След. ▶️', `admin_photo_next_${applicationId}_0`));
-      }
-      navButtons.push(navRow);
-      navButtons.push([Markup.button.callback('✅ Утвердить и отправить', `admin_approve_${applicationId}`)]);
-
-      await ctx.replyWithPhoto(
-        { source: photoBuffer },
-        {
-          caption: `Фото 1/${application.photos.length}\nЗаявка #${applicationId}`,
-          ...Markup.inlineKeyboard(navButtons)
+      if (photoBuffer && photoBuffer.length > 0) {
+        const navButtons = [];
+        const navRow = [];
+        navRow.push(Markup.button.callback(`1/${application.photos.length}`, 'noop'));
+        if (application.photos.length > 1) {
+          navRow.push(Markup.button.callback('След. ▶️', `admin_photo_next_${applicationId}_0`));
         }
-      );
-    } else {
-      await ctx.reply('Не удалось загрузить фото — данные отсутствуют в базе');
+        navButtons.push(navRow);
+        navButtons.push([Markup.button.callback('✅ Утвердить и отправить', `admin_approve_${applicationId}`)]);
+
+        await ctx.replyWithPhoto(
+          { source: photoBuffer },
+          {
+            caption: `Фото 1/${application.photos.length}\nЗаявка #${applicationId}`,
+            ...Markup.inlineKeyboard(navButtons)
+          }
+        );
+      } else {
+        await ctx.reply('Не удалось загрузить фото — данные отсутствуют');
+      }
+    } catch (photoError) {
+      console.error('[ADMIN] Error loading photo data:', photoError.message);
+      await ctx.reply('Не удалось загрузить фото');
     }
 
   } catch (error) {
@@ -150,35 +156,40 @@ export async function handleAdminPhotoNav(ctx, direction) {
     const photo = application.photos[newIndex];
     await ctx.answerCbQuery();
 
-    if (photo.data && photo.data.length > 0) {
-      const photoBuffer = Buffer.isBuffer(photo.data) ? photo.data : Buffer.from(photo.data);
+    try {
+      const photoBuffer = await getPhotoData(photo);
 
-      const navButtons = [];
-      const navRow = [];
-      if (newIndex > 0) {
-        navRow.push(Markup.button.callback('◀️ Пред.', `admin_photo_prev_${applicationId}_${newIndex}`));
-      }
-      navRow.push(Markup.button.callback(`${newIndex + 1}/${application.photos.length}`, 'noop'));
-      if (newIndex < application.photos.length - 1) {
-        navRow.push(Markup.button.callback('След. ▶️', `admin_photo_next_${applicationId}_${newIndex}`));
-      }
-      navButtons.push(navRow);
-      navButtons.push([Markup.button.callback('✅ Утвердить и отправить', `admin_approve_${applicationId}`)]);
-
-      try {
-        await ctx.deleteMessage();
-      } catch (e) {
-        console.log('[ADMIN] Could not delete message:', e.message);
-      }
-
-      await ctx.replyWithPhoto(
-        { source: photoBuffer },
-        {
-          caption: `Фото ${newIndex + 1}/${application.photos.length}\nЗаявка #${applicationId}`,
-          ...Markup.inlineKeyboard(navButtons)
+      if (photoBuffer && photoBuffer.length > 0) {
+        const navButtons = [];
+        const navRow = [];
+        if (newIndex > 0) {
+          navRow.push(Markup.button.callback('◀️ Пред.', `admin_photo_prev_${applicationId}_${newIndex}`));
         }
-      );
-    } else {
+        navRow.push(Markup.button.callback(`${newIndex + 1}/${application.photos.length}`, 'noop'));
+        if (newIndex < application.photos.length - 1) {
+          navRow.push(Markup.button.callback('След. ▶️', `admin_photo_next_${applicationId}_${newIndex}`));
+        }
+        navButtons.push(navRow);
+        navButtons.push([Markup.button.callback('✅ Утвердить и отправить', `admin_approve_${applicationId}`)]);
+
+        try {
+          await ctx.deleteMessage();
+        } catch (e) {
+          console.log('[ADMIN] Could not delete message:', e.message);
+        }
+
+        await ctx.replyWithPhoto(
+          { source: photoBuffer },
+          {
+            caption: `Фото ${newIndex + 1}/${application.photos.length}\nЗаявка #${applicationId}`,
+            ...Markup.inlineKeyboard(navButtons)
+          }
+        );
+      } else {
+        await ctx.reply('Не удалось загрузить фото');
+      }
+    } catch (photoError) {
+      console.error('[ADMIN] Error loading photo data:', photoError.message);
       await ctx.reply('Не удалось загрузить фото');
     }
 

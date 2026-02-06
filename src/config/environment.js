@@ -51,6 +51,14 @@ const config = {
     expiresIn: process.env.JWT_EXPIRES_IN || '7d'
   },
 
+  s3: {
+    endpoint: process.env.S3_ENDPOINT || 'https://s3.ru-1.storage.selcloud.ru',
+    region: process.env.S3_REGION || 'ru-1',
+    bucket: process.env.S3_BUCKET || 'cosmobynika-photos',
+    accessKeyId: process.env.S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY
+  },
+
   adminTelegramIds: (process.env.ADMIN_TELEGRAM_IDS || '')
     .split(',')
     .map(id => id.trim())
@@ -60,6 +68,9 @@ const config = {
 
 // Validation
 const requiredVars = ['DATABASE_URL', 'CLIENT_BOT_TOKEN', 'DOCTOR_BOT_TOKEN'];
+if (config.isProduction) {
+  requiredVars.push('S3_ACCESS_KEY_ID', 'S3_SECRET_ACCESS_KEY', 'S3_BUCKET');
+}
 const missing = requiredVars.filter(v => !process.env[v]);
 
 if (missing.length > 0) {
@@ -82,6 +93,9 @@ if (config.database.url) {
   console.log(`🗄️  Database: ${config.database.url.substring(0, 30)}...`);
 }
 console.log(`🌐 Server Port: ${config.server.port}`);
+if (config.s3.accessKeyId) {
+  console.log(`📦 S3: ${config.s3.bucket} @ ${config.s3.endpoint}`);
+}
 if (WEBHOOK_URL) {
   console.log(`🔗 Webhook URL: ${WEBHOOK_URL}`);
 } else if (config.isProduction) {

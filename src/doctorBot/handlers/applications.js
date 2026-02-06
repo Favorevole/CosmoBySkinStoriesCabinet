@@ -10,7 +10,7 @@ import {
   getApplicationById,
   getDoctorAssignedApplications
 } from '../../db/applications.js';
-import { getApplicationPhotos } from '../../db/photos.js';
+import { getApplicationPhotos, getPhotoData } from '../../db/photos.js';
 import { formatSkinType, formatPriceRange } from '../../clientBot/states/index.js';
 import config from '../../config/environment.js';
 
@@ -165,12 +165,10 @@ export async function handleShowPhotos(ctx) {
     console.log(`[DOCTOR_BOT] Sending photo id: ${photo.id}, telegramFileId: ${photo.telegramFileId}, hasData: ${!!photo.data}, dataType: ${photo.data ? photo.data.constructor.name : 'none'}, dataLength: ${photo.data ? photo.data.length : 0}`);
 
     try {
-      // Always use binary data from DB - telegramFileId from client bot won't work in doctor bot
-      if (photo.data && photo.data.length > 0) {
-        // Ensure we have a proper Buffer
-        const photoBuffer = Buffer.isBuffer(photo.data) ? photo.data : Buffer.from(photo.data);
-        console.log(`[DOCTOR_BOT] Sending photo buffer, size: ${photoBuffer.length} bytes`);
+      const photoBuffer = await getPhotoData(photo);
+      console.log(`[DOCTOR_BOT] Photo data resolved, size: ${photoBuffer?.length || 0} bytes`);
 
+      if (photoBuffer && photoBuffer.length > 0) {
         await ctx.replyWithPhoto(
           { source: photoBuffer },
           {
@@ -180,12 +178,11 @@ export async function handleShowPhotos(ctx) {
         );
         console.log('[DOCTOR_BOT] Photo sent successfully');
       } else {
-        console.error('[DOCTOR_BOT] Photo has no data or empty data');
-        await ctx.reply('Не удалось загрузить фото - данные отсутствуют в базе');
+        console.error('[DOCTOR_BOT] Photo has no data');
+        await ctx.reply('Не удалось загрузить фото - данные отсутствуют');
       }
     } catch (photoError) {
       console.error('[DOCTOR_BOT] Error sending photo:', photoError.message);
-      console.error('[DOCTOR_BOT] Error stack:', photoError.stack);
       await ctx.reply(`Не удалось отправить фото: ${photoError.message}`);
     }
 
@@ -224,11 +221,9 @@ export async function handlePhotoNavigation(ctx, direction) {
     await ctx.answerCbQuery();
 
     try {
-      // Always use binary data - telegramFileId from client bot won't work in doctor bot
-      if (photo.data && photo.data.length > 0) {
-        const photoBuffer = Buffer.isBuffer(photo.data) ? photo.data : Buffer.from(photo.data);
+      const photoBuffer = await getPhotoData(photo);
 
-        // Can't edit message media with buffer, need to delete and send new
+      if (photoBuffer && photoBuffer.length > 0) {
         try {
           await ctx.deleteMessage();
         } catch (deleteErr) {

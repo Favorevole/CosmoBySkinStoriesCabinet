@@ -37,6 +37,17 @@ export async function getApplicationById(id) {
       client: true,
       doctor: true,
       photos: {
+        select: {
+          id: true,
+          applicationId: true,
+          fileName: true,
+          mimeType: true,
+          fileSize: true,
+          s3Key: true,
+          sortOrder: true,
+          telegramFileId: true,
+          createdAt: true
+        },
         orderBy: { sortOrder: 'asc' }
       },
       recommendation: {
@@ -121,7 +132,19 @@ export async function assignDoctor(applicationId, doctorId, adminId) {
     include: {
       client: true,
       doctor: true,
-      photos: true
+      photos: {
+        select: {
+          id: true,
+          applicationId: true,
+          fileName: true,
+          mimeType: true,
+          fileSize: true,
+          s3Key: true,
+          sortOrder: true,
+          telegramFileId: true,
+          createdAt: true
+        }
+      }
     }
   });
 

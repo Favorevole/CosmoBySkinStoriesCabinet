@@ -114,7 +114,7 @@
       <div class="experts-grid">
         <div class="expert-card">
           <div class="expert-photo">
-            <img src="/nika.png" alt="Ника Шамхалова" />
+            <img src="/nika.jpg" alt="Ника Шамхалова" />
           </div>
           <h3>Ника Шамхалова</h3>
           <span class="expert-role">Врач дерматолог-косметолог, к.м.н.</span>
@@ -122,19 +122,19 @@
         </div>
         <div class="expert-card">
           <div class="expert-photo">
-            <img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&q=80" alt="Мария Иванова" />
+            <img src="/rajab.jpg" alt="Раджаб Давудов" />
           </div>
-          <h3>Мария Иванова</h3>
-          <span class="expert-role">Дерматолог, к.м.н.</span>
-          <p>Эксперт по заболеваниям кожи и восстановлению кожного барьера</p>
+          <h3>Раджаб Давудов</h3>
+          <span class="expert-role">Врач косметолог, эстетист</span>
+          <p>Эксперт по подбору ухода. Редактор телеграм канала Skin Stories</p>
         </div>
         <div class="expert-card">
           <div class="expert-photo">
-            <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400&q=80" alt="Елена Петрова" />
+            <img src="/alex.jpg" alt="Александр Щелкушкин" style="transform: scale(1.4); object-position: center 30%;" />
           </div>
-          <h3>Елена Петрова</h3>
-          <span class="expert-role">Косметолог-эстетист</span>
-          <p>Специалист по пигментации и текстуре кожи</p>
+          <h3>Александр Щелкушкин</h3>
+          <span class="expert-role">Сооснователь проекта</span>
+          <p>Архитектор данных, превративший опыт построения аналитических платформ в технологическую основу Skin Stories</p>
         </div>
       </div>
     </section>

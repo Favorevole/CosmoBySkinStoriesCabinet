@@ -145,7 +145,8 @@ model Photo {
   fileName       String      @map("file_name")
   mimeType       String      @map("mime_type")
   fileSize       Int         @map("file_size")
-  data           Bytes
+  data           Bytes?
+  s3Key          String?     @map("s3_key")
   sortOrder      Int         @default(0) @map("sort_order")
   telegramFileId String?     @map("telegram_file_id")
   createdAt      DateTime    @default(now()) @map("created_at")
