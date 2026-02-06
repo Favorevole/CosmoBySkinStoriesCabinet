@@ -114,7 +114,7 @@
       <div class="experts-grid">
         <div class="expert-card">
           <div class="expert-photo">
-            <img src="/nika.jpg" alt="Ника Шамхалова" />
+            <img src="/nika.png" alt="Ника Шамхалова" />
           </div>
           <h3>Ника Шамхалова</h3>
           <span class="expert-role">Врач дерматолог-косметолог, к.м.н.</span>
@@ -130,7 +130,7 @@
         </div>
         <div class="expert-card">
           <div class="expert-photo">
-            <img src="/alex.jpg" alt="Александр Щелкушкин" style="transform: scale(1.4); object-position: center 30%;" />
+            <img src="/alex.jpg" alt="Александр Щелкушкин" />
           </div>
           <h3>Александр Щелкушкин</h3>
           <span class="expert-role">Сооснователь проекта</span>
