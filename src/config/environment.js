@@ -16,7 +16,7 @@ const envPath = path.resolve(__dirname, '../../', envFile);
 
 // Load .env first, then environment-specific file
 dotenv.config();
-dotenv.config({ path: envPath, override: true });
+dotenv.config({ path: envPath });
 
 // Railway автоматически создает RAILWAY_PUBLIC_DOMAIN, используем его для webhook
 const WEBHOOK_URL = process.env.WEBHOOK_URL ||
