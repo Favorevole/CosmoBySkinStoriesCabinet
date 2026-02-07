@@ -246,7 +246,10 @@
 </template>
 
 <script setup>
-const telegramBotLink = 'https://t.me/CosmobySkinStoriesClient_bot';
+// Use bot username from environment variable
+// Production: @SkinStories_bot, Development/Test: @CosmobySkinStoriesClient_bot
+const botUsername = import.meta.env.VITE_CLIENT_BOT_USERNAME || 'CosmobySkinStoriesClient_bot';
+const telegramBotLink = `https://t.me/${botUsername}`;
 </script>
 
 <style>
