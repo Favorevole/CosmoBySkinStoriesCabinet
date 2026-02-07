@@ -111,6 +111,9 @@ model Application {
   mainProblems      String            @map("main_problems") @db.Text
   additionalComment String?           @map("additional_comment") @db.Text
 
+  // Display number (fake number shown to client, starts from 100)
+  displayNumber     Int               @unique @map("display_number")
+
   // Status
   status            ApplicationStatus @default(NEW)
   declineReason     String?           @map("decline_reason") @db.Text
