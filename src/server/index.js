@@ -149,13 +149,28 @@ if (config.isProduction) {
   const { fileURLToPath } = await import('url');
   const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-  app.use(express.static(path.join(__dirname, '../../frontend/dist')));
+  // Serve static files with long cache for hashed assets
+  app.use(express.static(path.join(__dirname, '../../frontend/dist'), {
+    maxAge: '1y', // Cache assets for 1 year (they have hashes)
+    setHeaders: (res, filePath) => {
+      // Don't cache HTML files
+      if (filePath.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+      }
+    }
+  }));
 
   app.get('*', (req, res) => {
     // Don't serve frontend for API routes
     if (req.path.startsWith('/api/') || req.path.includes('-webhook')) {
       return res.status(404).json({ error: 'Not found' });
     }
+    // Send index.html with no-cache headers
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
   });
 }

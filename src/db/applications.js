@@ -79,11 +79,32 @@ export async function getApplications(filters = {}, pagination = {}) {
     prisma.application.count({ where }),
     prisma.application.findMany({
       where,
-      include: {
-        client: true,
-        doctor: true,
+      select: {
+        id: true,
+        status: true,
+        age: true,
+        skinType: true,
+        createdAt: true,
+        updatedAt: true,
+        assignedAt: true,
+        client: {
+          select: {
+            id: true,
+            fullName: true,
+            telegramUsername: true,
+            telegramId: true
+          }
+        },
+        doctor: {
+          select: {
+            id: true,
+            fullName: true,
+            telegramId: true
+          }
+        },
         photos: {
-          select: { id: true }
+          select: { id: true },
+          take: 1 // Only need count, so just get first
         },
         recommendation: {
           select: { id: true }

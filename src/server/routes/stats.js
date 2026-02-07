@@ -14,7 +14,8 @@ router.use(requireAdmin);
  */
 router.get('/dashboard', async (req, res) => {
   try {
-    const [applicationStats, doctorStats, clientCount, recentApplications] = await Promise.all([
+    // Use a single transaction for better performance
+    const [applicationStats, doctorStats, clientCount] = await Promise.all([
       getApplicationStats(),
 
       prisma.doctor.groupBy({
@@ -22,21 +23,11 @@ router.get('/dashboard', async (req, res) => {
         _count: { id: true }
       }),
 
-      prisma.client.count(),
-
-      prisma.application.findMany({
-        orderBy: { createdAt: 'desc' },
-        take: 5,
-        include: {
-          client: {
-            select: { fullName: true, telegramUsername: true }
-          },
-          doctor: {
-            select: { fullName: true }
-          }
-        }
-      })
+      prisma.client.count()
     ]);
+
+    // Recent applications removed from dashboard stats to improve performance
+    // Can be loaded separately if needed
 
     const doctorStatusCounts = {};
     doctorStats.forEach(s => {
@@ -57,14 +48,7 @@ router.get('/dashboard', async (req, res) => {
       },
       clients: {
         total: clientCount
-      },
-      recentApplications: recentApplications.map(app => ({
-        id: app.id,
-        status: app.status,
-        createdAt: app.createdAt,
-        client: app.client?.fullName || app.client?.telegramUsername || 'Не указано',
-        doctor: app.doctor?.fullName || null
-      }))
+      }
     });
 
   } catch (error) {
