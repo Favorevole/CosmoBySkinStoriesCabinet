@@ -23,6 +23,7 @@
           <span class="badge">AI Research Phase</span>
           <h1>Мы обучаем AI<br>понимать настоящую кожу</h1>
           <p class="hero-subtitle">Загрузите фото кожи через Telegram.<br>Получите экспертные рекомендации — пока наш AI&nbsp;учится.</p>
+          <p class="hero-price">Стоимость услуги — всего 500 рублей.<br>Сможете оплатить после заполнения анкеты в боте.</p>
           <a :href="telegramBotLink" target="_blank" class="btn btn-primary">
             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="m22 2-11 11"/></svg>
             Загрузить фото в Telegram
@@ -459,6 +460,14 @@ onMounted(async () => {
   line-height: 1.6;
   margin-bottom: 32px;
   max-width: 500px;
+}
+
+.hero-price {
+  font-size: 16px;
+  color: var(--color-burgundy);
+  font-weight: 500;
+  line-height: 1.5;
+  margin-bottom: 24px;
 }
 
 .hero-visual {
