@@ -8,6 +8,7 @@
       <div class="filters">
         <select v-model="filters.status" @change="loadApplications">
           <option value="">Все статусы</option>
+          <option value="PENDING_PAYMENT">Ожидают оплаты</option>
           <option value="NEW">Новые</option>
           <option value="ASSIGNED">Назначены</option>
           <option value="RESPONSE_GIVEN">Ответ дан</option>
@@ -234,6 +235,7 @@ const pagination = ref({ page: 1, totalPages: 1 });
 const filters = ref({ status: '' });
 
 const statusLabels = {
+  PENDING_PAYMENT: 'Ожидает оплаты',
   NEW: 'Новая',
   ASSIGNED: 'Назначена',
   RESPONSE_GIVEN: 'Ответ дан',
@@ -556,6 +558,11 @@ function formatDate(date) {
   text-transform: uppercase;
   letter-spacing: 0.03em;
   white-space: nowrap;
+}
+
+.status-pending_payment {
+  background: rgba(251, 191, 36, 0.15);
+  color: #FBBF24;
 }
 
 .status-new {

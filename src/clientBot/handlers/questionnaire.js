@@ -52,7 +52,7 @@ export async function handleStartQuestionnaire(ctx) {
 
   await ctx.answerCbQuery();
   await ctx.reply(
-    '*Вопрос 1 из 5*\n\nУкажите ваш возраст (число):',
+    'Стоимость консультации: *300 ₽*\nОплата после заполнения анкеты.\n\n*Вопрос 1 из 5*\n\nУкажите ваш возраст (число):',
     { parse_mode: 'Markdown' }
   );
 }
@@ -362,6 +362,8 @@ export async function showConfirmation(ctx) {
 ${additionalComment ? `Комментарий: ${additionalComment}` : 'Комментарий: нет'}
 Фотографий: ${session.photos.length}
 
+Стоимость консультации: *300 ₽*
+
 Всё верно?
 `;
 
@@ -381,16 +383,18 @@ export async function handleConfirmSubmit(ctx) {
     return;
   }
 
-  await ctx.answerCbQuery('Отправляем заявку...');
+  await ctx.answerCbQuery('Создаём заявку...');
 
   try {
+    const { Markup } = await import('telegraf');
+    const { createPayment } = await import('../../services/payment.js');
     const username = ctx.from.username;
     const fullName = [ctx.from.first_name, ctx.from.last_name].filter(Boolean).join(' ');
 
     // Get or create client
     const client = await getOrCreateClientByTelegramId(telegramId, username, fullName);
 
-    // Create application
+    // Create application with PENDING_PAYMENT status
     const application = await createApplication({
       clientId: client.id,
       age: session.applicationData.age,
@@ -398,7 +402,8 @@ export async function handleConfirmSubmit(ctx) {
       priceRange: session.applicationData.priceRange,
       mainProblems: session.applicationData.mainProblems,
       additionalComment: session.applicationData.additionalComment,
-      source: 'TELEGRAM'
+      source: 'TELEGRAM',
+      status: 'PENDING_PAYMENT'
     });
 
     // Save photos
@@ -413,24 +418,24 @@ export async function handleConfirmSubmit(ctx) {
       });
     }
 
+    // Create pending payment
+    await createPayment(application.id);
+
     clearSession(telegramId);
 
-    await ctx.editMessageText(`Заявка #${application.id} отправлена!`);
+    await ctx.editMessageText(`Заявка #${application.id} создана!`);
 
     await ctx.reply(
-      `*Заявка #${application.id} успешно отправлена!*\n\n` +
-      'Специалист изучит вашу анкету и фотографии, после чего вы получите персональные рекомендации.\n\n' +
-      'Обычно это занимает 24-48 часов.\n\n' +
-      'Мы пришлём вам уведомление, когда ответ будет готов.',
+      `*Заявка #${application.id} готова к оплате*\n\n` +
+      'Стоимость консультации: *300 ₽*\n\n' +
+      'После оплаты заявка будет отправлена специалисту.',
       {
         parse_mode: 'Markdown',
-        ...mainMenuKeyboard()
+        ...Markup.inlineKeyboard([
+          [Markup.button.callback('Оплатить 300 ₽', `pay_${application.id}`)]
+        ])
       }
     );
-
-    // Notify admins about new application
-    const { notifyAdminsNewApplication } = await import('../../services/notifications.js');
-    await notifyAdminsNewApplication(application);
 
   } catch (error) {
     console.error('[CLIENT_BOT] Error submitting application:', error);
@@ -461,7 +466,7 @@ export async function handleTextMessage(ctx) {
     clientSessions.set(telegramId, session);
 
     await ctx.reply(
-      '*Вопрос 1 из 5*\n\nУкажите ваш возраст (число):',
+      'Стоимость консультации: *300 ₽*\nОплата после заполнения анкеты.\n\n*Вопрос 1 из 5*\n\nУкажите ваш возраст (число):',
       { parse_mode: 'Markdown' }
     );
     return true;

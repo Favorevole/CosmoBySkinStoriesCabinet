@@ -22,6 +22,12 @@ import {
   handleAddMorePhotos,
   handleAdditionalPhotosDone
 } from './handlers/photos.js';
+import {
+  handleReviewRating,
+  handleSkipReviewText,
+  handleReviewText
+} from './handlers/review.js';
+import { handlePayment } from './handlers/payment.js';
 
 let bot = null;
 
@@ -73,11 +79,22 @@ export function createClientBot() {
   bot.action('add_more_photos', handleAddMorePhotos);
   bot.action(/^additional_photos_done_(\d+)$/, handleAdditionalPhotosDone);
 
+  // Callback queries - payment
+  bot.action(/^pay_(\d+)$/, handlePayment);
+
+  // Callback queries - reviews
+  bot.action(/^review_(\d+)_(\d+)$/, handleReviewRating);
+  bot.action(/^skip_review_text_(\d+)$/, handleSkipReviewText);
+
   // Photo handler
   bot.on('photo', handlePhotoUpload);
 
   // Text handler
   bot.on('text', async (ctx) => {
+    // Check if user is writing a review
+    const reviewHandled = await handleReviewText(ctx);
+    if (reviewHandled) return;
+
     const handled = await handleTextMessage(ctx);
     if (!handled) {
       await ctx.reply(

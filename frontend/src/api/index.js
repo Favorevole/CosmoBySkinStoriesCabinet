@@ -100,6 +100,10 @@ export const submitWebApplication = (formData) =>
 export const checkApplicationStatus = (id) =>
   api.get(`/web/application/${id}/status`);
 
+// Public reviews (no auth)
+export const getPublicReviews = () =>
+  api.get('/web/reviews');
+
 // Settings
 export const getSkinProblems = () =>
   api.get('/settings/skin-problems');

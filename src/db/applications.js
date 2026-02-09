@@ -1,6 +1,8 @@
 import prisma from './prisma.js';
 
 export async function createApplication(data) {
+  const status = data.status || 'NEW';
+
   const application = await prisma.application.create({
     data: {
       clientId: data.clientId,
@@ -10,7 +12,7 @@ export async function createApplication(data) {
       mainProblems: data.mainProblems,
       additionalComment: data.additionalComment,
       source: data.source || 'TELEGRAM',
-      status: 'NEW'
+      status
     },
     include: {
       client: true
@@ -22,7 +24,7 @@ export async function createApplication(data) {
     data: {
       applicationId: application.id,
       fromStatus: null,
-      toStatus: 'NEW',
+      toStatus: status,
       changedByRole: 'CLIENT'
     }
   });

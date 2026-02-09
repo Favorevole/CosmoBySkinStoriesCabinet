@@ -16,12 +16,24 @@ enum UserStatus {
 }
 
 enum ApplicationStatus {
+  PENDING_PAYMENT
   NEW
   ASSIGNED
   RESPONSE_GIVEN
   APPROVED
   SENT_TO_CLIENT
   DECLINED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum PaymentProvider {
+  MOCK
+  YOOKASSA
 }
 
 enum SkinType {
@@ -61,6 +73,7 @@ model Client {
   updatedAt        DateTime      @updatedAt @map("updated_at")
 
   applications     Application[]
+  reviews          Review[]
 
   @@index([telegramId])
   @@map("clients")
@@ -134,6 +147,8 @@ model Application {
   photos            Photo[]
   recommendation    Recommendation?
   statusHistory     StatusHistory[]
+  review            Review?
+  payment           Payment?
 
   @@index([clientId])
   @@index([doctorId])
@@ -216,6 +231,40 @@ model AuthCode {
   @@index([code])
   @@index([expiresAt])
   @@map("auth_codes")
+}
+
+model Payment {
+  id            Int             @id @default(autoincrement())
+  applicationId Int             @unique @map("application_id")
+  amount        Float
+  status        PaymentStatus   @default(PENDING)
+  provider      PaymentProvider @default(MOCK)
+  externalId    String?         @map("external_id")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  completedAt   DateTime?       @map("completed_at")
+
+  application   Application     @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@index([externalId])
+  @@map("payments")
+}
+
+model Review {
+  id            Int      @id @default(autoincrement())
+  applicationId Int      @unique @map("application_id")
+  clientId      Int      @map("client_id")
+  rating        Int      // 1-5 stars
+  text          String?  @db.Text
+  clientName    String?  @map("client_name")
+  isApproved    Boolean  @default(false) @map("is_approved")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  client        Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([isApproved])
+  @@map("reviews")
 }
 
 model Setting {

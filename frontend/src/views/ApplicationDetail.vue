@@ -354,6 +354,7 @@ onUnmounted(() => {
 });
 
 const statusLabels = {
+  PENDING_PAYMENT: 'Ожидает оплаты',
   NEW: 'Новая',
   ASSIGNED: 'Назначена',
   RESPONSE_GIVEN: 'Ответ дан',
@@ -512,6 +513,7 @@ function formatDate(date) {
   letter-spacing: 0.03em;
 }
 
+.status-pending_payment { background: rgba(251, 191, 36, 0.15); color: #FBBF24; }
 .status-new { background: rgba(59, 130, 246, 0.15); color: #60A5FA; }
 .status-assigned { background: rgba(201, 169, 98, 0.15); color: #C9A962; }
 .status-response_given { background: rgba(139, 92, 246, 0.15); color: #A78BFA; }

@@ -141,6 +141,30 @@ ${recommendation.text}
       disable_web_page_preview: true
     });
 
+    // Send review request after a short delay
+    try {
+      const { Markup } = await import('telegraf');
+      const reviewMessage = `Будем рады вашему отзыву! Оцените нашу работу:`;
+
+      await clientBot.telegram.sendMessage(
+        Number(application.client.telegramId),
+        reviewMessage,
+        {
+          ...Markup.inlineKeyboard([
+            [
+              Markup.button.callback('1', `review_1_${application.id}`),
+              Markup.button.callback('2', `review_2_${application.id}`),
+              Markup.button.callback('3', `review_3_${application.id}`),
+              Markup.button.callback('4', `review_4_${application.id}`),
+              Markup.button.callback('5', `review_5_${application.id}`)
+            ]
+          ])
+        }
+      );
+    } catch (reviewError) {
+      console.error('[NOTIFICATIONS] Error sending review request:', reviewError);
+    }
+
     console.log(`[NOTIFICATIONS] Sent recommendation to client ${application.client.id}`);
   } catch (error) {
     console.error('[NOTIFICATIONS] Error notifying client:', error);

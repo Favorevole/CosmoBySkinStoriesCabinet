@@ -34,6 +34,24 @@
       </div>
     </section>
 
+    <!-- Reviews -->
+    <section v-if="reviews.length" class="reviews">
+      <div class="section-header">
+        <span class="tagline">ОТЗЫВЫ</span>
+        <h2>Что говорят наши клиенты</h2>
+        <p class="section-desc">Реальные отзывы от тех, кто уже получил рекомендации</p>
+      </div>
+      <div class="reviews-grid">
+        <div v-for="review in reviews" :key="review.id" class="review-card">
+          <div class="review-stars">
+            <span v-for="s in review.rating" :key="s" class="star">&#x2B50;</span>
+          </div>
+          <p class="review-text">{{ review.text }}</p>
+          <span class="review-author">{{ review.clientName || 'Клиент' }}</span>
+        </div>
+      </div>
+    </section>
+
     <!-- How It Works -->
     <section id="how-it-works" class="how-it-works">
       <div class="section-header">
@@ -246,10 +264,22 @@
 </template>
 
 <script setup>
-// Use bot username from environment variable
-// Production: @SkinStories_bot, Development/Test: @CosmobySkinStoriesClient_bot
+import { ref, onMounted } from 'vue';
+import { getPublicReviews } from '../api/index.js';
+
 const botUsername = import.meta.env.VITE_CLIENT_BOT_USERNAME || 'CosmobySkinStoriesClient_bot';
 const telegramBotLink = `https://t.me/${botUsername}`;
+
+const reviews = ref([]);
+
+onMounted(async () => {
+  try {
+    const res = await getPublicReviews();
+    reviews.value = res.data.reviews || [];
+  } catch (e) {
+    // Landing still works without reviews
+  }
+});
 </script>
 
 <style>
@@ -338,6 +368,7 @@ const telegramBotLink = `https://t.me/${botUsername}`;
   height: 56px;
   width: auto;
   object-fit: contain;
+  margin-top: 4px;
 }
 
 .logo-img-footer {
@@ -512,6 +543,51 @@ const telegramBotLink = `https://t.me/${botUsername}`;
 .section-desc {
   font-size: 18px;
   color: var(--color-cocoa);
+}
+
+/* Reviews */
+.reviews {
+  padding: 100px 80px;
+  background: var(--color-soft-ivory);
+}
+
+.reviews-grid {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.review-card {
+  background: var(--color-white);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 360px;
+  flex: 1;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 2px 12px rgba(45, 36, 32, 0.06);
+}
+
+.review-stars {
+  display: flex;
+  gap: 2px;
+  font-size: 18px;
+}
+
+.review-text {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-cocoa);
+  flex: 1;
+}
+
+.review-author {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-burgundy);
 }
 
 /* How It Works */
@@ -943,6 +1019,7 @@ const telegramBotLink = `https://t.me/${botUsername}`;
 @media (max-width: 1200px) {
   .header-content,
   .hero,
+  .reviews,
   .how-it-works,
   .why-join,
   .experts,
@@ -1117,12 +1194,23 @@ const telegramBotLink = `https://t.me/${botUsername}`;
     justify-content: center;
   }
 
+  .reviews,
   .how-it-works,
   .why-join,
   .experts,
   .ai-trust,
   .telegram-flow {
     padding: 60px 20px;
+  }
+
+  .reviews-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .review-card {
+    max-width: 100%;
+    min-width: 0;
   }
 
   .section-header {

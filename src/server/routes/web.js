@@ -125,6 +125,7 @@ router.get('/application/:id/status', async (req, res) => {
     }
 
     const statusMessages = {
+      PENDING_PAYMENT: 'Заявка ожидает оплаты',
       NEW: 'Заявка получена и ожидает назначения специалиста',
       ASSIGNED: 'Заявка на рассмотрении у специалиста',
       RESPONSE_GIVEN: 'Рекомендации подготовлены и проверяются',
@@ -143,6 +144,22 @@ router.get('/application/:id/status', async (req, res) => {
 
   } catch (error) {
     console.error('[WEB] Error getting status:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * GET /api/web/reviews
+ * Get random approved reviews for landing page (public)
+ */
+router.get('/reviews', async (req, res) => {
+  try {
+    const { getApprovedReviews } = await import('../../db/reviews.js');
+    const reviews = await getApprovedReviews(6);
+
+    res.json({ reviews });
+  } catch (error) {
+    console.error('[WEB] Error getting reviews:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
