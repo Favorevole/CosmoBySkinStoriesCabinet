@@ -3,7 +3,7 @@ import { updateApplicationStatus } from '../db/applications.js';
 import { getApplicationById } from '../db/applications.js';
 import { notifyAdminsNewApplication } from './notifications.js';
 
-export const PAYMENT_AMOUNT = 300;
+export const PAYMENT_AMOUNT = 500;
 
 // Currently using MOCK provider. Switch to YOOKASSA when ready.
 const PROVIDER = 'MOCK';

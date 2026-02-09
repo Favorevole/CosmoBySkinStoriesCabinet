@@ -52,7 +52,7 @@ export async function handleStartQuestionnaire(ctx) {
 
   await ctx.answerCbQuery();
   await ctx.reply(
-    'Стоимость консультации: *300 ₽*\nОплата после заполнения анкеты.\n\n*Вопрос 1 из 5*\n\nУкажите ваш возраст (число):',
+    'Стоимость консультации: *500 ₽*\nОплата после заполнения анкеты.\n\n*Вопрос 1 из 5*\n\nУкажите ваш возраст (число):',
     { parse_mode: 'Markdown' }
   );
 }
@@ -362,7 +362,7 @@ export async function showConfirmation(ctx) {
 ${additionalComment ? `Комментарий: ${additionalComment}` : 'Комментарий: нет'}
 Фотографий: ${session.photos.length}
 
-Стоимость консультации: *300 ₽*
+Стоимость консультации: *500 ₽*
 
 Всё верно?
 `;
@@ -427,12 +427,12 @@ export async function handleConfirmSubmit(ctx) {
 
     await ctx.reply(
       `*Заявка #${application.id} готова к оплате*\n\n` +
-      'Стоимость консультации: *300 ₽*\n\n' +
+      'Стоимость консультации: *500 ₽*\n\n' +
       'После оплаты заявка будет отправлена специалисту.',
       {
         parse_mode: 'Markdown',
         ...Markup.inlineKeyboard([
-          [Markup.button.callback('Оплатить 300 ₽', `pay_${application.id}`)]
+          [Markup.button.callback('Оплатить 500 ₽', `pay_${application.id}`)]
         ])
       }
     );
@@ -466,7 +466,7 @@ export async function handleTextMessage(ctx) {
     clientSessions.set(telegramId, session);
 
     await ctx.reply(
-      'Стоимость консультации: *300 ₽*\nОплата после заполнения анкеты.\n\n*Вопрос 1 из 5*\n\nУкажите ваш возраст (число):',
+      'Стоимость консультации: *500 ₽*\nОплата после заполнения анкеты.\n\n*Вопрос 1 из 5*\n\nУкажите ваш возраст (число):',
       { parse_mode: 'Markdown' }
     );
     return true;
