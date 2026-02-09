@@ -125,7 +125,7 @@ model Application {
   additionalComment String?           @map("additional_comment") @db.Text
 
   // Display number (fake number shown to client, starts from 100)
-  displayNumber     Int               @unique @default(autoincrement()) @map("display_number")
+  displayNumber     Int?              @unique @map("display_number")
 
   // Status
   status            ApplicationStatus @default(NEW)
