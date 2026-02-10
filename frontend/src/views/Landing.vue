@@ -141,19 +141,27 @@
         </div>
         <div class="expert-card">
           <div class="expert-photo">
+            <img src="/maria.jpg" alt="Мария Гаврилова" />
+          </div>
+          <h3>Мария Гаврилова</h3>
+          <span class="expert-role">Врач дерматолог</span>
+          <p>Эксперт по лечению акне</p>
+        </div>
+        <div class="expert-card">
+          <div class="expert-photo">
+            <img src="/sofya.jpg" alt="Софья Охотникова" />
+          </div>
+          <h3>Софья Охотникова</h3>
+          <span class="expert-role">Врач дерматолог-косметолог</span>
+          <p>Специалист по anti-age методикам</p>
+        </div>
+        <div class="expert-card">
+          <div class="expert-photo">
             <img src="/rajab.jpg" alt="Раджаб Давудов" />
           </div>
           <h3>Раджаб Давудов</h3>
           <span class="expert-role">Врач косметолог, эстетист</span>
           <p>Эксперт по подбору ухода. Редактор телеграм канала Skin Stories</p>
-        </div>
-        <div class="expert-card">
-          <div class="expert-photo">
-            <img src="/alex.jpg" alt="Александр Щелкушкин" />
-          </div>
-          <h3>Александр Щелкушкин</h3>
-          <span class="expert-role">Сооснователь проекта</span>
-          <p>Архитектор данных, превративший опыт построения аналитических платформ в технологическую основу Skin Stories</p>
         </div>
       </div>
     </section>
@@ -731,7 +739,7 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   gap: 40px;
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -1085,10 +1093,6 @@ onMounted(async () => {
   .experts-grid {
     flex-wrap: wrap;
   }
-
-  .expert-card {
-    width: calc(50% - 20px);
-  }
 }
 
 @media (max-width: 768px) {
@@ -1134,8 +1138,21 @@ onMounted(async () => {
     width: 100%;
   }
 
+  .experts-grid {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 8px;
+    margin: 0 -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
   .expert-card {
-    width: 100%;
+    min-width: 220px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
   }
 
   .phone-mockup {
