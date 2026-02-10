@@ -94,8 +94,15 @@ export const getDoctorStats = () =>
 // Web form
 export const submitWebApplication = (formData) =>
   api.post('/web/applications', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 60000
   });
+
+export const payWebApplication = (id) =>
+  api.post(`/web/applications/${id}/pay`);
+
+export const getWebSkinProblems = () =>
+  api.get('/web/skin-problems');
 
 export const checkApplicationStatus = (id) =>
   api.get(`/web/application/${id}/status`);

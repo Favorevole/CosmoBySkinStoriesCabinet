@@ -131,6 +131,9 @@ model Application {
   status            ApplicationStatus @default(NEW)
   declineReason     String?           @map("decline_reason") @db.Text
 
+  // Consent
+  consentToDataProcessing Boolean @default(false) @map("consent_to_data_processing")
+
   // Source tracking
   source            ApplicationSource @default(TELEGRAM)
 

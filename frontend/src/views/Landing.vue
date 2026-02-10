@@ -10,9 +10,9 @@
           <a href="#how-it-works">Как это работает</a>
           <a href="#experts">Эксперты</a>
           <a href="#about">О проекте</a>
-          <a :href="telegramBotLink" target="_blank" class="nav-cta">Начать</a>
+          <button class="nav-cta" @click="showModal = true">Начать</button>
         </nav>
-        <a :href="telegramBotLink" target="_blank" class="mobile-cta">Начать</a>
+        <button class="mobile-cta" @click="showModal = true">Начать</button>
       </div>
     </header>
 
@@ -24,10 +24,17 @@
           <h1>Мы обучаем AI<br>понимать настоящую кожу</h1>
           <p class="hero-subtitle">Получите экспертные рекомендации по уходу за кожей от наших дерматологов — пока наш AI&nbsp;учится.</p>
           <p class="hero-price">Стоимость одной консультации — 500 рублей</p>
-          <a :href="telegramBotLink" target="_blank" class="btn btn-primary">
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="m22 2-11 11"/></svg>
-            Начать консультацию
-          </a>
+          <p class="hero-cta-label">Начать консультацию</p>
+          <div class="hero-cta-buttons">
+            <button class="btn btn-primary" @click="showModal = true">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M14 9l3 3-3 3"/></svg>
+              На сайте
+            </button>
+            <a :href="telegramBotLink" target="_blank" class="btn btn-outline">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="m22 2-11 11"/></svg>
+              В Телеграм
+            </a>
+          </div>
         </div>
         <div class="hero-visual">
           <img src="/hero.png" alt="Skin care" />
@@ -246,13 +253,22 @@
     <!-- Final CTA -->
     <section class="final-cta">
       <h2>Готовы помочь AI понять кожу?</h2>
-      <p class="cta-subtitle">Загрузите фото — получите экспертный анализ бесплатно</p>
-      <a :href="telegramBotLink" target="_blank" class="btn btn-white">
-        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="m22 2-11 11"/></svg>
-        Открыть Telegram
-      </a>
-      <span class="cta-note">Бесплатно • Конфиденциально • Без регистрации</span>
+      <p class="cta-subtitle">Загрузите фото — получите экспертный анализ</p>
+      <div class="cta-buttons">
+        <button class="btn btn-white" @click="showModal = true">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M14 9l3 3-3 3"/></svg>
+          Заполнить на сайте
+        </button>
+        <a :href="telegramBotLink" target="_blank" class="btn btn-white-outline">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="m22 2-11 11"/></svg>
+          Открыть Telegram
+        </a>
+      </div>
+      <span class="cta-note">Конфиденциально • Ответ за 24 часа</span>
     </section>
+
+    <!-- Consultation Modal -->
+    <ConsultationModal :visible="showModal" @close="showModal = false" />
 
     <!-- Footer -->
     <footer class="footer">
@@ -275,11 +291,13 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { getPublicReviews } from '../api/index.js';
+import ConsultationModal from '../components/ConsultationModal.vue';
 
 const botUsername = import.meta.env.VITE_CLIENT_BOT_USERNAME || 'CosmobySkinStoriesClient_bot';
 const telegramBotLink = `https://t.me/${botUsername}`;
 
 const reviews = ref([]);
+const showModal = ref(false);
 
 onMounted(async () => {
   try {
@@ -408,6 +426,11 @@ onMounted(async () => {
   color: var(--color-white) !important;
   border-radius: 24px;
   transition: background 0.3s;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .nav-cta:hover {
@@ -422,6 +445,9 @@ onMounted(async () => {
   border-radius: 20px;
   font-size: 14px;
   font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
 }
 
 /* Hero */
@@ -478,6 +504,22 @@ onMounted(async () => {
   margin-bottom: 24px;
 }
 
+.hero-cta-label {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-cocoa);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.hero-cta-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .hero-visual {
   width: 520px;
   height: 520px;
@@ -524,14 +566,39 @@ onMounted(async () => {
   box-shadow: 0 6px 25px rgba(139, 58, 74, 0.4);
 }
 
+.btn-outline {
+  background: transparent;
+  color: var(--color-burgundy);
+  border: 2px solid var(--color-burgundy);
+}
+
+.btn-outline:hover {
+  background: var(--color-burgundy);
+  color: var(--color-white);
+  transform: translateY(-2px);
+}
+
 .btn-white {
   background: var(--color-white);
   color: var(--color-burgundy);
+  border: none;
 }
 
 .btn-white:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 25px rgba(255, 255, 255, 0.3);
+}
+
+.btn-white-outline {
+  background: transparent;
+  color: var(--color-white);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.btn-white-outline:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--color-white);
+  transform: translateY(-2px);
 }
 
 /* Sections */
@@ -993,6 +1060,13 @@ onMounted(async () => {
   margin-bottom: 40px;
 }
 
+.cta-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 .cta-note {
   display: block;
   margin-top: 24px;
@@ -1216,8 +1290,25 @@ onMounted(async () => {
   .btn {
     padding: 16px 28px;
     font-size: 15px;
-    width: 100%;
     justify-content: center;
+  }
+
+  .hero-cta-buttons {
+    flex-direction: column;
+  }
+
+  .hero-cta-buttons .btn {
+    width: 100%;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .cta-buttons .btn {
+    width: 100%;
+    max-width: 300px;
   }
 
   .reviews,

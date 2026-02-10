@@ -11,6 +11,7 @@ export async function createApplication(data) {
       priceRange: data.priceRange,
       mainProblems: data.mainProblems,
       additionalComment: data.additionalComment,
+      consentToDataProcessing: data.consentToDataProcessing || false,
       source: data.source || 'TELEGRAM',
       status
     },

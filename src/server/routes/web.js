@@ -4,6 +4,8 @@ import { createClient } from '../../db/clients.js';
 import { createApplication } from '../../db/applications.js';
 import { addPhotoToApplication } from '../../db/photos.js';
 import { notifyAdminsNewApplication } from '../../services/notifications.js';
+import { getSkinProblems } from '../../db/settings.js';
+import { createPayment, processPayment } from '../../services/payment.js';
 
 const router = express.Router();
 
@@ -23,16 +25,50 @@ const upload = multer({
   }
 });
 
+const VALID_SKIN_TYPES = ['DRY', 'OILY', 'COMBINATION', 'NORMAL'];
+const VALID_PRICE_RANGES = ['UP_TO_5000', 'UP_TO_10000', 'UP_TO_20000'];
+
+/**
+ * GET /api/web/skin-problems
+ * Public endpoint — returns list of skin problems
+ */
+router.get('/skin-problems', async (req, res) => {
+  try {
+    const problems = await getSkinProblems();
+    res.json({ problems });
+  } catch (error) {
+    console.error('[WEB] Error getting skin problems:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 /**
  * POST /api/web/applications
  * Create application from website form
  */
 router.post('/applications', upload.array('photos', 6), async (req, res) => {
   try {
-    const { age, skinType, mainProblems, additionalComment, email, phone, fullName } = req.body;
+    const { age, skinType, priceRange, mainProblems, additionalComment, email, fullName, consentToDataProcessing } = req.body;
     const files = req.files;
 
     // Validation
+    if (!fullName || !fullName.trim()) {
+      return res.status(400).json({ error: 'Имя обязательно' });
+    }
+
+    if (!email || !email.trim()) {
+      return res.status(400).json({ error: 'Email обязателен' });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      return res.status(400).json({ error: 'Некорректный email' });
+    }
+
+    if (consentToDataProcessing !== 'true' && consentToDataProcessing !== true) {
+      return res.status(400).json({ error: 'Необходимо согласие на обработку персональных данных' });
+    }
+
     if (!age || !skinType || !mainProblems) {
       return res.status(400).json({
         error: 'Missing required fields: age, skinType, mainProblems'
@@ -58,29 +94,33 @@ router.post('/applications', upload.array('photos', 6), async (req, res) => {
       });
     }
 
-    const validSkinTypes = ['DRY', 'OILY', 'COMBINATION', 'NORMAL'];
-    if (!validSkinTypes.includes(skinType)) {
-      return res.status(400).json({
-        error: 'Invalid skinType'
-      });
+    if (!VALID_SKIN_TYPES.includes(skinType)) {
+      return res.status(400).json({ error: 'Invalid skinType' });
+    }
+
+    if (priceRange && !VALID_PRICE_RANGES.includes(priceRange)) {
+      return res.status(400).json({ error: 'Invalid priceRange' });
     }
 
     // Create client (without telegramId for web users)
     const client = await createClient({
       telegramId: null,
-      fullName: fullName || null,
-      email: email || null,
-      phone: phone || null
+      fullName: fullName.trim(),
+      email: email.trim(),
+      phone: null
     });
 
-    // Create application
+    // Create application with PENDING_PAYMENT status
     const application = await createApplication({
       clientId: client.id,
       age: ageNum,
       skinType,
+      priceRange: priceRange || null,
       mainProblems,
       additionalComment: additionalComment || null,
-      source: 'WEB'
+      consentToDataProcessing: true,
+      source: 'WEB',
+      status: 'PENDING_PAYMENT'
     });
 
     // Save photos
@@ -95,18 +135,53 @@ router.post('/applications', upload.array('photos', 6), async (req, res) => {
       });
     }
 
-    // Notify admins
-    const fullApplication = await (await import('../../db/applications.js')).getApplicationById(application.id);
-    await notifyAdminsNewApplication(fullApplication);
+    // Create pending payment
+    await createPayment(application.id);
 
     res.status(201).json({
       success: true,
       applicationId: application.id,
-      message: 'Application submitted successfully'
+      message: 'Application created, awaiting payment'
     });
 
   } catch (error) {
     console.error('[WEB] Error creating application:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * POST /api/web/applications/:id/pay
+ * Process mock payment for web application
+ */
+router.post('/applications/:id/pay', async (req, res) => {
+  try {
+    const applicationId = parseInt(req.params.id);
+    if (isNaN(applicationId)) {
+      return res.status(400).json({ error: 'Invalid application ID' });
+    }
+
+    const { getApplicationById } = await import('../../db/applications.js');
+    const application = await getApplicationById(applicationId);
+
+    if (!application) {
+      return res.status(404).json({ error: 'Application not found' });
+    }
+
+    if (application.status !== 'PENDING_PAYMENT') {
+      return res.status(400).json({ error: 'Application is not awaiting payment' });
+    }
+
+    // Process mock payment (creates payment, moves to NEW, notifies admins)
+    const result = await processPayment(applicationId);
+
+    res.json({
+      success: true,
+      paid: !result.alreadyPaid,
+      message: 'Оплата прошла успешно'
+    });
+  } catch (error) {
+    console.error('[WEB] Error processing payment:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

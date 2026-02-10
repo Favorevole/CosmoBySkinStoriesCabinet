@@ -105,13 +105,29 @@ ${application.additionalComment ? `Комментарий: ${application.additio
 
 // Notify client about ready recommendation
 export async function notifyClientRecommendation(application) {
+  // Web clients: send via email
+  if (!application.client.telegramId && application.client.email) {
+    try {
+      const { sendRecommendationEmail } = await import('./email.js');
+      await sendRecommendationEmail(
+        application.client.email,
+        application,
+        application.recommendation
+      );
+      console.log(`[NOTIFICATIONS] Sent recommendation via email to client ${application.client.id}`);
+    } catch (error) {
+      console.error('[NOTIFICATIONS] Error sending email recommendation:', error);
+    }
+    return;
+  }
+
   if (!clientBot) {
     console.log('[NOTIFICATIONS] Client bot not initialized, skipping client notification');
     return;
   }
 
   if (!application.client.telegramId) {
-    console.log('[NOTIFICATIONS] Client has no telegramId, skipping notification');
+    console.log('[NOTIFICATIONS] Client has no telegramId and no email, skipping notification');
     return;
   }
 
