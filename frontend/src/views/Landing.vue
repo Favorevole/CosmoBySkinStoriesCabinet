@@ -543,9 +543,13 @@ onMounted(async () => {
   padding: 18px 36px;
   font-size: 16px;
   font-weight: 600;
+  font-family: var(--font-body);
   border-radius: 28px;
   transition: all 0.4s ease-out;
   cursor: pointer;
+  border: none;
+  outline: none;
+  text-decoration: none;
 }
 
 .btn-icon {
