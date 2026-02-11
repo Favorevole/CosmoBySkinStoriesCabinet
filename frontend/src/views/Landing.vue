@@ -659,47 +659,51 @@ onMounted(async () => {
 
 /* Reviews */
 .reviews {
-  padding: 100px 80px;
+  padding: 48px 80px;
   background: var(--color-soft-ivory);
+}
+
+.reviews .section-header {
+  margin-bottom: 24px;
+}
+
+.reviews .section-header h2 {
+  font-size: 28px;
 }
 
 .reviews-grid {
   display: flex;
-  gap: 24px;
+  gap: 16px;
   justify-content: center;
   flex-wrap: wrap;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .review-card {
   background: var(--color-white);
-  border-radius: 16px;
-  padding: 32px;
-  max-width: 360px;
+  border-radius: 12px;
+  padding: 20px 24px;
+  max-width: 280px;
   flex: 1;
-  min-width: 280px;
+  min-width: 220px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  box-shadow: 0 2px 12px rgba(45, 36, 32, 0.06);
+  gap: 10px;
+  box-shadow: 0 2px 8px rgba(45, 36, 32, 0.05);
 }
 
 .review-stars {
   display: flex;
   gap: 2px;
-  font-size: 18px;
+  font-size: 14px;
 }
 
 .review-text {
-  font-size: 16px;
-  line-height: 1.6;
+  font-size: 14px;
+  line-height: 1.5;
   color: var(--color-cocoa);
   flex: 1;
-}
-
-.review-author {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-burgundy);
 }
 
 /* How It Works */
