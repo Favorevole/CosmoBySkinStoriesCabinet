@@ -47,6 +47,22 @@ async function createYooKassaPayment(applicationId) {
     },
     capture: true,
     description: 'Онлайн-консультация косметолога',
+    receipt: {
+      customer: {
+        email: 'receipt@skinstories.ru'
+      },
+      items: [{
+        description: 'Онлайн-консультация косметолога',
+        quantity: '1.00',
+        amount: {
+          value: `${PAYMENT_AMOUNT}.00`,
+          currency: 'RUB'
+        },
+        vat_code: 1,
+        payment_subject: 'service',
+        payment_mode: 'full_payment'
+      }]
+    },
     metadata: {
       applicationId: String(applicationId)
     }
