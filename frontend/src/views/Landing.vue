@@ -659,12 +659,12 @@ onMounted(async () => {
 
 /* Reviews */
 .reviews {
-  padding: 48px 80px;
+  padding: 32px 80px;
   background: var(--color-soft-ivory);
 }
 
 .reviews .section-header {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .reviews .section-header h2 {
