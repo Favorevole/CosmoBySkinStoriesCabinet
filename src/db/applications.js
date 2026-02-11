@@ -1,15 +1,19 @@
 import prisma from './prisma.js';
 
 async function generateDisplayNumber() {
-  for (let i = 0; i < 10; i++) {
-    const num = Math.floor(100000 + Math.random() * 900000); // 6-digit number
+  for (let i = 0; i < 20; i++) {
+    const num = Math.floor(100 + Math.random() * 401); // 100-500
     const existing = await prisma.application.findFirst({
       where: { displayNumber: num }
     });
     if (!existing) return num;
   }
-  // Fallback: timestamp-based
-  return Math.floor(Date.now() / 1000) % 900000 + 100000;
+  // Fallback: first free number above 500
+  const last = await prisma.application.findFirst({
+    orderBy: { displayNumber: 'desc' },
+    select: { displayNumber: true }
+  });
+  return (last?.displayNumber || 500) + 1;
 }
 
 export async function createApplication(data) {
