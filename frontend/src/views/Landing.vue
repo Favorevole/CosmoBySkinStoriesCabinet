@@ -169,6 +169,14 @@
           <span class="expert-role">Врач косметолог, эстетист</span>
           <p>Эксперт по подбору ухода. Редактор телеграм канала Skin Stories</p>
         </div>
+        <div class="expert-card">
+          <div class="expert-photo">
+            <img src="/alex.jpg" alt="Александр Щелкушкин" />
+          </div>
+          <h3>Александр Щелкушкин</h3>
+          <span class="expert-role">Архитектор проекта и тех.лид</span>
+          <p>И тот кто стесняется ходить к косметологу</p>
+        </div>
       </div>
     </section>
 
