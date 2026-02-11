@@ -49,7 +49,7 @@ async function sendToAdminsViaDoctorBot(message, parseMode = 'Markdown') {
 // Notify all admins about new application
 export async function notifyAdminsNewApplication(application) {
   const message = `
-*Новая заявка #${application.id}*
+*Новая заявка #${application.displayNumber || application.id}*
 
 Возраст: ${application.age}
 Тип кожи: ${formatSkinType(application.skinType)}
@@ -78,7 +78,7 @@ export async function notifyDoctorAssignment(doctor, application) {
     const { Markup } = await import('telegraf');
 
     const message = `
-*Вам назначена новая заявка #${application.id}*
+*Вам назначена новая заявка #${application.displayNumber || application.id}*
 
 Возраст пациента: ${application.age}
 Тип кожи: ${formatSkinType(application.skinType)}
@@ -134,10 +134,11 @@ export async function notifyClientRecommendation(application) {
   try {
     const recommendation = application.recommendation;
 
+    const appNum = application.displayNumber || application.id;
     let message = `
 *Ваши рекомендации готовы!*
 
-Заявка #${application.id}
+Заявка #${appNum}
 
 ${recommendation.text}
 `;
@@ -199,7 +200,7 @@ export async function notifyAdminsDoctorResponse(application) {
     const { formatSkinType } = await import('../clientBot/states/index.js');
 
     const message = `
-*Врач дал ответ по заявке #${application.id}*
+*Врач дал ответ по заявке #${application.displayNumber || application.id}*
 
 *Врач:* ${application.doctor.fullName}
 *Клиент:* ${application.client.fullName || application.client.telegramUsername || 'Не указано'}
@@ -248,7 +249,7 @@ export async function notifyAdminsDoctorResponse(application) {
 // Notify admins about declined application
 export async function notifyAdminsDecline(application, reason) {
   const message = `
-*Врач отклонил заявку #${application.id}*
+*Врач отклонил заявку #${application.displayNumber || application.id}*
 
 Врач: ${application.doctor.fullName}
 Причина: ${reason}
@@ -278,10 +279,11 @@ export async function requestAdditionalPhotos(application, doctor) {
   try {
     const { Markup } = await import('telegraf');
 
+    const appNum2 = application.displayNumber || application.id;
     const message = `
 *Врач запрашивает дополнительные фотографии*
 
-Заявка #${application.id}
+Заявка #${appNum2}
 Врач: ${doctor.fullName}
 
 Пожалуйста, отправьте дополнительные фотографии для более точной консультации.
@@ -291,6 +293,7 @@ export async function requestAdditionalPhotos(application, doctor) {
     // Store the pending request
     pendingPhotoRequests.set(Number(application.client.telegramId), {
       applicationId: application.id,
+      displayNumber: application.displayNumber || application.id,
       doctorId: doctor.id,
       doctorName: doctor.fullName,
       photos: []
@@ -326,10 +329,12 @@ export async function notifyDoctorNewPhotos(applicationId, doctorId, photoCount)
 
     const { Markup } = await import('telegraf');
 
+    const appForNum = await prisma.application.findUnique({ where: { id: applicationId }, select: { displayNumber: true } });
+    const appNum3 = appForNum?.displayNumber || applicationId;
     const message = `
 *Клиент отправил дополнительные фотографии*
 
-Заявка #${applicationId}
+Заявка #${appNum3}
 Добавлено фото: ${photoCount}
 
 Нажмите кнопку для просмотра:

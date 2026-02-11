@@ -125,7 +125,7 @@
         @click="$router.push(`/admin/applications/${app.id}`)"
       >
         <div class="app-header">
-          <span class="app-id">#{{ app.id }}</span>
+          <span class="app-id">#{{ app.displayNumber || app.id }}</span>
           <span :class="['status', `status-${app.status.toLowerCase()}`]">
             {{ statusLabels[app.status] }}
           </span>

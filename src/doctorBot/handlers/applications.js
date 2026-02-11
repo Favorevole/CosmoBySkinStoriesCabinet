@@ -41,11 +41,11 @@ export async function handleMyApplications(ctx) {
       const statusLabel = app.status === 'ASSIGNED' ? 'Ожидает ответа' : 'Ответ дан';
       const date = app.createdAt.toLocaleDateString('ru-RU');
 
-      message += `#${app.id} от ${date}\n`;
+      message += `#${app.displayNumber || app.id} от ${date}\n`;
       message += `Статус: ${statusLabel}\n`;
       message += `Возраст: ${app.age}, ${formatSkinType(app.skinType)}\n\n`;
 
-      buttons.push([Markup.button.callback(`Заявка #${app.id}`, `view_app_${app.id}`)]);
+      buttons.push([Markup.button.callback(`Заявка #${app.displayNumber || app.id}`, `view_app_${app.id}`)]);
     }
 
     await ctx.reply(message, {
@@ -90,7 +90,7 @@ export async function handleViewApplication(ctx) {
       SENT_TO_CLIENT: 'Отправлено клиенту'
     }[application.status] || application.status;
 
-    let message = `*Заявка #${application.id}*\n\n`;
+    let message = `*Заявка #${application.displayNumber || application.id}*\n\n`;
     message += `Статус: ${statusLabel}\n\n`;
     message += `*Данные анкеты:*\n`;
     message += `Возраст: ${application.age}\n`;
@@ -172,7 +172,7 @@ export async function handleShowPhotos(ctx) {
         await ctx.replyWithPhoto(
           { source: photoBuffer },
           {
-            caption: `Фото 1/${application.photos.length}\nЗаявка #${applicationId}`,
+            caption: `Фото 1/${application.photos.length}\nЗаявка #${application.displayNumber || applicationId}`,
             ...viewPhotosKeyboard(applicationId, 0, application.photos.length)
           }
         );
@@ -288,7 +288,7 @@ export async function handleRequestPhotos(ctx) {
     await ctx.answerCbQuery('Запрос отправлен клиенту');
     await ctx.reply(
       `Запрос на дополнительные фото отправлен клиенту.\n` +
-      `Когда клиент отправит фото, они будут добавлены к заявке #${applicationId}.`
+      `Когда клиент отправит фото, они будут добавлены к заявке #${application.displayNumber || applicationId}.`
     );
 
   } catch (error) {

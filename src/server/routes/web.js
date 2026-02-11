@@ -141,6 +141,7 @@ router.post('/applications', upload.array('photos', 6), async (req, res) => {
     res.status(201).json({
       success: true,
       applicationId: application.id,
+      displayNumber: application.displayNumber || application.id,
       message: 'Application created, awaiting payment'
     });
 
@@ -213,6 +214,7 @@ router.get('/application/:id/status', async (req, res) => {
 
     res.json({
       id: application.id,
+      displayNumber: application.displayNumber || application.id,
       status: application.status,
       statusMessage: statusMessages[application.status] || application.status,
       createdAt: application.createdAt,

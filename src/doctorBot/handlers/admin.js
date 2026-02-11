@@ -32,7 +32,7 @@ export async function handleAdminViewApp(ctx) {
       return;
     }
 
-    let message = `*📋 Заявка #${application.id}*\n\n`;
+    let message = `*📋 Заявка #${application.displayNumber || application.id}*\n\n`;
     message += `*Клиент:* ${application.client.fullName || application.client.telegramUsername || 'Не указано'}\n`;
     if (application.client.telegramUsername) {
       message += `*Telegram:* @${application.client.telegramUsername}\n`;
@@ -106,7 +106,7 @@ export async function handleAdminShowPhotos(ctx) {
         await ctx.replyWithPhoto(
           { source: photoBuffer },
           {
-            caption: `Фото 1/${application.photos.length}\nЗаявка #${applicationId}`,
+            caption: `Фото 1/${application.photos.length}\nЗаявка #${application.displayNumber || applicationId}`,
             ...Markup.inlineKeyboard(navButtons)
           }
         );
@@ -181,7 +181,7 @@ export async function handleAdminPhotoNav(ctx, direction) {
         await ctx.replyWithPhoto(
           { source: photoBuffer },
           {
-            caption: `Фото ${newIndex + 1}/${application.photos.length}\nЗаявка #${applicationId}`,
+            caption: `Фото ${newIndex + 1}/${application.photos.length}\nЗаявка #${application.displayNumber || applicationId}`,
             ...Markup.inlineKeyboard(navButtons)
           }
         );
@@ -221,7 +221,7 @@ export async function handleAdminShowRec(ctx) {
     }
 
     const rec = application.recommendation;
-    let message = `*📝 Ответ врача по заявке #${applicationId}*\n\n`;
+    let message = `*📝 Ответ врача по заявке #${application.displayNumber || applicationId}*\n\n`;
     message += `*Врач:* ${application.doctor?.fullName || 'Не указан'}\n\n`;
     message += `${rec.text}\n`;
 
@@ -291,7 +291,7 @@ export async function handleAdminApprove(ctx) {
 
     await ctx.reply(
       `*Подтвердите отправку клиенту*\n\n` +
-      `Заявка #${applicationId}\n` +
+      `Заявка #${application.displayNumber || applicationId}\n` +
       `Клиент: ${application.client.fullName || application.client.telegramUsername || 'Не указано'}\n\n` +
       `_Ответ врача (превью):_\n${preview}`,
       {
@@ -348,7 +348,7 @@ export async function handleAdminConfirmApprove(ctx) {
 
     await ctx.answerCbQuery('Отправлено!');
     await ctx.editMessageText(
-      `✅ *Заявка #${applicationId} — рекомендации отправлены клиенту!*\n\n` +
+      `✅ *Заявка #${application.displayNumber || applicationId} — рекомендации отправлены клиенту!*\n\n` +
       `Клиент: ${application.client.fullName || application.client.telegramUsername || 'Не указано'}`,
       { parse_mode: 'Markdown' }
     );

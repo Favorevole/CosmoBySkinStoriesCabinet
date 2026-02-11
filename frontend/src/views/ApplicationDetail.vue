@@ -7,7 +7,7 @@
         </svg>
         Назад
       </button>
-      <h1>Заявка #{{ application.id }}</h1>
+      <h1>Заявка #{{ application.displayNumber || application.id }}</h1>
       <span :class="['status', `status-${application.status.toLowerCase()}`]">
         {{ statusLabels[application.status] }}
       </span>

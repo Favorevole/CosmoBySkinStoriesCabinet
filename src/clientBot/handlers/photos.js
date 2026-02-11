@@ -220,7 +220,7 @@ export async function handleAdditionalPhotosDone(ctx) {
 
     await ctx.answerCbQuery();
     await ctx.editMessageText(
-      `Спасибо! ${pendingRequest.photos.length} дополнительных фото добавлено к заявке #${applicationId}.\n\n` +
+      `Спасибо! ${pendingRequest.photos.length} дополнительных фото добавлено к заявке #${pendingRequest.displayNumber || applicationId}.\n\n` +
       `Врач ${pendingRequest.doctorName} получит уведомление.`
     );
 

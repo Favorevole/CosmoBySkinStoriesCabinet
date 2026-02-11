@@ -49,7 +49,9 @@ router.post('/request-code', async (req, res) => {
     // Generate and save code
     const code = await createAuthCode(targetTelegramId);
 
-    // Send code via bot
+    // Send code via bot (try client bot first, then doctor bot as fallback)
+    let codeSent = false;
+
     try {
       const { getClientBot } = await import('../../clientBot/index.js');
       const clientBot = getClientBot();
@@ -60,10 +62,34 @@ router.post('/request-code', async (req, res) => {
           `Ваш код для входа в админ-панель: *${code}*\n\nКод действителен 5 минут.`,
           { parse_mode: 'Markdown' }
         );
+        codeSent = true;
+        console.log(`[AUTH] Code sent via client bot to ${targetTelegramId}`);
       }
     } catch (botError) {
-      console.error('[AUTH] Failed to send code via bot:', botError);
-      // Continue anyway - admin can see code in logs for dev
+      console.error('[AUTH] Failed to send code via client bot:', botError.message);
+    }
+
+    if (!codeSent) {
+      try {
+        const { getDoctorBot } = await import('../../doctorBot/index.js');
+        const doctorBot = getDoctorBot();
+
+        if (doctorBot) {
+          await doctorBot.telegram.sendMessage(
+            Number(targetTelegramId),
+            `Ваш код для входа в админ-панель: *${code}*\n\nКод действителен 5 минут.`,
+            { parse_mode: 'Markdown' }
+          );
+          codeSent = true;
+          console.log(`[AUTH] Code sent via doctor bot to ${targetTelegramId}`);
+        }
+      } catch (botError2) {
+        console.error('[AUTH] Failed to send code via doctor bot:', botError2.message);
+      }
+    }
+
+    if (!codeSent) {
+      console.error(`[AUTH] Could not send code to ${targetTelegramId} via any bot`);
     }
 
     res.json({

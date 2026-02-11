@@ -26,7 +26,7 @@ function getTransporter() {
 }
 
 export async function sendRecommendationEmail(email, application, recommendation) {
-  const subject = `Ваши рекомендации по заявке #${application.id} — Skin Stories`;
+  const subject = `Ваши рекомендации по заявке #${application.displayNumber || application.id} — Skin Stories`;
 
   let linksHtml = '';
   if (recommendation.links && Array.isArray(recommendation.links) && recommendation.links.length > 0) {
@@ -50,7 +50,7 @@ export async function sendRecommendationEmail(email, application, recommendation
           Ваши рекомендации готовы!
         </h2>
         <p style="color: #5C4A3D; font-size: 14px; margin-bottom: 24px;">
-          Заявка #${application.id}
+          Заявка #${application.displayNumber || application.id}
         </p>
         <div style="color: #2D2420; font-size: 16px; line-height: 1.7; white-space: pre-wrap;">
           ${recommendation.text}

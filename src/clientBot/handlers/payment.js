@@ -1,4 +1,5 @@
 import { processPayment } from '../../services/payment.js';
+import { getApplicationById } from '../../db/applications.js';
 import { Markup } from 'telegraf';
 
 // Handle pay_{applicationId} callback — now creates a YooKassa payment URL
@@ -17,8 +18,11 @@ export async function handlePayment(ctx) {
       return;
     }
 
+    const application = await getApplicationById(applicationId);
+    const appNum = application?.displayNumber || applicationId;
+
     await ctx.editMessageText(
-      `*Заявка #${applicationId} — оплата*\n\n` +
+      `*Заявка #${appNum} — оплата*\n\n` +
       'Нажмите кнопку ниже, чтобы перейти к оплате.',
       {
         parse_mode: 'Markdown',

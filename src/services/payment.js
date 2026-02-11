@@ -154,10 +154,11 @@ export async function handleYooKassaWebhook(body) {
         const { getClientBot } = await import('../clientBot/index.js');
         const bot = getClientBot();
         if (bot) {
+          const appNum = fullApplication.displayNumber || applicationId;
           await bot.telegram.sendMessage(
             fullApplication.client.telegramId.toString(),
             `*Оплата прошла успешно!*\n\n` +
-            `Заявка #${applicationId} отправлена специалисту.\n\n` +
+            `Заявка #${appNum} отправлена специалисту.\n\n` +
             'Эксперт изучит вашу анкету и фотографии, после чего вы получите персональные рекомендации.\n\n' +
             'Обычно это занимает 24-48 часов.\n\n' +
             'Мы пришлём вам уведомление, когда ответ будет готов.',

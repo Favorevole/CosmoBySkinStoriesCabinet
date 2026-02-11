@@ -8,19 +8,19 @@
         </div>
         <p class="subtitle">Панель администратора</p>
 
-        <!-- Step 1: Enter Telegram Username -->
+        <!-- Step 1: Enter Telegram Username or ID -->
         <div v-if="step === 1" class="step">
-          <p class="instruction">Введите ваш Telegram username</p>
+          <p class="instruction">Введите Telegram username или ID</p>
           <div class="input-wrapper">
-            <span class="input-prefix">@</span>
+            <span class="input-prefix">{{ isNumericInput ? '#' : '@' }}</span>
             <input
               type="text"
-              v-model="telegramUsername"
-              placeholder="username"
+              v-model="loginInput"
+              placeholder="username или ID"
               @keyup.enter="requestCode"
             >
           </div>
-          <button @click="requestCode" :disabled="!telegramUsername || loading" class="btn btn-primary">
+          <button @click="requestCode" :disabled="!loginInput || loading" class="btn btn-primary">
             <span v-if="loading" class="spinner"></span>
             {{ loading ? 'Отправка...' : 'Получить код' }}
           </button>
@@ -71,28 +71,35 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { requestCode as apiRequestCode, verifyCode as apiVerifyCode } from '../api/index.js';
 
 const router = useRouter();
 
 const step = ref(1);
-const telegramUsername = ref('');
+const loginInput = ref('');
 const telegramId = ref('');
 const code = ref('');
 const loading = ref(false);
 const error = ref(null);
 
+const isNumericInput = computed(() => /^\d+$/.test(loginInput.value));
+
 async function requestCode() {
-  if (!telegramUsername.value) return;
+  if (!loginInput.value) return;
 
   loading.value = true;
   error.value = null;
 
   try {
-    const response = await apiRequestCode(null, telegramUsername.value);
-    // Save the telegramId returned by server for verification step
+    const input = loginInput.value.trim();
+    let response;
+    if (/^\d+$/.test(input)) {
+      response = await apiRequestCode(input, null);
+    } else {
+      response = await apiRequestCode(null, input);
+    }
     telegramId.value = response.data.telegramId;
     step.value = 2;
   } catch (err) {

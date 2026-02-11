@@ -1,7 +1,20 @@
 import prisma from './prisma.js';
 
+async function generateDisplayNumber() {
+  for (let i = 0; i < 10; i++) {
+    const num = Math.floor(100000 + Math.random() * 900000); // 6-digit number
+    const existing = await prisma.application.findFirst({
+      where: { displayNumber: num }
+    });
+    if (!existing) return num;
+  }
+  // Fallback: timestamp-based
+  return Math.floor(Date.now() / 1000) % 900000 + 100000;
+}
+
 export async function createApplication(data) {
   const status = data.status || 'NEW';
+  const displayNumber = await generateDisplayNumber();
 
   const application = await prisma.application.create({
     data: {
@@ -13,7 +26,8 @@ export async function createApplication(data) {
       additionalComment: data.additionalComment,
       consentToDataProcessing: data.consentToDataProcessing || false,
       source: data.source || 'TELEGRAM',
-      status
+      status,
+      displayNumber
     },
     include: {
       client: true

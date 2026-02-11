@@ -96,7 +96,7 @@ export async function handleMyApplications(ctx) {
       const date = app.createdAt.toLocaleDateString('ru-RU');
       const status = statusLabels[app.status] || app.status;
 
-      message += `#${app.id} от ${date}\n`;
+      message += `#${app.displayNumber || app.id} от ${date}\n`;
       message += `Статус: ${status}\n`;
       message += `Тип кожи: ${formatSkinType(app.skinType)}\n`;
       if (app.doctor) {

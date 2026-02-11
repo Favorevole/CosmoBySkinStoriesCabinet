@@ -519,13 +519,14 @@ export async function handleConfirmSubmit(ctx) {
 
     clearSession(telegramId);
 
-    await ctx.editMessageText(`Заявка #${application.id} создана!`);
+    const appNum = application.displayNumber || application.id;
+    await ctx.editMessageText(`Заявка #${appNum} создана!`);
 
     if (paymentResult.alreadyPaid) {
       await ctx.reply('Эта заявка уже оплачена.');
     } else {
       await ctx.reply(
-        `*Заявка #${application.id} готова к оплате*\n\n` +
+        `*Заявка #${appNum} готова к оплате*\n\n` +
         'Стоимость консультации: *500 ₽*\n\n' +
         'Нажмите кнопку ниже, чтобы перейти к оплате.\n' +
         'После оплаты заявка будет отправлена специалисту.',
