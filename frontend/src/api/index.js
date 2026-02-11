@@ -111,6 +111,19 @@ export const checkApplicationStatus = (id) =>
 export const getPublicReviews = () =>
   api.get('/web/reviews');
 
+// Reviews (admin)
+export const getAdminReviews = () =>
+  api.get('/reviews');
+
+export const approveReviewApi = (id) =>
+  api.post(`/reviews/${id}/approve`);
+
+export const rejectReviewApi = (id) =>
+  api.post(`/reviews/${id}/reject`);
+
+export const deleteReviewApi = (id) =>
+  api.delete(`/reviews/${id}`);
+
 // Settings
 export const getSkinProblems = () =>
   api.get('/settings/skin-problems');

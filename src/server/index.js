@@ -9,6 +9,7 @@ import doctorsRoutes from './routes/doctors.js';
 import statsRoutes from './routes/stats.js';
 import webRoutes from './routes/web.js';
 import settingsRoutes from './routes/settings.js';
+import reviewsRoutes from './routes/reviews.js';
 
 const app = express();
 
@@ -72,6 +73,7 @@ app.use('/api/doctors', doctorsRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/web', webRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/reviews', reviewsRoutes);
 
 // YooKassa payment webhook
 app.post('/api/payments/yookassa/webhook',

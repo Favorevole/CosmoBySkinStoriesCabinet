@@ -10,6 +10,7 @@ import Applications from './views/Applications.vue';
 import ApplicationDetail from './views/ApplicationDetail.vue';
 import Doctors from './views/Doctors.vue';
 import Settings from './views/Settings.vue';
+import Reviews from './views/Reviews.vue';
 
 const routes = [
   { path: '/', component: Landing },
@@ -23,6 +24,7 @@ const routes = [
       { path: 'applications', component: Applications },
       { path: 'applications/:id', component: ApplicationDetail },
       { path: 'doctors', component: Doctors },
+      { path: 'reviews', component: Reviews },
       { path: 'settings', component: Settings }
     ]
   }

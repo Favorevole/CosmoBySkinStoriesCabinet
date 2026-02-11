@@ -55,7 +55,6 @@
             <span v-for="s in review.rating" :key="s" class="star">&#x2B50;</span>
           </div>
           <p class="review-text">{{ review.text }}</p>
-          <span class="review-author">{{ review.clientName || 'Клиент' }}</span>
         </div>
       </div>
     </section>

@@ -15,7 +15,7 @@ router.use(requireAdmin);
 router.get('/dashboard', async (req, res) => {
   try {
     // Use a single transaction for better performance
-    const [applicationStats, doctorStats, clientCount] = await Promise.all([
+    const [applicationStats, doctorStats, clientCount, pendingReviewsCount] = await Promise.all([
       getApplicationStats(),
 
       prisma.doctor.groupBy({
@@ -23,7 +23,9 @@ router.get('/dashboard', async (req, res) => {
         _count: { id: true }
       }),
 
-      prisma.client.count()
+      prisma.client.count(),
+
+      prisma.review.count({ where: { isApproved: false } })
     ]);
 
     // Recent applications removed from dashboard stats to improve performance
@@ -48,6 +50,9 @@ router.get('/dashboard', async (req, res) => {
       },
       clients: {
         total: clientCount
+      },
+      reviews: {
+        pending: pendingReviewsCount
       }
     });
 
