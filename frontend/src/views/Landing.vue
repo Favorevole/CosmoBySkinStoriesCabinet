@@ -10,9 +10,9 @@
           <a href="#how-it-works">Как это работает</a>
           <a href="#experts">Эксперты</a>
           <a href="#about">О проекте</a>
-          <button class="nav-cta" @click="showModal = true">Начать</button>
+          <!-- <button class="nav-cta" @click="showModal = true">Начать</button> -->
         </nav>
-        <button class="mobile-cta" @click="showModal = true">Начать</button>
+        <!-- <button class="mobile-cta" @click="showModal = true">Начать</button> -->
       </div>
     </header>
 
@@ -26,11 +26,11 @@
           <p class="hero-price">Стоимость одной консультации — 500 рублей</p>
           <p class="hero-cta-label">Начать консультацию</p>
           <div class="hero-cta-buttons">
-            <button class="btn btn-primary" @click="showModal = true">
+            <!-- <button class="btn btn-primary" @click="showModal = true">
               <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M14 9l3 3-3 3"/></svg>
               На сайте
-            </button>
-            <a :href="telegramBotLink" target="_blank" class="btn btn-outline">
+            </button> -->
+            <a :href="telegramBotLink" target="_blank" class="btn btn-primary">
               <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="m22 2-11 11"/></svg>
               В Телеграм
             </a>
@@ -254,11 +254,11 @@
       <h2>Готовы помочь AI понять кожу?</h2>
       <p class="cta-subtitle">Загрузите фото — получите экспертный анализ</p>
       <div class="cta-buttons">
-        <button class="btn btn-white" @click="showModal = true">
+        <!-- <button class="btn btn-white" @click="showModal = true">
           <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M14 9l3 3-3 3"/></svg>
           Заполнить на сайте
-        </button>
-        <a :href="telegramBotLink" target="_blank" class="btn btn-white-outline">
+        </button> -->
+        <a :href="telegramBotLink" target="_blank" class="btn btn-white">
           <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="m22 2-11 11"/></svg>
           Открыть Telegram
         </a>
