@@ -387,7 +387,7 @@ export async function handleConfirmSubmit(ctx) {
 
   try {
     const { Markup } = await import('telegraf');
-    const { createPayment } = await import('../../services/payment.js');
+    const { createPayment, processPayment } = await import('../../services/payment.js');
     const username = ctx.from.username;
     const fullName = [ctx.from.first_name, ctx.from.last_name].filter(Boolean).join(' ');
 
@@ -421,21 +421,29 @@ export async function handleConfirmSubmit(ctx) {
     // Create pending payment
     await createPayment(application.id);
 
+    // Create YooKassa payment and get URL
+    const paymentResult = await processPayment(application.id);
+
     clearSession(telegramId);
 
     await ctx.editMessageText(`Заявка #${application.id} создана!`);
 
-    await ctx.reply(
-      `*Заявка #${application.id} готова к оплате*\n\n` +
-      'Стоимость консультации: *500 ₽*\n\n' +
-      'После оплаты заявка будет отправлена специалисту.',
-      {
-        parse_mode: 'Markdown',
-        ...Markup.inlineKeyboard([
-          [Markup.button.callback('Оплатить 500 ₽', `pay_${application.id}`)]
-        ])
-      }
-    );
+    if (paymentResult.alreadyPaid) {
+      await ctx.reply('Эта заявка уже оплачена.');
+    } else {
+      await ctx.reply(
+        `*Заявка #${application.id} готова к оплате*\n\n` +
+        'Стоимость консультации: *500 ₽*\n\n' +
+        'Нажмите кнопку ниже, чтобы перейти к оплате.\n' +
+        'После оплаты заявка будет отправлена специалисту.',
+        {
+          parse_mode: 'Markdown',
+          ...Markup.inlineKeyboard([
+            [Markup.button.url('Оплатить 500 ₽', paymentResult.confirmationUrl)]
+          ])
+        }
+      );
+    }
 
   } catch (error) {
     console.error('[CLIENT_BOT] Error submitting application:', error);

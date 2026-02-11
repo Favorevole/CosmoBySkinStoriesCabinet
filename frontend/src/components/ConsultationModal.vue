@@ -461,10 +461,16 @@ async function submitAndPay() {
     const res = await submitWebApplication(fd);
     const applicationId = res.data.applicationId;
 
-    // Process mock payment
-    await payWebApplication(applicationId);
+    // Create YooKassa payment
+    const payRes = await payWebApplication(applicationId);
 
-    step.value = 6;
+    if (payRes.data.alreadyPaid) {
+      step.value = 6;
+      return;
+    }
+
+    // Redirect to YooKassa payment page
+    window.location.href = payRes.data.confirmationUrl;
   } catch (err) {
     submitError.value = err.response?.data?.error || 'Произошла ошибка. Попробуйте ещё раз.';
   } finally {

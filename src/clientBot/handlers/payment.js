@@ -1,14 +1,14 @@
 import { processPayment } from '../../services/payment.js';
-import { mainMenuKeyboard } from '../keyboards/index.js';
+import { Markup } from 'telegraf';
 
-// Handle pay_{applicationId} callback
+// Handle pay_{applicationId} callback — now creates a YooKassa payment URL
 export async function handlePayment(ctx) {
   try {
     await ctx.answerCbQuery();
 
     const applicationId = parseInt(ctx.match[1]);
 
-    await ctx.editMessageText('Обработка платежа...');
+    await ctx.editMessageText('Создаём ссылку на оплату...');
 
     const result = await processPayment(applicationId);
 
@@ -18,20 +18,20 @@ export async function handlePayment(ctx) {
     }
 
     await ctx.editMessageText(
-      `*Оплата прошла успешно!*\n\n` +
-      `Заявка #${applicationId} отправлена специалисту.\n\n` +
-      'Эксперт изучит вашу анкету и фотографии, после чего вы получите персональные рекомендации.\n\n' +
-      'Обычно это занимает 24-48 часов.\n\n' +
-      'Мы пришлём вам уведомление, когда ответ будет готов.',
-      { parse_mode: 'Markdown' }
+      `*Заявка #${applicationId} — оплата*\n\n` +
+      'Нажмите кнопку ниже, чтобы перейти к оплате.',
+      {
+        parse_mode: 'Markdown',
+        ...Markup.inlineKeyboard([
+          [Markup.button.url('Оплатить 500 ₽', result.confirmationUrl)]
+        ])
+      }
     );
 
-    await ctx.reply('Спасибо за оплату! Ожидайте ответа специалиста.', mainMenuKeyboard());
-
   } catch (error) {
-    console.error('[CLIENT_BOT] Error processing payment:', error);
+    console.error('[CLIENT_BOT] Error creating payment:', error);
     await ctx.reply(
-      'Произошла ошибка при обработке платежа. Пожалуйста, попробуйте ещё раз или начните заново с /start'
+      'Произошла ошибка при создании платежа. Пожалуйста, попробуйте ещё раз или начните заново с /start'
     );
   }
 }

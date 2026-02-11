@@ -36,3 +36,16 @@ export async function failPayment(paymentId) {
     }
   });
 }
+
+export async function getPaymentByExternalId(externalId) {
+  return prisma.payment.findFirst({
+    where: { externalId }
+  });
+}
+
+export async function updatePaymentExternalId(paymentId, externalId) {
+  return prisma.payment.update({
+    where: { id: paymentId },
+    data: { externalId }
+  });
+}

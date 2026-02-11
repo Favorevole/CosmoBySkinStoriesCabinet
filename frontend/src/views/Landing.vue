@@ -267,6 +267,22 @@
       <span class="cta-note">Конфиденциально • Ответ за 24 часа</span>
     </section>
 
+    <!-- Payment success banner -->
+    <Teleport to="body">
+      <div v-if="showPaymentBanner" class="payment-overlay" @click.self="showPaymentBanner = false">
+        <div class="payment-banner">
+          <button class="payment-banner-close" @click="showPaymentBanner = false">&times;</button>
+          <div class="payment-banner-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="56" height="56"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <h2>Платёж обрабатывается</h2>
+          <p>Ваш платёж получен и обрабатывается. Как только оплата будет подтверждена, заявка будет отправлена специалисту.</p>
+          <p class="payment-banner-note">Обычно это занимает несколько минут. Рекомендации вы получите в течение 24 часов.</p>
+          <button class="payment-banner-btn" @click="showPaymentBanner = false">Понятно</button>
+        </div>
+      </div>
+    </Teleport>
+
     <!-- Consultation Modal -->
     <ConsultationModal :visible="showModal" @close="showModal = false" />
 
@@ -298,8 +314,17 @@ const telegramBotLink = `https://t.me/${botUsername}`;
 
 const reviews = ref([]);
 const showModal = ref(false);
+const showPaymentBanner = ref(false);
 
 onMounted(async () => {
+  // Check if returning from YooKassa payment
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('payment') === 'success') {
+    showPaymentBanner.value = true;
+    // Clean up URL
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+
   try {
     const res = await getPublicReviews();
     reviews.value = res.data.reviews || [];
@@ -1257,6 +1282,89 @@ onMounted(async () => {
     flex-direction: column;
     gap: 16px;
   }
+}
+
+/* Payment banner */
+.payment-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(45, 36, 32, 0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.payment-banner {
+  background: var(--color-porcelain, #FAF8F5);
+  border-radius: 24px;
+  max-width: 460px;
+  width: 100%;
+  padding: 40px 32px 32px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(45, 36, 32, 0.2);
+}
+
+.payment-banner-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: var(--color-warm-nude, #E8DED4);
+  border-radius: 50%;
+  font-size: 22px;
+  color: var(--color-cocoa, #5C4A3D);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.payment-banner-icon {
+  color: var(--color-burgundy, #8B3A4A);
+  margin-bottom: 16px;
+}
+
+.payment-banner h2 {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--color-rich-ebony, #2D2420);
+  margin-bottom: 12px;
+}
+
+.payment-banner p {
+  font-size: 16px;
+  color: var(--color-cocoa, #5C4A3D);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.payment-banner-note {
+  font-size: 14px !important;
+  opacity: 0.7;
+}
+
+.payment-banner-btn {
+  margin-top: 20px;
+  padding: 14px 40px;
+  background: var(--color-burgundy, #8B3A4A);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--font-body, 'Manrope', sans-serif);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.payment-banner-btn:hover {
+  background: var(--color-burgundy-dark, #6E2E3B);
 }
 
 @media (max-width: 480px) {

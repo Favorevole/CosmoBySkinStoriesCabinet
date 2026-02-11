@@ -59,6 +59,14 @@ const config = {
     secretAccessKey: process.env.S3_SECRET_ACCESS_KEY
   },
 
+  yookassa: {
+    shopId: process.env.YOOKASSA_SHOP_ID,
+    apiKey: process.env.YOOKASSA_API_KEY,
+    returnUrl: WEBHOOK_URL
+      ? `${WEBHOOK_URL}/?payment=success`
+      : 'http://localhost:5173/?payment=success'
+  },
+
   adminTelegramIds: (process.env.ADMIN_TELEGRAM_IDS || '')
     .split(',')
     .map(id => id.trim())
@@ -69,7 +77,7 @@ const config = {
 // Validation
 const requiredVars = ['DATABASE_URL', 'CLIENT_BOT_TOKEN', 'DOCTOR_BOT_TOKEN'];
 if (config.isProduction) {
-  requiredVars.push('S3_ACCESS_KEY_ID', 'S3_SECRET_ACCESS_KEY', 'S3_BUCKET');
+  requiredVars.push('S3_ACCESS_KEY_ID', 'S3_SECRET_ACCESS_KEY', 'S3_BUCKET', 'YOOKASSA_SHOP_ID', 'YOOKASSA_API_KEY');
 }
 const missing = requiredVars.filter(v => !process.env[v]);
 

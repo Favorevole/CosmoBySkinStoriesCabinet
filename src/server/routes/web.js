@@ -172,13 +172,15 @@ router.post('/applications/:id/pay', async (req, res) => {
       return res.status(400).json({ error: 'Application is not awaiting payment' });
     }
 
-    // Process mock payment (creates payment, moves to NEW, notifies admins)
     const result = await processPayment(applicationId);
+
+    if (result.alreadyPaid) {
+      return res.json({ success: true, alreadyPaid: true });
+    }
 
     res.json({
       success: true,
-      paid: !result.alreadyPaid,
-      message: 'Оплата прошла успешно'
+      confirmationUrl: result.confirmationUrl
     });
   } catch (error) {
     console.error('[WEB] Error processing payment:', error);

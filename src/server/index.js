@@ -37,7 +37,7 @@ app.use((req, res, next) => {
 
 // JSON parsing (except for webhooks)
 app.use((req, res, next) => {
-  if (req.path === '/client-webhook' || req.path === '/doctor-webhook') {
+  if (req.path === '/client-webhook' || req.path === '/doctor-webhook' || req.path === '/api/payments/yookassa/webhook') {
     return next();
   }
   express.json({ limit: '50mb' })(req, res, next);
@@ -72,6 +72,23 @@ app.use('/api/doctors', doctorsRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/web', webRoutes);
 app.use('/api/settings', settingsRoutes);
+
+// YooKassa payment webhook
+app.post('/api/payments/yookassa/webhook',
+  express.json({ limit: '1mb' }),
+  async (req, res) => {
+    console.log('[WEBHOOK] YooKassa payment notification received');
+    // Respond 200 immediately — YooKassa requires fast response
+    res.sendStatus(200);
+
+    try {
+      const { handleYooKassaWebhook } = await import('../services/payment.js');
+      await handleYooKassaWebhook(req.body);
+    } catch (error) {
+      console.error('[WEBHOOK] YooKassa processing error:', error.message);
+    }
+  }
+);
 
 // Client bot webhook
 app.post('/client-webhook',
