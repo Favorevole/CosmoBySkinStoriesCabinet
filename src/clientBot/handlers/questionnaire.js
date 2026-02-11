@@ -323,6 +323,99 @@ export async function handleCommentInput(ctx) {
   return true;
 }
 
+// Back handlers
+export async function handleBackToAge(ctx) {
+  const telegramId = ctx.from.id;
+  const session = getSession(telegramId);
+  session.state = CLIENT_STATES.AWAITING_AGE;
+  session.applicationData.skinType = null;
+  clientSessions.set(telegramId, session);
+
+  await ctx.answerCbQuery();
+  await ctx.editMessageText('*Вопрос 1 из 5*\n\nУкажите ваш возраст (число):', { parse_mode: 'Markdown' });
+}
+
+export async function handleBackToSkinType(ctx) {
+  const telegramId = ctx.from.id;
+  const session = getSession(telegramId);
+  session.state = CLIENT_STATES.AWAITING_SKIN_TYPE;
+  session.applicationData.priceRange = null;
+  clientSessions.set(telegramId, session);
+
+  await ctx.answerCbQuery();
+  await ctx.editMessageText('*Вопрос 2 из 5*\n\nВыберите тип вашей кожи:', {
+    parse_mode: 'Markdown',
+    ...skinTypeKeyboard()
+  });
+}
+
+export async function handleBackToPriceRange(ctx) {
+  const telegramId = ctx.from.id;
+  const session = getSession(telegramId);
+  session.state = CLIENT_STATES.AWAITING_PRICE_RANGE;
+  session.applicationData.mainProblems = null;
+  session.selectedProblems = [];
+  clientSessions.set(telegramId, session);
+
+  await ctx.answerCbQuery();
+  await ctx.editMessageText('*Вопрос 3 из 5*\n\nВыберите комфортный ценовой диапазон для ухода за кожей:', {
+    parse_mode: 'Markdown',
+    ...priceRangeKeyboard()
+  });
+}
+
+export async function handleBackToProblems(ctx) {
+  const telegramId = ctx.from.id;
+  const session = getSession(telegramId);
+  session.state = CLIENT_STATES.AWAITING_PROBLEMS;
+  session.applicationData.additionalComment = null;
+  clientSessions.set(telegramId, session);
+
+  await ctx.answerCbQuery();
+  await ctx.editMessageText('*Вопрос 4 из 5*\n\nОпишите основные проблемы с кожей, которые вас беспокоят.\n\nВы можете написать своими словами или воспользоваться подсказками:', {
+    parse_mode: 'Markdown',
+    ...problemsInputKeyboard()
+  });
+}
+
+export async function handleBackToComment(ctx) {
+  const telegramId = ctx.from.id;
+  const session = getSession(telegramId);
+  session.state = CLIENT_STATES.AWAITING_COMMENT;
+  session.photos = [];
+  clientSessions.set(telegramId, session);
+
+  await ctx.answerCbQuery();
+  await ctx.editMessageText('*Вопрос 5 из 5*\n\nЕсть ли дополнительная информация, которую вы хотите сообщить?\n\n(текущий уход, аллергии, хронические заболевания и т.д.)', {
+    parse_mode: 'Markdown',
+    ...skipCommentKeyboard()
+  });
+}
+
+export async function handleBackToPhotos(ctx) {
+  const telegramId = ctx.from.id;
+  const session = getSession(telegramId);
+  session.state = CLIENT_STATES.AWAITING_PHOTOS;
+  clientSessions.set(telegramId, session);
+
+  const { photoUploadKeyboard } = await import('../keyboards/index.js');
+  const photoCount = session.photos.length;
+
+  await ctx.answerCbQuery();
+
+  if (photoCount > 0) {
+    await ctx.editMessageText(
+      `У вас ${photoCount} фото. Отправьте ещё или нажмите "Готово".`,
+      photoUploadKeyboard(photoCount)
+    );
+  } else {
+    await ctx.editMessageText(
+      '*Загрузка фотографий*\n\nОтправьте от 1 до 6 фотографий вашей кожи.',
+      { parse_mode: 'Markdown' }
+    );
+  }
+}
+
 // Handle cancel
 export async function handleCancel(ctx) {
   const telegramId = ctx.from.id;

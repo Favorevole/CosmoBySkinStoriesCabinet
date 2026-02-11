@@ -14,7 +14,13 @@ import {
   handleSkipComment,
   handleCancel,
   handleConfirmSubmit,
-  handleTextMessage
+  handleTextMessage,
+  handleBackToAge,
+  handleBackToSkinType,
+  handleBackToPriceRange,
+  handleBackToProblems,
+  handleBackToComment,
+  handleBackToPhotos
 } from './handlers/questionnaire.js';
 import {
   handlePhotoUpload,
@@ -73,6 +79,14 @@ export function createClientBot() {
   bot.action('skip_comment', handleSkipComment);
   bot.action('cancel', handleCancel);
   bot.action('confirm_submit', handleConfirmSubmit);
+
+  // Callback queries - back navigation
+  bot.action('back_to_age', handleBackToAge);
+  bot.action('back_to_skin_type', handleBackToSkinType);
+  bot.action('back_to_price_range', handleBackToPriceRange);
+  bot.action('back_to_problems', handleBackToProblems);
+  bot.action('back_to_comment', handleBackToComment);
+  bot.action('back_to_photos', handleBackToPhotos);
 
   // Callback queries - photos
   bot.action('photos_done', handlePhotosDone);
