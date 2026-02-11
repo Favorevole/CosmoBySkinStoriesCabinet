@@ -62,9 +62,7 @@ const config = {
   yookassa: {
     shopId: process.env.YOOKASSA_SHOP_ID,
     apiKey: process.env.YOOKASSA_API_KEY,
-    returnUrl: WEBHOOK_URL
-      ? `${WEBHOOK_URL}/?payment=success`
-      : 'http://localhost:5173/?payment=success'
+    returnUrl: process.env.YOOKASSA_RETURN_URL || 'http://localhost:5173/?payment=success'
   },
 
   adminTelegramIds: (process.env.ADMIN_TELEGRAM_IDS || '')
