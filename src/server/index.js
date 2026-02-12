@@ -43,11 +43,16 @@ const allowedOrigins = [
   ...(config.isDevelopment ? ['http://localhost:5173', 'http://localhost:3000'] : [])
 ];
 
+console.log('[CORS] Allowed origins:', allowedOrigins);
+
 app.use(cors({
   origin(origin, callback) {
     // Allow requests with no origin (webhooks, bots, server-to-server)
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
+    // Allow Railway deployment domains
+    if (origin.endsWith('.up.railway.app')) return callback(null, true);
+    console.warn(`[CORS] Blocked origin: ${origin}`);
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
