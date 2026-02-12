@@ -283,7 +283,9 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="56" height="56"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
           </div>
           <h2>Платёж обрабатывается</h2>
-          <p>Ваш платёж получен и обрабатывается. Как только оплата будет подтверждена, заявка будет отправлена специалисту.</p>
+          <p v-if="paymentAppNumber">Заявка <strong>#{{ paymentAppNumber }}</strong> — платёж получен и обрабатывается. Как только оплата будет подтверждена, заявка будет отправлена специалисту.</p>
+          <p v-else>Ваш платёж получен и обрабатывается. Как только оплата будет подтверждена, заявка будет отправлена специалисту.</p>
+          <p v-if="paymentAppNumber" class="payment-banner-note" style="font-size: 13px;">Номер вашей заявки: <strong>#{{ paymentAppNumber }}</strong>. Сохраните его на случай обращения.</p>
           <p class="payment-banner-note">Обычно это занимает несколько минут. Рекомендации вы получите в течение 24 часов.</p>
           <button class="payment-banner-btn" @click="showPaymentBanner = false">Понятно</button>
         </div>
@@ -322,12 +324,14 @@ const telegramBotLink = `https://t.me/${botUsername}`;
 const reviews = ref([]);
 const showModal = ref(false);
 const showPaymentBanner = ref(false);
+const paymentAppNumber = ref(null);
 
 onMounted(async () => {
   // Check if returning from YooKassa payment
   const params = new URLSearchParams(window.location.search);
   if (params.get('payment') === 'success') {
     showPaymentBanner.value = true;
+    paymentAppNumber.value = params.get('app') || null;
     // Clean up URL
     window.history.replaceState({}, '', window.location.pathname);
   }

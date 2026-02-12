@@ -31,6 +31,10 @@ async function createYooKassaPayment(applicationId) {
     return { alreadyPaid: true };
   }
 
+  // Get displayNumber for return URL
+  const application = await getApplicationById(applicationId);
+  const displayNumber = application?.displayNumber || applicationId;
+
   // If we already have an externalId, the payment was already created at YooKassa.
   // Create a new one with a fresh idempotence key to get a valid confirmation URL.
 
@@ -43,7 +47,7 @@ async function createYooKassaPayment(applicationId) {
     },
     confirmation: {
       type: 'redirect',
-      return_url: config.yookassa.returnUrl
+      return_url: `${config.yookassa.returnUrl}&app=${displayNumber}`
     },
     capture: true,
     description: 'Онлайн-консультация косметолога',
