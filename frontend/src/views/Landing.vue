@@ -21,7 +21,7 @@
       <div class="hero-content">
         <div class="hero-text">
           <span class="badge">AI Research Phase</span>
-          <h1>Мы обучаем AI<br>понимать настоящую кожу</h1>
+          <h1>Мы обучаем AI <br>понимать настоящую кожу</h1>
           <p class="hero-subtitle">Получите экспертные рекомендации по уходу за кожей от наших дерматологов — пока наш AI&nbsp;учится.</p>
           <p class="hero-price">Стоимость одной консультации — 500 рублей</p>
           <p class="hero-cta-label">Начать консультацию</p>
