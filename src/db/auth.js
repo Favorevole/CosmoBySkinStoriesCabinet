@@ -1,11 +1,12 @@
 import prisma from './prisma.js';
 import { nanoid } from 'nanoid';
+import crypto from 'crypto';
 
 const CODE_EXPIRY_MINUTES = 5;
 
 export async function createAuthCode(telegramId) {
-  // Generate 6-digit code
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  // Generate 6-digit code (cryptographically secure)
+  const code = crypto.randomInt(100000, 999999).toString();
 
   const expiresAt = new Date();
   expiresAt.setMinutes(expiresAt.getMinutes() + CODE_EXPIRY_MINUTES);

@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import config from '../config/environment.js';
 
 // Routes
@@ -13,6 +15,9 @@ import reviewsRoutes from './routes/reviews.js';
 
 const app = express();
 
+// Trust proxy (Railway runs behind a reverse proxy)
+app.set('trust proxy', 1);
+
 // Store bot references for webhooks
 let clientBot = null;
 let doctorBot = null;
@@ -22,12 +27,56 @@ export function setBotsForWebhook(client, doctor) {
   doctorBot = doctor;
 }
 
-// CORS
+// Security headers
+app.use(helmet({
+  contentSecurityPolicy: false, // CSP managed separately for frontend
+  crossOriginEmbedderPolicy: false
+}));
+
+// CORS — restrict to allowed origins
+// Build allowed origins from config + well-known domains
+const allowedOrigins = [
+  'https://bot.skinstories.ru',
+  'https://skinstories.ru',
+  'https://www.skinstories.ru',
+  ...(config.server.webhookUrl ? [config.server.webhookUrl] : []),
+  ...(config.isDevelopment ? ['http://localhost:5173', 'http://localhost:3000'] : [])
+];
+
+console.log('[CORS] Allowed origins:', allowedOrigins);
+
 app.use(cors({
-  origin: true,
+  origin(origin, callback) {
+    // Allow requests with no origin (webhooks, bots, server-to-server)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    // Allow Railway deployment domains
+    if (origin.endsWith('.up.railway.app')) return callback(null, true);
+    console.warn(`[CORS] Blocked origin: ${origin}`);
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   exposedHeaders: ['Content-Disposition']
 }));
+
+// Rate limiting
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // 10 attempts per window
+  message: { error: 'Слишком много попыток. Попробуйте через 15 минут.' }
+});
+
+const webFormLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // 10 applications per hour per IP
+  message: { error: 'Слишком много заявок. Попробуйте позже.' }
+});
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  message: { error: 'Too many requests' }
+});
 
 // Logging middleware
 app.use((req, res, next) => {
@@ -66,20 +115,62 @@ app.get('/doctor-webhook', (req, res) => {
   });
 });
 
-// API routes
-app.use('/api/auth', authRoutes);
-app.use('/api/applications', applicationsRoutes);
-app.use('/api/doctors', doctorsRoutes);
-app.use('/api/stats', statsRoutes);
-app.use('/api/web', webRoutes);
-app.use('/api/settings', settingsRoutes);
-app.use('/api/reviews', reviewsRoutes);
+// API routes with rate limiting
+app.use('/api/auth', authLimiter, authRoutes);
+app.use('/api/applications', apiLimiter, applicationsRoutes);
+app.use('/api/doctors', apiLimiter, doctorsRoutes);
+app.use('/api/stats', apiLimiter, statsRoutes);
+app.use('/api/web', webFormLimiter, webRoutes);
+app.use('/api/settings', apiLimiter, settingsRoutes);
+app.use('/api/reviews', apiLimiter, reviewsRoutes);
+
+// YooKassa webhook IP whitelist
+// https://yookassa.ru/developers/using-api/webhooks#ip
+const YOOKASSA_IPS = [
+  '185.71.76.0/27',
+  '185.71.77.0/27',
+  '77.75.153.0/25',
+  '77.75.156.11',
+  '77.75.156.35',
+  '77.75.154.128/25',
+  '2a02:5180::/32'
+];
+
+function ipInCIDR(ip, cidr) {
+  if (cidr.includes('/')) {
+    const [range, bits] = cidr.split('/');
+    const rangeParts = range.split('.').map(Number);
+    const ipParts = ip.split('.').map(Number);
+    const mask = -1 << (32 - parseInt(bits));
+    const rangeNum = ((rangeParts[0] << 24) | (rangeParts[1] << 16) | (rangeParts[2] << 8) | rangeParts[3]) >>> 0;
+    const ipNum = ((ipParts[0] << 24) | (ipParts[1] << 16) | (ipParts[2] << 8) | ipParts[3]) >>> 0;
+    return (ipNum & mask) === (rangeNum & mask);
+  }
+  return ip === cidr;
+}
+
+function isYooKassaIP(requestIp) {
+  // In dev mode, skip IP check
+  if (config.isDevelopment) return true;
+  const ip = requestIp.replace('::ffff:', '');
+  return YOOKASSA_IPS.some(cidr => {
+    if (cidr.includes(':')) return false; // Skip IPv6 for now
+    return ipInCIDR(ip, cidr);
+  });
+}
 
 // YooKassa payment webhook
 app.post('/api/payments/yookassa/webhook',
   express.json({ limit: '1mb' }),
   async (req, res) => {
-    console.log('[WEBHOOK] YooKassa payment notification received');
+    const clientIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip;
+    console.log(`[WEBHOOK] YooKassa notification from IP: ${clientIp}`);
+
+    if (!isYooKassaIP(clientIp)) {
+      console.warn(`[WEBHOOK] Rejected YooKassa webhook from untrusted IP: ${clientIp}`);
+      return res.sendStatus(403);
+    }
+
     // Respond 200 immediately — YooKassa requires fast response
     res.sendStatus(200);
 

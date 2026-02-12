@@ -469,8 +469,17 @@ async function submitAndPay() {
       return;
     }
 
-    // Redirect to YooKassa payment page
-    window.location.href = payRes.data.confirmationUrl;
+    // Redirect to YooKassa payment page (validate URL)
+    const payUrl = payRes.data.confirmationUrl;
+    try {
+      const parsed = new URL(payUrl);
+      if (parsed.protocol !== 'https:' || !parsed.hostname.endsWith('yookassa.ru')) {
+        throw new Error('Invalid payment URL');
+      }
+      window.location.href = payUrl;
+    } catch {
+      submitError.value = 'Ошибка платёжной ссылки. Попробуйте ещё раз.';
+    }
   } catch (err) {
     submitError.value = err.response?.data?.error || 'Произошла ошибка. Попробуйте ещё раз.';
   } finally {
