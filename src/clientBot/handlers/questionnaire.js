@@ -50,7 +50,7 @@ export async function handleStartQuestionnaire(ctx) {
 
   clientSessions.set(telegramId, session);
 
-  await ctx.answerCbQuery();
+  if (ctx.callbackQuery) await ctx.answerCbQuery();
   await ctx.reply(
     'Стоимость консультации: *500 ₽*\nОплата после заполнения анкеты.\n\n*Вопрос 1 из 5*\n\nУкажите ваш возраст (число):',
     { parse_mode: 'Markdown' }
