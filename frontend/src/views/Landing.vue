@@ -305,7 +305,7 @@
         </div>
         <div class="footer-links">
           <a href="/privacy">Политика конфиденциальности</a>
-          <span>© 2025 Skin Stories</span>
+          <span>© 2026 Skin Stories</span>
         </div>
       </div>
     </footer>
