@@ -15,6 +15,9 @@ import reviewsRoutes from './routes/reviews.js';
 
 const app = express();
 
+// Trust proxy (Railway runs behind a reverse proxy)
+app.set('trust proxy', 1);
+
 // Store bot references for webhooks
 let clientBot = null;
 let doctorBot = null;
@@ -31,10 +34,12 @@ app.use(helmet({
 }));
 
 // CORS — restrict to allowed origins
+// Build allowed origins from config + well-known domains
 const allowedOrigins = [
   'https://bot.skinstories.ru',
   'https://skinstories.ru',
   'https://www.skinstories.ru',
+  ...(config.server.webhookUrl ? [config.server.webhookUrl] : []),
   ...(config.isDevelopment ? ['http://localhost:5173', 'http://localhost:3000'] : [])
 ];
 
