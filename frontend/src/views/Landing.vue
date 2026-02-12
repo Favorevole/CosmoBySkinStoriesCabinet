@@ -304,9 +304,8 @@
           </div>
         </div>
         <div class="footer-links">
-          <a href="#">Политика конфиденциальности</a>
-          <a href="#">Условия использования</a>
-          <span>© 2024 Skin.Stories</span>
+          <a href="/privacy">Политика конфиденциальности</a>
+          <span>© 2025 Skin Stories</span>
         </div>
       </div>
     </footer>
