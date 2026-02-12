@@ -1258,6 +1258,7 @@ onMounted(async () => {
 
   .experts-grid {
     flex-wrap: nowrap;
+    justify-content: flex-start;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory;
