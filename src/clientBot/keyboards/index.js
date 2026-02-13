@@ -18,7 +18,7 @@ export function skinTypeKeyboard() {
       Markup.button.callback(SKIN_TYPES.NORMAL.label, 'skin_NORMAL')
     ],
     [
-      Markup.button.callback('« Назад', 'back_to_age'),
+      Markup.button.callback('⬅️ Назад', 'back_to_age'),
       Markup.button.callback('Отмена', 'cancel')
     ]
   ]);
@@ -30,7 +30,7 @@ export function priceRangeKeyboard() {
     [Markup.button.callback(PRICE_RANGES.UP_TO_10000.label, 'price_UP_TO_10000')],
     [Markup.button.callback(PRICE_RANGES.UP_TO_20000.label, 'price_UP_TO_20000')],
     [
-      Markup.button.callback('« Назад', 'back_to_skin_type'),
+      Markup.button.callback('⬅️ Назад', 'back_to_skin_type'),
       Markup.button.callback('Отмена', 'cancel')
     ]
   ]);
@@ -58,7 +58,7 @@ export function problemsInputKeyboard() {
   return Markup.inlineKeyboard([
     [Markup.button.callback('💡 Помощь с выбором', 'problems_help')],
     [
-      Markup.button.callback('« Назад', 'back_to_price_range'),
+      Markup.button.callback('⬅️ Назад', 'back_to_price_range'),
       Markup.button.callback('Отмена', 'cancel')
     ]
   ]);
@@ -68,7 +68,7 @@ export function skipCommentKeyboard() {
   return Markup.inlineKeyboard([
     [Markup.button.callback('⏩ Пропустить', 'skip_comment')],
     [
-      Markup.button.callback('« Назад', 'back_to_problems'),
+      Markup.button.callback('⬅️ Назад', 'back_to_problems'),
       Markup.button.callback('Отмена', 'cancel')
     ]
   ]);
@@ -86,7 +86,7 @@ export function photoUploadKeyboard(photoCount) {
   }
 
   buttons.push([
-    Markup.button.callback('« Назад', 'back_to_comment'),
+    Markup.button.callback('⬅️ Назад', 'back_to_comment'),
     Markup.button.callback('Отмена', 'cancel')
   ]);
 
@@ -97,7 +97,7 @@ export function confirmKeyboard() {
   return Markup.inlineKeyboard([
     [Markup.button.callback('📨 Отправить', 'confirm_submit')],
     [
-      Markup.button.callback('« Назад', 'back_to_photos'),
+      Markup.button.callback('⬅️ Назад', 'back_to_photos'),
       Markup.button.callback('Отменить', 'cancel')
     ]
   ]);
