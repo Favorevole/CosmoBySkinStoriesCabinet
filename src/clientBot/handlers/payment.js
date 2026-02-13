@@ -1,5 +1,6 @@
 import { processPayment } from '../../services/payment.js';
 import { getApplicationById } from '../../db/applications.js';
+import { getPaymentByApplicationId } from '../../db/payments.js';
 import { Markup } from 'telegraf';
 
 // Handle pay_{applicationId} callback — now creates a YooKassa payment URL
@@ -13,7 +14,7 @@ export async function handlePayment(ctx) {
 
     const result = await processPayment(applicationId);
 
-    if (result.alreadyPaid) {
+    if (result.alreadyPaid || result.freeWithPromo) {
       await ctx.editMessageText('Эта заявка уже оплачена.');
       return;
     }
@@ -21,13 +22,17 @@ export async function handlePayment(ctx) {
     const application = await getApplicationById(applicationId);
     const appNum = application?.displayNumber || applicationId;
 
+    // Get actual amount from payment record
+    const payment = await getPaymentByApplicationId(applicationId);
+    const amount = payment?.amount || 500;
+
     await ctx.editMessageText(
       `*Заявка #${appNum} — оплата*\n\n` +
       'Нажмите кнопку ниже, чтобы перейти к оплате.',
       {
         parse_mode: 'Markdown',
         ...Markup.inlineKeyboard([
-          [Markup.button.url('Оплатить 500 ₽', result.confirmationUrl)]
+          [Markup.button.url(`Оплатить ${amount} ₽`, result.confirmationUrl)]
         ])
       }
     );

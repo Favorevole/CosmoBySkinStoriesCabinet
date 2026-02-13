@@ -11,6 +11,7 @@ import {
   problemsInputKeyboard,
   problemsHelpKeyboard,
   skipCommentKeyboard,
+  promoCodeKeyboard,
   confirmKeyboard,
   mainMenuKeyboard
 } from '../keyboards/index.js';
@@ -442,6 +443,90 @@ export async function handleBackToPhotos(ctx) {
   }
 }
 
+// Show promo code prompt (after photos, before confirmation)
+export async function showPromoCodePrompt(ctx) {
+  const telegramId = ctx.from.id;
+  const session = getSession(telegramId);
+
+  session.state = CLIENT_STATES.AWAITING_PROMO_CODE;
+  session.promoCode = null;
+  session.promoDiscount = 0;
+  clientSessions.set(telegramId, session);
+
+  await ctx.reply(
+    'У вас есть промокод?',
+    promoCodeKeyboard()
+  );
+}
+
+// Handle enter promo button
+export async function handleEnterPromo(ctx) {
+  const telegramId = ctx.from.id;
+  const session = getSession(telegramId);
+
+  session.state = CLIENT_STATES.AWAITING_PROMO_CODE;
+  clientSessions.set(telegramId, session);
+
+  await ctx.answerCbQuery();
+  await ctx.editMessageText('Введите промокод:');
+}
+
+// Handle skip promo button
+export async function handleSkipPromo(ctx) {
+  const telegramId = ctx.from.id;
+  const session = getSession(telegramId);
+
+  session.promoCode = null;
+  session.promoDiscount = 0;
+  clientSessions.set(telegramId, session);
+
+  await ctx.answerCbQuery();
+  await ctx.editMessageText('Промокод: без промокода');
+
+  await showConfirmation(ctx);
+}
+
+// Handle promo code text input
+export async function handlePromoCodeInput(ctx) {
+  const telegramId = ctx.from.id;
+  const session = getSession(telegramId);
+
+  if (session.state !== CLIENT_STATES.AWAITING_PROMO_CODE) {
+    return false;
+  }
+
+  const code = ctx.message.text.trim();
+
+  const { validatePromoCode } = await import('../../db/promoCodes.js');
+  const { valid, promoCode, error } = await validatePromoCode(code);
+
+  if (!valid) {
+    await ctx.reply(`${error}. Попробуйте другой промокод или нажмите "Продолжить без промокода".`, promoCodeKeyboard());
+    return true;
+  }
+
+  session.promoCode = promoCode;
+  session.promoDiscount = promoCode.discount;
+  clientSessions.set(telegramId, session);
+
+  const { PAYMENT_AMOUNT } = await import('../../services/payment.js');
+  const discountAmount = Math.round(PAYMENT_AMOUNT * promoCode.discount / 100);
+  const finalAmount = PAYMENT_AMOUNT - discountAmount;
+
+  await ctx.reply(
+    `*Промокод применён!*\n\n` +
+    `Код: ${promoCode.code}\n` +
+    `Скидка: ${promoCode.discount}%\n` +
+    (finalAmount > 0
+      ? `Итого к оплате: *${finalAmount} ₽* (вместо ${PAYMENT_AMOUNT} ₽)`
+      : `Оплата не требуется!`),
+    { parse_mode: 'Markdown' }
+  );
+
+  await showConfirmation(ctx);
+  return true;
+}
+
 // Handle cancel
 export async function handleCancel(ctx) {
   const telegramId = ctx.from.id;
@@ -470,6 +555,20 @@ export async function showConfirmation(ctx) {
   clientSessions.set(telegramId, session);
 
   const { age, skinType, priceRange, mainProblems, additionalComment } = session.applicationData;
+  const { PAYMENT_AMOUNT } = await import('../../services/payment.js');
+
+  const hasPromo = session.promoCode && session.promoDiscount > 0;
+  const discountAmount = hasPromo ? Math.round(PAYMENT_AMOUNT * session.promoDiscount / 100) : 0;
+  const finalAmount = PAYMENT_AMOUNT - discountAmount;
+
+  let priceText;
+  if (hasPromo && finalAmount === 0) {
+    priceText = `Стоимость: ~${PAYMENT_AMOUNT} ₽~ → *Бесплатно* (промокод ${session.promoCode.code})`;
+  } else if (hasPromo) {
+    priceText = `Стоимость: ~${PAYMENT_AMOUNT} ₽~ → *${finalAmount} ₽* (промокод ${session.promoCode.code})`;
+  } else {
+    priceText = `Стоимость консультации: *${PAYMENT_AMOUNT} ₽*`;
+  }
 
   const summary = `
 *Проверьте данные заявки:*
@@ -481,7 +580,7 @@ export async function showConfirmation(ctx) {
 ${additionalComment ? `Комментарий: ${additionalComment}` : 'Комментарий: нет'}
 Фотографий: ${session.photos.length}
 
-Стоимость консультации: *500 ₽*
+${priceText}
 
 Всё верно?
 `;
@@ -506,7 +605,7 @@ export async function handleConfirmSubmit(ctx) {
 
   try {
     const { Markup } = await import('telegraf');
-    const { createPayment, processPayment } = await import('../../services/payment.js');
+    const { createPayment, processPayment, PAYMENT_AMOUNT } = await import('../../services/payment.js');
     const username = ctx.from.username;
     const fullName = [ctx.from.first_name, ctx.from.last_name].filter(Boolean).join(' ');
 
@@ -537,10 +636,12 @@ export async function handleConfirmSubmit(ctx) {
       });
     }
 
-    // Create pending payment
-    await createPayment(application.id);
+    // Create pending payment (with promo if applicable)
+    const promoCodeId = session.promoCode?.id || null;
+    const promoDiscount = session.promoDiscount || 0;
+    await createPayment(application.id, promoCodeId, promoDiscount);
 
-    // Create YooKassa payment and get URL
+    // Process payment
     const paymentResult = await processPayment(application.id);
 
     clearSession(telegramId);
@@ -548,18 +649,31 @@ export async function handleConfirmSubmit(ctx) {
     const appNum = application.displayNumber || application.id;
     await ctx.editMessageText(`Заявка #${appNum} создана!`);
 
-    if (paymentResult.alreadyPaid) {
-      await ctx.reply('Эта заявка уже оплачена.');
+    if (paymentResult.alreadyPaid || paymentResult.freeWithPromo) {
+      // 100% discount — no payment needed
+      await ctx.reply(
+        `*Заявка #${appNum} оформлена!*\n\n` +
+        'Промокод применён — оплата не требуется.\n' +
+        'Заявка отправлена специалисту.\n\n' +
+        'Вам ответят в течение 24 часов.',
+        { parse_mode: 'Markdown' }
+      );
     } else {
+      const discountAmount = promoDiscount > 0 ? Math.round(PAYMENT_AMOUNT * promoDiscount / 100) : 0;
+      const finalAmount = PAYMENT_AMOUNT - discountAmount;
+      const priceText = promoDiscount > 0
+        ? `Стоимость: ${finalAmount} ₽ (скидка ${promoDiscount}%)`
+        : `Стоимость консультации: ${PAYMENT_AMOUNT} ₽`;
+
       await ctx.reply(
         `*Заявка #${appNum} готова к оплате*\n\n` +
-        'Стоимость консультации: *500 ₽*\n\n' +
+        `${priceText}\n\n` +
         'Нажмите кнопку ниже, чтобы перейти к оплате.\n' +
         'После оплаты заявка будет отправлена специалисту.',
         {
           parse_mode: 'Markdown',
           ...Markup.inlineKeyboard([
-            [Markup.button.url('Оплатить 500 ₽', paymentResult.confirmationUrl)]
+            [Markup.button.url(`Оплатить ${finalAmount} ₽`, paymentResult.confirmationUrl)]
           ])
         }
       );
@@ -626,6 +740,9 @@ export async function handleTextMessage(ctx) {
     case CLIENT_STATES.AWAITING_PHOTOS:
       await ctx.reply('Пожалуйста, отправьте фотографию, а не текст.');
       return true;
+
+    case CLIENT_STATES.AWAITING_PROMO_CODE:
+      return handlePromoCodeInput(ctx);
 
     default:
       return false;

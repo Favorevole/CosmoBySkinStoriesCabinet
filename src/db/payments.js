@@ -1,12 +1,14 @@
 import prisma from './prisma.js';
 
-export async function createPaymentRecord({ applicationId, amount, provider = 'MOCK' }) {
+export async function createPaymentRecord({ applicationId, amount, provider = 'MOCK', promoCodeId = null, discountAmount = null }) {
   return prisma.payment.create({
     data: {
       applicationId,
       amount,
       provider,
-      status: 'PENDING'
+      status: 'PENDING',
+      promoCodeId,
+      discountAmount
     }
   });
 }
@@ -47,5 +49,12 @@ export async function updatePaymentExternalId(paymentId, externalId) {
   return prisma.payment.update({
     where: { id: paymentId },
     data: { externalId }
+  });
+}
+
+export async function updatePaymentWithPromo(paymentId, { promoCodeId, discountAmount, amount }) {
+  return prisma.payment.update({
+    where: { id: paymentId },
+    data: { promoCodeId, discountAmount, amount }
   });
 }

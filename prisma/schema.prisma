@@ -143,6 +143,7 @@ model Application {
   assignedAt        DateTime?         @map("assigned_at")
   completedAt       DateTime?         @map("completed_at")
   sentToClientAt    DateTime?         @map("sent_to_client_at")
+  lastReminderAt    DateTime?         @map("last_reminder_at")
 
   // Relations
   client            Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
@@ -237,16 +238,19 @@ model AuthCode {
 }
 
 model Payment {
-  id            Int             @id @default(autoincrement())
-  applicationId Int             @unique @map("application_id")
-  amount        Float
-  status        PaymentStatus   @default(PENDING)
-  provider      PaymentProvider @default(MOCK)
-  externalId    String?         @map("external_id")
-  createdAt     DateTime        @default(now()) @map("created_at")
-  completedAt   DateTime?       @map("completed_at")
+  id             Int             @id @default(autoincrement())
+  applicationId  Int             @unique @map("application_id")
+  amount         Float
+  status         PaymentStatus   @default(PENDING)
+  provider       PaymentProvider @default(MOCK)
+  externalId     String?         @map("external_id")
+  promoCodeId    Int?            @map("promo_code_id")
+  discountAmount Float?          @map("discount_amount")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  completedAt    DateTime?       @map("completed_at")
 
-  application   Application     @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  application    Application     @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  promoCode      PromoCode?      @relation(fields: [promoCodeId], references: [id])
 
   @@index([applicationId])
   @@index([externalId])
@@ -277,4 +281,20 @@ model Setting {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("settings")
+}
+
+model PromoCode {
+  id        Int       @id @default(autoincrement())
+  code      String    @unique
+  discount  Int       // percentage 0-100
+  isActive  Boolean   @default(true) @map("is_active")
+  maxUses   Int?      @map("max_uses")
+  usedCount Int       @default(0) @map("used_count")
+  expiresAt DateTime? @map("expires_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  payments  Payment[]
+
+  @@map("promo_codes")
 }

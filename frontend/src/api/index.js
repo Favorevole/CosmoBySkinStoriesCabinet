@@ -98,8 +98,8 @@ export const submitWebApplication = (formData) =>
     timeout: 60000
   });
 
-export const payWebApplication = (id) =>
-  api.post(`/web/applications/${id}/pay`, null, { timeout: 30000 });
+export const payWebApplication = (id, promoCode = null) =>
+  api.post(`/web/applications/${id}/pay`, promoCode ? { promoCode } : null, { timeout: 30000 });
 
 export const getWebSkinProblems = () =>
   api.get('/web/skin-problems');
@@ -130,5 +130,26 @@ export const getSkinProblems = () =>
 
 export const updateSkinProblems = (problems) =>
   api.put('/settings/skin-problems', { problems });
+
+// Payment reminders
+export const sendPaymentReminder = (id) =>
+  api.post(`/applications/${id}/remind-payment`);
+
+// Promo codes (admin)
+export const getPromoCodes = () =>
+  api.get('/promo-codes');
+
+export const createPromoCodeApi = (data) =>
+  api.post('/promo-codes', data);
+
+export const updatePromoCodeApi = (id, data) =>
+  api.patch(`/promo-codes/${id}`, data);
+
+export const deletePromoCodeApi = (id) =>
+  api.delete(`/promo-codes/${id}`);
+
+// Promo code validation (public)
+export const validatePromoCodeApi = (code) =>
+  api.post('/web/validate-promo', { code });
 
 export default api;

@@ -277,6 +277,56 @@ export async function notifyAdminsDecline(application, reason) {
   await sendToAdminsViaDoctorBot(message);
 }
 
+// Send payment reminder to client
+export async function sendPaymentReminder(application, confirmationUrl) {
+  const appNum = application.displayNumber || application.id;
+
+  // Send via Telegram if client has telegramId
+  if (application.client?.telegramId && clientBot) {
+    try {
+      const { Markup } = await import('telegraf');
+      const message = `*Напоминание об оплате*\n\n` +
+        `Заявка #${appNum} ожидает оплаты.\n\n` +
+        'Нажмите кнопку ниже, чтобы перейти к оплате.\n' +
+        'После оплаты заявка будет отправлена специалисту.';
+
+      await clientBot.telegram.sendMessage(
+        Number(application.client.telegramId),
+        message,
+        {
+          parse_mode: 'Markdown',
+          ...Markup.inlineKeyboard([
+            [Markup.button.url(`Оплатить`, confirmationUrl)]
+          ])
+        }
+      );
+      console.log(`[NOTIFICATIONS] Payment reminder sent via Telegram to client ${application.client.id}`);
+      return 'telegram';
+    } catch (error) {
+      console.error('[NOTIFICATIONS] Error sending Telegram reminder:', error.message);
+    }
+  }
+
+  // Send via email if client has email
+  if (application.client?.email) {
+    try {
+      const { sendPaymentReminderEmail } = await import('./email.js');
+      await sendPaymentReminderEmail({
+        to: application.client.email,
+        displayNumber: appNum,
+        paymentUrl: confirmationUrl
+      });
+      console.log(`[NOTIFICATIONS] Payment reminder sent via email to ${application.client.email}`);
+      return 'email';
+    } catch (error) {
+      console.error('[NOTIFICATIONS] Error sending email reminder:', error.message);
+    }
+  }
+
+  console.log('[NOTIFICATIONS] No contact method for payment reminder');
+  return null;
+}
+
 // Store pending photo requests (applicationId -> clientTelegramId)
 export const pendingPhotoRequests = new Map();
 

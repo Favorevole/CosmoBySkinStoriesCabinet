@@ -21,7 +21,9 @@ import {
   handleBackToPriceRange,
   handleBackToProblems,
   handleBackToComment,
-  handleBackToPhotos
+  handleBackToPhotos,
+  handleEnterPromo,
+  handleSkipPromo
 } from './handlers/questionnaire.js';
 import {
   handlePhotoUpload,
@@ -92,6 +94,10 @@ export function createClientBot() {
   bot.action('back_to_problems', handleBackToProblems);
   bot.action('back_to_comment', handleBackToComment);
   bot.action('back_to_photos', handleBackToPhotos);
+
+  // Callback queries - promo code
+  bot.action('enter_promo', handleEnterPromo);
+  bot.action('skip_promo', handleSkipPromo);
 
   // Callback queries - photos
   bot.action('photos_done', handlePhotosDone);
