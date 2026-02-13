@@ -474,13 +474,16 @@ async function submitAndPay() {
 
     // Redirect to YooKassa payment page (validate URL)
     const payUrl = payRes.data.confirmationUrl;
+    console.log('[PAY] confirmationUrl:', payUrl);
     try {
+      if (!payUrl) throw new Error('No payment URL received');
       const parsed = new URL(payUrl);
-      if (parsed.protocol !== 'https:' || !parsed.hostname.endsWith('yookassa.ru')) {
-        throw new Error('Invalid payment URL');
+      if (parsed.protocol !== 'https:' || !(parsed.hostname.endsWith('yookassa.ru') || parsed.hostname.endsWith('yoomoney.ru'))) {
+        throw new Error(`Invalid payment URL domain: ${parsed.hostname}`);
       }
       window.location.href = payUrl;
-    } catch {
+    } catch (urlErr) {
+      console.error('[PAY] URL validation error:', urlErr.message);
       submitError.value = 'Ошибка платёжной ссылки. Попробуйте ещё раз.';
     }
   } catch (err) {

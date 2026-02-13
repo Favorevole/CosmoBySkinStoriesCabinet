@@ -99,7 +99,7 @@ export const submitWebApplication = (formData) =>
   });
 
 export const payWebApplication = (id) =>
-  api.post(`/web/applications/${id}/pay`);
+  api.post(`/web/applications/${id}/pay`, null, { timeout: 30000 });
 
 export const getWebSkinProblems = () =>
   api.get('/web/skin-problems');
