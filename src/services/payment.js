@@ -168,6 +168,19 @@ export async function handleYooKassaWebhook(body) {
     const fullApplication = await getApplicationById(applicationId);
     await notifyAdminsNewApplication(fullApplication);
 
+    // Send confirmation email if client has email
+    if (fullApplication?.client?.email) {
+      try {
+        const { sendPaymentConfirmation } = await import('./email.js');
+        await sendPaymentConfirmation({
+          to: fullApplication.client.email,
+          displayNumber: fullApplication.displayNumber || applicationId
+        });
+      } catch (err) {
+        console.error('[PAYMENT] Error sending confirmation email:', err.message);
+      }
+    }
+
     // If Telegram user — send success message via bot
     if (fullApplication?.client?.telegramId) {
       try {

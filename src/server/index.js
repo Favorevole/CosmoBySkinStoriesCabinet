@@ -98,6 +98,26 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Test email endpoint (only in non-production)
+app.get('/api/test-email', async (req, res) => {
+  if (config.isProduction) return res.status(404).json({ error: 'Not found' });
+  const to = req.query.to;
+  if (!to) return res.status(400).json({ error: 'Missing ?to=email@example.com' });
+  try {
+    const { sendEmail } = await import('../services/email.js');
+    const info = await sendEmail({
+      to,
+      subject: 'Тестовое письмо — Skin Stories',
+      text: 'SMTP работает! Это тестовое письмо от Skin Stories.',
+      html: '<h2 style="color: #8B3A4A;">Skin Stories</h2><p>SMTP работает! Это тестовое письмо.</p>'
+    });
+    res.json({ success: true, messageId: info?.messageId || 'no-smtp' });
+  } catch (err) {
+    console.error('[TEST-EMAIL]', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Тестовые endpoints для проверки webhook путей
 app.get('/client-webhook', (req, res) => {
   res.json({
