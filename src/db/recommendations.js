@@ -99,6 +99,7 @@ export async function approveRecommendation(applicationId, adminId) {
     where: { id: applicationId },
     include: {
       client: true,
+      doctor: true,
       recommendation: true
     }
   });
