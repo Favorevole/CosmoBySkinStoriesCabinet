@@ -48,19 +48,27 @@ async function sendToAdminsViaDoctorBot(message, parseMode = 'Markdown') {
 
 // Notify all admins about new application
 export async function notifyAdminsNewApplication(application) {
-  const message = `
-*Новая заявка #${application.displayNumber || application.id}*
+  const appNum = application.displayNumber || application.id;
+  const clientName = application.client.fullName || application.client.telegramUsername || 'Не указано';
+  const source = application.source === 'WEB' ? '🌐 Сайт' : '✈️ Telegram';
+  const problems = application.mainProblems || 'Не указаны';
 
-Возраст: ${application.age}
-Тип кожи: ${formatSkinType(application.skinType)}
-Бюджет: ${application.priceRange ? formatPriceRange(application.priceRange) : 'Не указан'}
-Проблемы: ${application.mainProblems}
-${application.additionalComment ? `Комментарий: ${application.additionalComment}` : ''}
+  const message = `📋 *Новая заявка #${appNum}*
 
-Клиент: ${application.client.fullName || application.client.telegramUsername || 'Не указано'}
+━━━━━━━━━━━━━━━━━━
+👤 *Клиент:* ${clientName}
+📍 *Источник:* ${source}
+━━━━━━━━━━━━━━━━━━
 
-Откройте админ-панель для назначения врача.
-`;
+🔹 *Возраст:* ${application.age}
+🔹 *Тип кожи:* ${formatSkinType(application.skinType)}
+🔹 *Бюджет:* ${application.priceRange ? formatPriceRange(application.priceRange) : 'Не указан'}
+🔹 *Проблемы:* ${problems}
+📷 *Фото:* ${application.photos?.length || 0} шт.
+${application.additionalComment ? `💬 *Комментарий:* ${application.additionalComment}` : ''}
+━━━━━━━━━━━━━━━━━━
+
+👉 Назначьте врача в админ-панели.`;
 
   // Send via doctor bot to admins only
   const sentViaDoctorBot = await sendToAdminsViaDoctorBot(message);
@@ -77,18 +85,21 @@ export async function notifyDoctorAssignment(doctor, application) {
   try {
     const { Markup } = await import('telegraf');
 
-    const message = `
-*Вам назначена новая заявка #${application.displayNumber || application.id}*
+    const appNum = application.displayNumber || application.id;
+    const problems = application.mainProblems || 'Не указаны';
 
-Возраст пациента: ${application.age}
-Тип кожи: ${formatSkinType(application.skinType)}
-Бюджет: ${application.priceRange ? formatPriceRange(application.priceRange) : 'Не указан'}
-Проблемы: ${application.mainProblems}
-${application.additionalComment ? `Комментарий: ${application.additionalComment}` : ''}
-Фотографий: ${application.photos?.length || 0}
+    const message = `🩺 *Вам назначена заявка #${appNum}*
 
-Нажмите кнопку для просмотра:
-`;
+━━━━━━━━━━━━━━━━━━
+🔹 *Возраст:* ${application.age}
+🔹 *Тип кожи:* ${formatSkinType(application.skinType)}
+🔹 *Бюджет:* ${application.priceRange ? formatPriceRange(application.priceRange) : 'Не указан'}
+🔹 *Проблемы:* ${problems}
+📷 *Фото:* ${application.photos?.length || 0} шт.
+${application.additionalComment ? `💬 *Комментарий:* ${application.additionalComment}` : ''}
+━━━━━━━━━━━━━━━━━━
+
+Ознакомьтесь с заявкой и подготовьте рекомендации.`;
 
     await doctorBot.telegram.sendMessage(Number(doctor.telegramId), message, {
       parse_mode: 'Markdown',
@@ -199,18 +210,23 @@ export async function notifyAdminsDoctorResponse(application) {
     const { Markup } = await import('telegraf');
     const { formatSkinType } = await import('../clientBot/states/index.js');
 
-    const message = `
-*Врач дал ответ по заявке #${application.displayNumber || application.id}*
+    const appNum = application.displayNumber || application.id;
+    const clientName = application.client.fullName || application.client.telegramUsername || 'Не указано';
+    const problems = application.mainProblems || 'Не указаны';
 
-*Врач:* ${application.doctor.fullName}
-*Клиент:* ${application.client.fullName || application.client.telegramUsername || 'Не указано'}
+    const message = `✅ *Ответ врача по заявке #${appNum}*
 
-*Анкета:*
-• Возраст: ${application.age}
-• Тип кожи: ${formatSkinType(application.skinType)}
-• Проблемы: ${application.mainProblems}
-• Фото: ${application.photos?.length || 0}
-`;
+━━━━━━━━━━━━━━━━━━
+👨‍⚕️ *Врач:* ${application.doctor.fullName}
+👤 *Клиент:* ${clientName}
+━━━━━━━━━━━━━━━━━━
+
+🔹 *Возраст:* ${application.age}
+🔹 *Тип кожи:* ${formatSkinType(application.skinType)}
+🔹 *Проблемы:* ${problems}
+📷 *Фото:* ${application.photos?.length || 0} шт.
+
+Проверьте рекомендации и утвердите отправку.`;
 
     const keyboard = Markup.inlineKeyboard([
       [Markup.button.callback('📋 Показать заявку', `admin_view_${application.id}`)],
