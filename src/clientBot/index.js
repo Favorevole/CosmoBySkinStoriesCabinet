@@ -3,7 +3,7 @@ import https from 'https';
 import config from '../config/environment.js';
 
 // Handlers
-import { handleStart, handleHelp } from './handlers/start.js';
+import { handleStart, handleHelp, handleMyApplications } from './handlers/start.js';
 import {
   handleStartQuestionnaire,
   handleSkinTypeSelection,
@@ -68,6 +68,8 @@ export function createClientBot() {
   // Commands
   bot.command('start', handleStart);
   bot.command('help', handleHelp);
+  bot.command('new', handleStartQuestionnaire);
+  bot.command('myapps', handleMyApplications);
 
   // Callback queries - questionnaire
   bot.action('start_questionnaire', handleStartQuestionnaire);
@@ -143,6 +145,14 @@ export async function startClientBot() {
   if (!bot) {
     createClientBot();
   }
+
+  // Set bot commands menu
+  await bot.telegram.setMyCommands([
+    { command: 'new', description: 'Новая консультация' },
+    { command: 'myapps', description: 'Мои заявки' },
+    { command: 'help', description: 'Справка' },
+    { command: 'start', description: 'Перезапустить бот' }
+  ]);
 
   if (config.isProduction && config.server.webhookUrl) {
     // Production: используем webhook - НЕ вызываем bot.launch()!

@@ -245,10 +245,11 @@
           <div class="success-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="64" height="64"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           </div>
-          <h2>Заявка отправлена!</h2>
+          <h2>Заявка #{{ applicationDisplayNumber }} отправлена!</h2>
           <p class="success-text">
             Ваша заявка принята и оплачена. Наши эксперты проанализируют ваши фотографии и отправят рекомендации на <strong>{{ form.email }}</strong>.
           </p>
+          <p class="success-text" style="font-size: 14px; color: #8B7355;">Номер вашей заявки: <strong>#{{ applicationDisplayNumber }}</strong>. Сохраните его на случай обращения.</p>
           <p class="success-note">Обычно это занимает до 24 часов.</p>
           <button class="btn-next" @click="close">Закрыть</button>
         </div>
@@ -271,6 +272,7 @@ const submitting = ref(false);
 const submitError = ref('');
 const isDragging = ref(false);
 const skinProblems = ref([]);
+const applicationDisplayNumber = ref(null);
 
 const skinTypes = [
   { value: 'DRY', label: 'Сухая' },
@@ -460,6 +462,7 @@ async function submitAndPay() {
     // Submit application
     const res = await submitWebApplication(fd);
     const applicationId = res.data.applicationId;
+    applicationDisplayNumber.value = res.data.displayNumber || applicationId;
 
     // Create YooKassa payment
     const payRes = await payWebApplication(applicationId);

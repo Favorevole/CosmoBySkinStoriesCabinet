@@ -50,7 +50,7 @@ export async function handleStartQuestionnaire(ctx) {
 
   clientSessions.set(telegramId, session);
 
-  await ctx.answerCbQuery();
+  if (ctx.callbackQuery) await ctx.answerCbQuery();
   await ctx.reply(
     'Стоимость консультации: *500 ₽*\nОплата после заполнения анкеты.\n\n*Вопрос 1 из 5*\n\nУкажите ваш возраст (число):',
     { parse_mode: 'Markdown' }
@@ -554,7 +554,7 @@ export async function handleTextMessage(ctx) {
   const text = ctx.message.text;
 
   // Handle menu buttons
-  if (text === 'Новая консультация') {
+  if (text === '✨ Новая консультация' || text === 'Новая консультация') {
     session.state = CLIENT_STATES.AWAITING_AGE;
     session.applicationData = {
       age: null,
@@ -574,13 +574,13 @@ export async function handleTextMessage(ctx) {
     return true;
   }
 
-  if (text === 'Мои заявки') {
+  if (text === '📋 Мои заявки' || text === 'Мои заявки') {
     const { handleMyApplications } = await import('./start.js');
     await handleMyApplications(ctx);
     return true;
   }
 
-  if (text === 'Помощь') {
+  if (text === '❓ Помощь' || text === 'Помощь') {
     const { handleHelp } = await import('./start.js');
     await handleHelp(ctx);
     return true;

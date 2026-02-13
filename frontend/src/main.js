@@ -11,9 +11,11 @@ import ApplicationDetail from './views/ApplicationDetail.vue';
 import Doctors from './views/Doctors.vue';
 import Settings from './views/Settings.vue';
 import Reviews from './views/Reviews.vue';
+import Privacy from './views/Privacy.vue';
 
 const routes = [
   { path: '/', component: Landing },
+  { path: '/privacy', component: Privacy },
   { path: '/login', component: Login },
   {
     path: '/admin',
