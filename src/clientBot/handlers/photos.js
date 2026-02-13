@@ -18,7 +18,7 @@ export async function handlePhotoUpload(ctx) {
   }
 
   if (session.state !== CLIENT_STATES.AWAITING_PHOTOS) {
-    await ctx.reply('Пожалуйста, начните заполнение анкеты с команды /start или кнопки "Новая консультация".');
+    await ctx.reply('Сессия истекла после обновления. Начните заново — /new');
     return;
   }
 
