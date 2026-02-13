@@ -1,5 +1,10 @@
 import nodemailer from 'nodemailer';
 import config from '../config/environment.js';
+import { getClientBotUsername } from '../clientBot/index.js';
+
+function getBotUsername() {
+  return getClientBotUsername() || 'skinstories_bot';
+}
 
 let transporter = null;
 
@@ -167,7 +172,7 @@ export async function sendRecommendationEmail(email, application, recommendation
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 28px; border-top: 1px solid #F5F0EB;">
       <tr><td align="center" style="padding-top: 24px;">
         <p style="margin: 0 0 12px; font-size: 14px; color: #8B7355;">Будем рады, если поделитесь впечатлениями о консультации</p>
-        <a href="https://t.me/CosmobySkinStoriesClient_bot" style="display: inline-block; padding: 12px 28px; background: #8B3A4A; color: #ffffff; border-radius: 20px; text-decoration: none; font-size: 14px; font-weight: 600;">Оставить отзыв</a>
+        <a href="https://t.me/${getBotUsername()}" style="display: inline-block; padding: 12px 28px; background: #8B3A4A; color: #ffffff; border-radius: 20px; text-decoration: none; font-size: 14px; font-weight: 600;">Оставить отзыв</a>
       </td></tr>
     </table>
   `;

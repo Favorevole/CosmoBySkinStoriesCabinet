@@ -317,7 +317,7 @@ import { ref, onMounted } from 'vue';
 import { getPublicReviews } from '../api/index.js';
 import ConsultationModal from '../components/ConsultationModal.vue';
 
-const botUsername = import.meta.env.VITE_CLIENT_BOT_USERNAME || 'CosmobySkinStoriesClient_bot';
+const botUsername = import.meta.env.VITE_CLIENT_BOT_USERNAME;
 const telegramBotLink = `https://t.me/${botUsername}`;
 
 const reviews = ref([]);

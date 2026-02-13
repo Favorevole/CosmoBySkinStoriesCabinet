@@ -36,6 +36,7 @@ import {
 import { handlePayment } from './handlers/payment.js';
 
 let bot = null;
+let botInfo = null;
 
 export function createClientBot() {
   const httpsAgent = new https.Agent({
@@ -146,6 +147,10 @@ export async function startClientBot() {
     createClientBot();
   }
 
+  // Get bot info (username etc.)
+  botInfo = await bot.telegram.getMe();
+  console.log(`[CLIENT_BOT] Bot username: @${botInfo.username}`);
+
   // Set bot commands menu
   await bot.telegram.setMyCommands([
     { command: 'new', description: 'Новая консультация' },
@@ -201,6 +206,10 @@ export async function stopClientBot() {
 
 export function getClientBot() {
   return bot;
+}
+
+export function getClientBotUsername() {
+  return botInfo?.username || null;
 }
 
 export default bot;
