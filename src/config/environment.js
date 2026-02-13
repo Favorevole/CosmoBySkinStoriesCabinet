@@ -59,6 +59,15 @@ const config = {
     secretAccessKey: process.env.S3_SECRET_ACCESS_KEY
   },
 
+  smtp: {
+    host: process.env.SMTP_HOST || 'smtp.mail.ru',
+    port: parseInt(process.env.SMTP_PORT || '465', 10),
+    secure: true,
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+    from: process.env.SMTP_FROM || process.env.SMTP_USER
+  },
+
   yookassa: {
     shopId: process.env.YOOKASSA_SHOP_ID,
     apiKey: process.env.YOOKASSA_API_KEY,
