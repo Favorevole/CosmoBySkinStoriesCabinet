@@ -98,6 +98,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+
 // Тестовые endpoints для проверки webhook путей
 app.get('/client-webhook', (req, res) => {
   res.json({

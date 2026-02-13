@@ -69,9 +69,9 @@ router.post('/applications', upload.array('photos', 6), async (req, res) => {
       return res.status(400).json({ error: 'Необходимо согласие на обработку персональных данных' });
     }
 
-    if (!age || !skinType || !mainProblems) {
+    if (!age || !skinType) {
       return res.status(400).json({
-        error: 'Missing required fields: age, skinType, mainProblems'
+        error: 'Missing required fields: age, skinType'
       });
     }
 

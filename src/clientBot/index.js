@@ -11,6 +11,7 @@ import {
   handleProblemsHelp,
   handleProblemSelection,
   handleProblemsDone,
+  handleSkipProblems,
   handleSkipComment,
   handleCancel,
   handleConfirmSubmit,
@@ -36,6 +37,7 @@ import {
 import { handlePayment } from './handlers/payment.js';
 
 let bot = null;
+let botInfo = null;
 
 export function createClientBot() {
   const httpsAgent = new https.Agent({
@@ -78,6 +80,7 @@ export function createClientBot() {
   bot.action('problems_help', handleProblemsHelp);
   bot.action(/^problem_(.+)$/, handleProblemSelection);
   bot.action('problems_done', handleProblemsDone);
+  bot.action('skip_problems', handleSkipProblems);
   bot.action('skip_comment', handleSkipComment);
   bot.action('cancel', handleCancel);
   bot.action('confirm_submit', handleConfirmSubmit);
@@ -146,6 +149,10 @@ export async function startClientBot() {
     createClientBot();
   }
 
+  // Get bot info (username etc.)
+  botInfo = await bot.telegram.getMe();
+  console.log(`[CLIENT_BOT] Bot username: @${botInfo.username}`);
+
   // Set bot commands menu
   await bot.telegram.setMyCommands([
     { command: 'new', description: 'Новая консультация' },
@@ -201,6 +208,10 @@ export async function stopClientBot() {
 
 export function getClientBot() {
   return bot;
+}
+
+export function getClientBotUsername() {
+  return botInfo?.username || null;
 }
 
 export default bot;

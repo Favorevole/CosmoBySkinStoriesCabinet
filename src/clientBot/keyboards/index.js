@@ -59,7 +59,7 @@ export function problemsInputKeyboard() {
     [Markup.button.callback('💡 Помощь с выбором', 'problems_help')],
     [
       Markup.button.callback('⬅️ Назад', 'back_to_price_range'),
-      Markup.button.callback('Отмена', 'cancel')
+      Markup.button.callback('⏩ Пропустить', 'skip_problems')
     ]
   ]);
 }

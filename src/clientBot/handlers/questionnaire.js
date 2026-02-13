@@ -266,6 +266,32 @@ export async function handleProblemsTextInput(ctx) {
   return true;
 }
 
+// Handle skip problems
+export async function handleSkipProblems(ctx) {
+  const telegramId = ctx.from.id;
+  const session = getSession(telegramId);
+
+  if (session.state !== CLIENT_STATES.AWAITING_PROBLEMS) {
+    await ctx.answerCbQuery('Пожалуйста, начните заново');
+    return;
+  }
+
+  session.applicationData.mainProblems = 'Не указаны';
+  session.state = CLIENT_STATES.AWAITING_COMMENT;
+  clientSessions.set(telegramId, session);
+
+  await ctx.answerCbQuery();
+  await ctx.editMessageText('Проблемы: пропущено');
+
+  await ctx.reply(
+    '*Вопрос 5 из 5*\n\nЕсть ли дополнительная информация, которую вы хотите сообщить?\n\n(текущий уход, аллергии, хронические заболевания и т.д.)',
+    {
+      parse_mode: 'Markdown',
+      ...skipCommentKeyboard()
+    }
+  );
+}
+
 // Handle skip comment
 export async function handleSkipComment(ctx) {
   const telegramId = ctx.from.id;
