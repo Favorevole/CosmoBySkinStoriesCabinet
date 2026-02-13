@@ -1,7 +1,16 @@
 import { processPayment, PAYMENT_AMOUNT } from '../../services/payment.js';
-import { getApplicationById } from '../../db/applications.js';
-import { getPaymentByApplicationId } from '../../db/payments.js';
+import { getApplicationById, updateApplicationStatus } from '../../db/applications.js';
+import { getPaymentByApplicationId, failPayment } from '../../db/payments.js';
 import { Markup } from 'telegraf';
+
+// Build payment keyboard with 3 buttons: promo, pay, cancel
+function paymentButtons(applicationId, amount, payUrl) {
+  return Markup.inlineKeyboard([
+    [Markup.button.callback('🏷 Ввести промокод', `promo_for_${applicationId}`)],
+    [Markup.button.url(`💳 Оплатить ${amount} ₽`, payUrl)],
+    [Markup.button.callback('❌ Отменить заявку', `cancel_app_${applicationId}`)]
+  ]);
+}
 
 // Handle pay_{applicationId} callback — creates YooKassa payment URL + shows promo option
 export async function handlePayment(ctx) {
@@ -12,6 +21,13 @@ export async function handlePayment(ctx) {
 
     await ctx.editMessageText('Создаём ссылку на оплату...');
 
+    const application = await getApplicationById(applicationId);
+
+    if (!application || application.status === 'CANCELLED') {
+      await ctx.editMessageText('Заявка отменена.');
+      return;
+    }
+
     const result = await processPayment(applicationId);
 
     if (result.alreadyPaid || result.freeWithPromo) {
@@ -19,7 +35,6 @@ export async function handlePayment(ctx) {
       return;
     }
 
-    const application = await getApplicationById(applicationId);
     const appNum = application?.displayNumber || applicationId;
 
     // Get actual amount from payment record
@@ -33,10 +48,7 @@ export async function handlePayment(ctx) {
       'Если у вас есть промокод — нажмите «Ввести промокод».',
       {
         parse_mode: 'Markdown',
-        ...Markup.inlineKeyboard([
-          [Markup.button.callback('🏷 Ввести промокод', `promo_for_${applicationId}`)],
-          [Markup.button.url(`💳 Оплатить ${amount} ₽`, result.confirmationUrl)]
-        ])
+        ...paymentButtons(applicationId, amount, result.confirmationUrl)
       }
     );
 
@@ -45,6 +57,51 @@ export async function handlePayment(ctx) {
     await ctx.reply(
       'Произошла ошибка при создании платежа. Пожалуйста, попробуйте ещё раз или начните заново с /start'
     );
+  }
+}
+
+// Handle cancel_app_{applicationId} — cancel unpaid application
+export async function handleCancelApplication(ctx) {
+  try {
+    await ctx.answerCbQuery();
+
+    const applicationId = parseInt(ctx.match[1]);
+    const application = await getApplicationById(applicationId);
+
+    if (!application) {
+      await ctx.editMessageText('Заявка не найдена.');
+      return;
+    }
+
+    if (application.status !== 'PENDING_PAYMENT') {
+      await ctx.editMessageText('Эту заявку нельзя отменить.');
+      return;
+    }
+
+    // Cancel the payment
+    const payment = await getPaymentByApplicationId(applicationId);
+    if (payment && payment.status === 'PENDING') {
+      await failPayment(payment.id);
+    }
+
+    // Update application status to CANCELLED
+    await updateApplicationStatus(
+      applicationId,
+      'CANCELLED',
+      null,
+      'CLIENT',
+      'Отменена клиентом'
+    );
+
+    const appNum = application.displayNumber || applicationId;
+    await ctx.editMessageText(
+      `Заявка #${appNum} отменена.\n\n` +
+      'Вы можете создать новую заявку в любое время — нажмите «Новая консультация».'
+    );
+
+  } catch (error) {
+    console.error('[CLIENT_BOT] Error cancelling application:', error);
+    await ctx.reply('Произошла ошибка при отмене заявки.');
   }
 }
 
@@ -63,6 +120,9 @@ export async function handlePaymentPromo(ctx) {
     const session = getSession(telegramId);
     session.state = CLIENT_STATES.AWAITING_PROMO_CODE;
     session.paymentApplicationId = applicationId;
+    // Store message info so we can clean it up after promo input
+    session.promoPromptChatId = ctx.callbackQuery.message.chat.id;
+    session.promoPromptMessageId = ctx.callbackQuery.message.message_id;
     clientSessions.set(telegramId, session);
 
     await ctx.editMessageText(
@@ -92,6 +152,10 @@ export async function handlePaymentPromoInput(ctx) {
   const code = ctx.message.text.trim();
   const applicationId = session.paymentApplicationId;
 
+  // Delete the old "Введите промокод:" message to avoid stale buttons
+  const promoChatId = session.promoPromptChatId;
+  const promoMsgId = session.promoPromptMessageId;
+
   try {
     // Validate and apply promo code via processPayment
     const result = await processPayment(applicationId, code);
@@ -99,7 +163,16 @@ export async function handlePaymentPromoInput(ctx) {
     // Clear promo state
     session.state = 'idle';
     session.paymentApplicationId = null;
+    session.promoPromptChatId = null;
+    session.promoPromptMessageId = null;
     clientSessions.set(telegramId, session);
+
+    // Remove the old promo prompt message
+    if (promoChatId && promoMsgId) {
+      try {
+        await ctx.telegram.deleteMessage(promoChatId, promoMsgId);
+      } catch (_) { /* message may already be gone */ }
+    }
 
     if (result.freeWithPromo) {
       await ctx.reply(
@@ -133,13 +206,21 @@ export async function handlePaymentPromoInput(ctx) {
     await ctx.reply(message, {
       parse_mode: 'Markdown',
       ...Markup.inlineKeyboard([
-        [Markup.button.url(`💳 Оплатить ${amount} ₽`, result.confirmationUrl)]
+        [Markup.button.url(`💳 Оплатить ${amount} ₽`, result.confirmationUrl)],
+        [Markup.button.callback('❌ Отменить заявку', `cancel_app_${applicationId}`)]
       ])
     });
 
     return true;
 
   } catch (error) {
+    // Remove the old promo prompt message
+    if (promoChatId && promoMsgId) {
+      try {
+        await ctx.telegram.deleteMessage(promoChatId, promoMsgId);
+      } catch (_) { /* message may already be gone */ }
+    }
+
     // Invalid promo code — show error, let user try again
     await ctx.reply(
       `${error.message}\n\nПопробуйте другой промокод или вернитесь к оплате.`,

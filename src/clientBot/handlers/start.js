@@ -81,7 +81,8 @@ export async function handleMyApplications(ctx) {
       RESPONSE_GIVEN: 'Ответ готов',
       APPROVED: 'Ответ одобрен',
       SENT_TO_CLIENT: 'Отправлено',
-      DECLINED: 'Отклонена'
+      DECLINED: 'Отклонена',
+      CANCELLED: 'Отменена'
     };
 
     let message = 'Ваши заявки:\n\n';

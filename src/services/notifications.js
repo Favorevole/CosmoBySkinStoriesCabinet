@@ -296,7 +296,9 @@ export async function sendPaymentReminder(application, confirmationUrl) {
         {
           parse_mode: 'Markdown',
           ...Markup.inlineKeyboard([
-            [Markup.button.url(`Оплатить`, confirmationUrl)]
+            [Markup.button.callback('🏷 Ввести промокод', `promo_for_${application.id}`)],
+            [Markup.button.url(`💳 Оплатить`, confirmationUrl)],
+            [Markup.button.callback('❌ Отменить заявку', `cancel_app_${application.id}`)]
           ])
         }
       );

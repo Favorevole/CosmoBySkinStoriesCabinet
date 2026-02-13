@@ -559,7 +559,8 @@ export async function handleConfirmSubmit(ctx) {
         parse_mode: 'Markdown',
         ...Markup.inlineKeyboard([
           [Markup.button.callback('🏷 Ввести промокод', `promo_for_${application.id}`)],
-          [Markup.button.url(`💳 Оплатить ${PAYMENT_AMOUNT} ₽`, paymentResult.confirmationUrl)]
+          [Markup.button.url(`💳 Оплатить ${PAYMENT_AMOUNT} ₽`, paymentResult.confirmationUrl)],
+          [Markup.button.callback('❌ Отменить заявку', `cancel_app_${application.id}`)]
         ])
       }
     );

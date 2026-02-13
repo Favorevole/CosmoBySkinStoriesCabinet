@@ -34,7 +34,7 @@ import {
   handleSkipReviewText,
   handleReviewText
 } from './handlers/review.js';
-import { handlePayment, handlePaymentPromo, handlePaymentPromoInput } from './handlers/payment.js';
+import { handlePayment, handlePaymentPromo, handlePaymentPromoInput, handleCancelApplication } from './handlers/payment.js';
 
 let bot = null;
 let botInfo = null;
@@ -103,6 +103,7 @@ export function createClientBot() {
 
   // Callback queries - payment
   bot.action(/^pay_(\d+)$/, handlePayment);
+  bot.action(/^cancel_app_(\d+)$/, handleCancelApplication);
 
   // Callback queries - reviews
   bot.action(/^review_(\d+)_(\d+)$/, handleReviewRating);

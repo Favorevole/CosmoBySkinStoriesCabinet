@@ -15,6 +15,7 @@
           <option value="APPROVED">Одобрены</option>
           <option value="SENT_TO_CLIENT">Отправлены</option>
           <option value="DECLINED">Отклонены</option>
+          <option value="CANCELLED">Отменены</option>
         </select>
       </div>
     </header>
@@ -241,7 +242,8 @@ const statusLabels = {
   RESPONSE_GIVEN: 'Ответ дан',
   APPROVED: 'Одобрена',
   SENT_TO_CLIENT: 'Отправлена',
-  DECLINED: 'Отклонена'
+  DECLINED: 'Отклонена',
+  CANCELLED: 'Отменена'
 };
 
 const skinTypeLabels = {
@@ -589,6 +591,11 @@ function formatDate(date) {
 .status-declined {
   background: rgba(248, 113, 113, 0.15);
   color: #F87171;
+}
+
+.status-cancelled {
+  background: rgba(156, 163, 175, 0.15);
+  color: #9CA3AF;
 }
 
 .app-body {

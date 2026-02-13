@@ -387,7 +387,8 @@ const statusLabels = {
   RESPONSE_GIVEN: 'Ответ дан',
   APPROVED: 'Одобрена',
   SENT_TO_CLIENT: 'Отправлена',
-  DECLINED: 'Отклонена'
+  DECLINED: 'Отклонена',
+  CANCELLED: 'Отменена'
 };
 
 const skinTypeLabels = {
@@ -559,6 +560,7 @@ function formatDate(date) {
 .status-response_given { background: rgba(139, 92, 246, 0.15); color: #A78BFA; }
 .status-approved, .status-sent_to_client { background: rgba(74, 222, 128, 0.15); color: #4ADE80; }
 .status-declined { background: rgba(248, 113, 113, 0.15); color: #F87171; }
+.status-cancelled { background: rgba(156, 163, 175, 0.15); color: #9CA3AF; }
 
 .content-grid {
   display: grid;

@@ -23,6 +23,7 @@ enum ApplicationStatus {
   APPROVED
   SENT_TO_CLIENT
   DECLINED
+  CANCELLED
 }
 
 enum PaymentStatus {
