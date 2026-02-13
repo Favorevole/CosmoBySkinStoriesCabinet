@@ -3,7 +3,7 @@ import { SKIN_TYPES, SKIN_PROBLEMS, PRICE_RANGES } from '../states/index.js';
 
 export function startKeyboard() {
   return Markup.inlineKeyboard([
-    [Markup.button.callback('Начать консультацию', 'start_questionnaire')]
+    [Markup.button.callback('✨ Начать консультацию', 'start_questionnaire')]
   ]);
 }
 
@@ -46,8 +46,8 @@ export function problemsHelpKeyboard(selectedProblems = []) {
 
   // Show done button with count if any selected
   const doneText = selectedProblems.length > 0
-    ? `✓ Готово (${selectedProblems.length})`
-    : '✓ Готово';
+    ? `🟢 Готово (${selectedProblems.length})`
+    : '🟢 Готово';
   buttons.push([Markup.button.callback(doneText, 'problems_done')]);
   buttons.push([Markup.button.callback('Отмена', 'cancel')]);
 
@@ -66,7 +66,7 @@ export function problemsInputKeyboard() {
 
 export function skipCommentKeyboard() {
   return Markup.inlineKeyboard([
-    [Markup.button.callback('Пропустить', 'skip_comment')],
+    [Markup.button.callback('⏩ Пропустить', 'skip_comment')],
     [
       Markup.button.callback('« Назад', 'back_to_problems'),
       Markup.button.callback('Отмена', 'cancel')
@@ -78,7 +78,7 @@ export function photoUploadKeyboard(photoCount) {
   const buttons = [];
 
   if (photoCount >= 1) {
-    buttons.push([Markup.button.callback(`Готово (${photoCount} фото)`, 'photos_done')]);
+    buttons.push([Markup.button.callback(`🟢 Готово (${photoCount} фото)`, 'photos_done')]);
   }
 
   if (photoCount < 6) {
@@ -95,7 +95,7 @@ export function photoUploadKeyboard(photoCount) {
 
 export function confirmKeyboard() {
   return Markup.inlineKeyboard([
-    [Markup.button.callback('Отправить', 'confirm_submit')],
+    [Markup.button.callback('📨 Отправить', 'confirm_submit')],
     [
       Markup.button.callback('« Назад', 'back_to_photos'),
       Markup.button.callback('Отменить', 'cancel')
@@ -105,8 +105,8 @@ export function confirmKeyboard() {
 
 export function mainMenuKeyboard() {
   return Markup.keyboard([
-    ['Новая консультация'],
-    ['Мои заявки', 'Помощь']
+    ['✨ Новая консультация'],
+    ['📋 Мои заявки', '❓ Помощь']
   ]).resize();
 }
 
