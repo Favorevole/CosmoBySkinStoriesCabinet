@@ -21,9 +21,7 @@ import {
   handleBackToPriceRange,
   handleBackToProblems,
   handleBackToComment,
-  handleBackToPhotos,
-  handleEnterPromo,
-  handleSkipPromo
+  handleBackToPhotos
 } from './handlers/questionnaire.js';
 import {
   handlePhotoUpload,
@@ -36,7 +34,7 @@ import {
   handleSkipReviewText,
   handleReviewText
 } from './handlers/review.js';
-import { handlePayment } from './handlers/payment.js';
+import { handlePayment, handlePaymentPromo, handlePaymentPromoInput } from './handlers/payment.js';
 
 let bot = null;
 let botInfo = null;
@@ -95,9 +93,8 @@ export function createClientBot() {
   bot.action('back_to_comment', handleBackToComment);
   bot.action('back_to_photos', handleBackToPhotos);
 
-  // Callback queries - promo code
-  bot.action('enter_promo', handleEnterPromo);
-  bot.action('skip_promo', handleSkipPromo);
+  // Callback queries - promo code at payment
+  bot.action(/^promo_for_(\d+)$/, handlePaymentPromo);
 
   // Callback queries - photos
   bot.action('photos_done', handlePhotosDone);
@@ -119,6 +116,10 @@ export function createClientBot() {
     // Check if user is writing a review
     const reviewHandled = await handleReviewText(ctx);
     if (reviewHandled) return;
+
+    // Check if user is entering a promo code for payment
+    const promoHandled = await handlePaymentPromoInput(ctx);
+    if (promoHandled) return;
 
     const handled = await handleTextMessage(ctx);
     if (!handled) {

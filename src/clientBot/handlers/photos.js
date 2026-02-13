@@ -1,6 +1,6 @@
 import { CLIENT_STATES } from '../states/index.js';
 import { photoUploadKeyboard } from '../keyboards/index.js';
-import { getSession, showPromoCodePrompt, clientSessions } from './questionnaire.js';
+import { getSession, showConfirmation, clientSessions } from './questionnaire.js';
 import { pendingPhotoRequests } from '../../services/notifications.js';
 import { addPhotoToApplication } from '../../db/photos.js';
 
@@ -98,7 +98,7 @@ export async function handlePhotosDone(ctx) {
   await ctx.answerCbQuery();
   await ctx.editMessageText(`Получено фотографий: ${session.photos.length}`);
 
-  await showPromoCodePrompt(ctx);
+  await showConfirmation(ctx);
 }
 
 export async function handleAddMorePhotos(ctx) {

@@ -93,13 +93,6 @@ export function photoUploadKeyboard(photoCount) {
   return Markup.inlineKeyboard(buttons);
 }
 
-export function promoCodeKeyboard() {
-  return Markup.inlineKeyboard([
-    [Markup.button.callback('🏷 Ввести промокод', 'enter_promo')],
-    [Markup.button.callback('⏩ Продолжить без промокода', 'skip_promo')]
-  ]);
-}
-
 export function confirmKeyboard() {
   return Markup.inlineKeyboard([
     [Markup.button.callback('📨 Отправить', 'confirm_submit')],
