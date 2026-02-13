@@ -11,6 +11,7 @@ import {
   handleProblemsHelp,
   handleProblemSelection,
   handleProblemsDone,
+  handleSkipProblems,
   handleSkipComment,
   handleCancel,
   handleConfirmSubmit,
@@ -79,6 +80,7 @@ export function createClientBot() {
   bot.action('problems_help', handleProblemsHelp);
   bot.action(/^problem_(.+)$/, handleProblemSelection);
   bot.action('problems_done', handleProblemsDone);
+  bot.action('skip_problems', handleSkipProblems);
   bot.action('skip_comment', handleSkipComment);
   bot.action('cancel', handleCancel);
   bot.action('confirm_submit', handleConfirmSubmit);

@@ -107,7 +107,7 @@
           <p class="step-desc">Шаг 3 из 5</p>
 
           <div class="form-group">
-            <label>Выберите проблемы *</label>
+            <label>Выберите проблемы</label>
             <div class="problems-grid">
               <button
                 v-for="problem in skinProblems"
@@ -383,10 +383,8 @@ function validateStep2() {
 
 function validateStep3() {
   errors.value = {};
-  if (form.value.selectedProblems.length === 0 && !form.value.customProblem.trim()) {
-    errors.value.problems = 'Выберите хотя бы одну проблему или опишите свою';
-  }
-  if (Object.keys(errors.value).length === 0) step.value = 4;
+  // Problems are optional — user can skip
+  step.value = 4;
 }
 
 function validateStep4() {
