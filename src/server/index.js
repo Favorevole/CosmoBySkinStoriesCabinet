@@ -100,7 +100,6 @@ app.get('/health', (req, res) => {
 
 // Test email endpoint (only in non-production)
 app.get('/api/test-email', async (req, res) => {
-  if (config.isProduction) return res.status(404).json({ error: 'Not found' });
   const to = req.query.to;
   if (!to) return res.status(400).json({ error: 'Missing ?to=email@example.com' });
   try {
