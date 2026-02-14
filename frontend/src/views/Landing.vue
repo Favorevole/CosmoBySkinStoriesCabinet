@@ -22,8 +22,7 @@
         <div class="hero-text">
           <span class="badge">Skin Stories</span>
           <h1>Персональные рекомендации<br>по уходу за кожей</h1>
-          <p class="hero-subtitle">Узнайте, какой уход подходит именно вашей коже — по рекомендации дерматолога.</p>
-          <p class="hero-price">Стоимость консультации — 500 рублей. Единоразово.</p>
+          <p class="hero-subtitle">Настоящие дерматологи изучат вашу кожу и подготовят индивидуальный план ухода.</p>
           <p class="hero-cta-label">Начать консультацию</p>
           <div class="hero-cta-buttons">
             <button class="btn btn-primary" @click="showModal = true">
