@@ -470,7 +470,6 @@ export async function showConfirmation(ctx) {
   clientSessions.set(telegramId, session);
 
   const { age, skinType, priceRange, mainProblems, additionalComment } = session.applicationData;
-  const { PAYMENT_AMOUNT } = await import('../../services/payment.js');
 
   const summary = `
 *Проверьте данные заявки:*
@@ -481,9 +480,6 @@ export async function showConfirmation(ctx) {
 Проблемы: ${mainProblems}
 ${additionalComment ? `Комментарий: ${additionalComment}` : 'Комментарий: нет'}
 Фотографий: ${session.photos.length}
-
-Стоимость консультации — *${PAYMENT_AMOUNT} ₽*.
-Единоразово, без подписок.
 
 Всё верно?
 `;
