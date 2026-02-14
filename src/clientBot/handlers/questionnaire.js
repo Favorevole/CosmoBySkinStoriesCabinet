@@ -564,19 +564,6 @@ export async function handleConfirmSubmit(ctx) {
       }
     );
 
-    // Show a random approved review as social proof
-    try {
-      const { getApprovedReviews } = await import('../../db/reviews.js');
-      const reviews = await getApprovedReviews(1);
-      if (reviews.length > 0) {
-        const r = reviews[0];
-        const stars = '⭐'.repeat(r.rating);
-        await ctx.reply(
-          `${stars}\n_«${r.text}»_`,
-          { parse_mode: 'Markdown' }
-        );
-      }
-    } catch (_) { /* reviews not critical */ }
 
   } catch (error) {
     console.error('[CLIENT_BOT] Error submitting application:', error);
