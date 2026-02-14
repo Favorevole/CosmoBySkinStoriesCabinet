@@ -42,10 +42,10 @@ export async function handlePayment(ctx) {
     const amount = payment?.amount || PAYMENT_AMOUNT;
 
     await ctx.editMessageText(
-      `*Заявка #${appNum} — оплата*\n\n` +
-      `Стоимость: ${amount} ₽\n\n` +
-      'Нажмите кнопку ниже, чтобы перейти к оплате.\n' +
-      'Если у вас есть промокод — нажмите «Ввести промокод».',
+      `*Заявка #${appNum}*\n\n` +
+      `Стоимость консультации: ${amount} ₽\n\n` +
+      'Нажмите кнопку ниже для оплаты.\n' +
+      'Если есть промокод — нажмите «Ввести промокод».',
       {
         parse_mode: 'Markdown',
         ...paymentButtons(applicationId, amount, result.confirmationUrl)
