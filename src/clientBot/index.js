@@ -34,7 +34,7 @@ import {
   handleSkipReviewText,
   handleReviewText
 } from './handlers/review.js';
-import { handlePayment } from './handlers/payment.js';
+import { handlePayment, handlePaymentPromo, handlePaymentPromoInput, handleCancelApplication } from './handlers/payment.js';
 
 let bot = null;
 let botInfo = null;
@@ -93,6 +93,9 @@ export function createClientBot() {
   bot.action('back_to_comment', handleBackToComment);
   bot.action('back_to_photos', handleBackToPhotos);
 
+  // Callback queries - promo code at payment
+  bot.action(/^promo_for_(\d+)$/, handlePaymentPromo);
+
   // Callback queries - photos
   bot.action('photos_done', handlePhotosDone);
   bot.action('add_more_photos', handleAddMorePhotos);
@@ -100,6 +103,7 @@ export function createClientBot() {
 
   // Callback queries - payment
   bot.action(/^pay_(\d+)$/, handlePayment);
+  bot.action(/^cancel_app_(\d+)$/, handleCancelApplication);
 
   // Callback queries - reviews
   bot.action(/^review_(\d+)_(\d+)$/, handleReviewRating);
@@ -113,6 +117,10 @@ export function createClientBot() {
     // Check if user is writing a review
     const reviewHandled = await handleReviewText(ctx);
     if (reviewHandled) return;
+
+    // Check if user is entering a promo code for payment
+    const promoHandled = await handlePaymentPromoInput(ctx);
+    if (promoHandled) return;
 
     const handled = await handleTextMessage(ctx);
     if (!handled) {

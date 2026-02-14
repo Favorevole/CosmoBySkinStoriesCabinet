@@ -98,6 +98,31 @@
           </div>
         </div>
 
+        <!-- Payment Reminder (if PENDING_PAYMENT) -->
+        <div class="subsection" v-if="application.status === 'PENDING_PAYMENT'">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 01-3.46 0"/>
+            </svg>
+            Напоминание об оплате
+          </h3>
+          <p v-if="application.lastReminderAt" class="reminder-info">
+            Последнее напоминание: {{ formatDate(application.lastReminderAt) }}
+          </p>
+          <button
+            @click="remindPayment"
+            :disabled="reminding"
+            class="btn btn-primary"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 01-3.46 0"/>
+            </svg>
+            {{ reminding ? 'Отправка...' : 'Напомнить об оплате' }}
+          </button>
+        </div>
+
         <!-- Assign Doctor (if NEW) -->
         <div class="subsection" v-if="application.status === 'NEW'">
           <h3>
@@ -269,7 +294,8 @@ import {
   assignDoctor as apiAssignDoctor,
   updateRecommendation,
   approveApplication,
-  getPhotoUrl
+  getPhotoUrl,
+  sendPaymentReminder
 } from '../api/index.js';
 
 const route = useRoute();
@@ -282,6 +308,7 @@ const editedRecommendation = ref('');
 const assigning = ref(false);
 const saving = ref(false);
 const approving = ref(false);
+const reminding = ref(false);
 
 // Photo navigation
 const currentPhotoIndex = computed(() => {
@@ -360,7 +387,8 @@ const statusLabels = {
   RESPONSE_GIVEN: 'Ответ дан',
   APPROVED: 'Одобрена',
   SENT_TO_CLIENT: 'Отправлена',
-  DECLINED: 'Отклонена'
+  DECLINED: 'Отклонена',
+  CANCELLED: 'Отменена'
 };
 
 const skinTypeLabels = {
@@ -445,6 +473,19 @@ async function approveAndSend() {
   }
 }
 
+async function remindPayment() {
+  reminding.value = true;
+  try {
+    const res = await sendPaymentReminder(application.value.id);
+    alert(res.data.message || 'Напоминание отправлено');
+    await loadApplication();
+  } catch (error) {
+    alert(error.response?.data?.error || 'Ошибка отправки напоминания');
+  } finally {
+    reminding.value = false;
+  }
+}
+
 function formatDate(date) {
   return new Date(date).toLocaleDateString('ru-RU', {
     day: 'numeric',
@@ -519,6 +560,7 @@ function formatDate(date) {
 .status-response_given { background: rgba(139, 92, 246, 0.15); color: #A78BFA; }
 .status-approved, .status-sent_to_client { background: rgba(74, 222, 128, 0.15); color: #4ADE80; }
 .status-declined { background: rgba(248, 113, 113, 0.15); color: #F87171; }
+.status-cancelled { background: rgba(156, 163, 175, 0.15); color: #9CA3AF; }
 
 .content-grid {
   display: grid;
@@ -699,6 +741,12 @@ function formatDate(date) {
   font-size: 13px;
   color: rgba(255, 255, 255, 0.5);
   margin-top: 2px;
+}
+
+.reminder-info {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 12px;
 }
 
 .select-doctor {

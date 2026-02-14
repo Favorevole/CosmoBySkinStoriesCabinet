@@ -82,7 +82,8 @@ export async function getApplicationById(id) {
       },
       statusHistory: {
         orderBy: { createdAt: 'asc' }
-      }
+      },
+      payment: true
     }
   });
 }
@@ -273,6 +274,13 @@ export async function getDoctorAssignedApplications(doctorId) {
 export async function getNewApplicationsCount() {
   return prisma.application.count({
     where: { status: 'NEW' }
+  });
+}
+
+export async function updateApplicationReminderTime(applicationId) {
+  return prisma.application.update({
+    where: { id: applicationId },
+    data: { lastReminderAt: new Date() }
   });
 }
 

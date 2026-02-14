@@ -120,6 +120,37 @@ export async function sendPaymentConfirmation({ to, displayNumber }) {
   });
 }
 
+export async function sendPaymentReminderEmail({ to, displayNumber, paymentUrl }) {
+  const content = `
+    <h2 style="margin: 0 0 8px; color: #8B3A4A; font-size: 22px; font-weight: 600;">Напоминание об оплате</h2>
+    <p style="margin: 0 0 20px; font-size: 14px; color: #8B7355;">Заявка #${displayNumber}</p>
+
+    <p style="margin: 0 0 12px; font-size: 16px; color: #2D2420; line-height: 1.6;">Здравствуйте!</p>
+    <p style="margin: 0 0 12px; font-size: 16px; color: #2D2420; line-height: 1.6;">
+      Ваша заявка <strong>#${displayNumber}</strong> ожидает оплаты. После оплаты она будет передана специалисту для подготовки персональных рекомендаций.
+    </p>
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin: 24px 0;">
+      <tr><td align="center">
+        <a href="${paymentUrl}" style="display: inline-block; padding: 14px 36px; background: #8B3A4A; color: #ffffff; border-radius: 20px; text-decoration: none; font-size: 16px; font-weight: 600;">Перейти к оплате</a>
+      </td></tr>
+    </table>
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-top: 1px solid #F5F0EB;">
+      <tr><td style="padding-top: 16px;">
+        <p style="margin: 0; font-size: 14px; color: #8B7355;">Если вы уже оплатили заявку, проигнорируйте это письмо.</p>
+      </td></tr>
+    </table>
+  `;
+
+  return sendEmail({
+    to,
+    subject: `Напоминание: заявка #${displayNumber} ожидает оплаты | Skin Stories`,
+    text: `Здравствуйте!\n\nВаша заявка #${displayNumber} ожидает оплаты.\nПерейдите по ссылке для оплаты: ${paymentUrl}\n\nЕсли вы уже оплатили, проигнорируйте это письмо.\n\nС заботой о вашей коже,\nКоманда Skin Stories`,
+    html: emailWrapper(content)
+  });
+}
+
 export async function sendRecommendationEmail(email, application, recommendation) {
   const appNum = application.displayNumber || application.id;
   const doctorName = application.doctor?.fullName || 'Специалист Skin Stories';

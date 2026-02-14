@@ -6,6 +6,7 @@ export const CLIENT_STATES = {
   AWAITING_PROBLEMS: 'awaiting_problems',
   AWAITING_COMMENT: 'awaiting_comment',
   AWAITING_PHOTOS: 'awaiting_photos',
+  AWAITING_PROMO_CODE: 'awaiting_promo_code',
   CONFIRMING: 'confirming'
 };
 

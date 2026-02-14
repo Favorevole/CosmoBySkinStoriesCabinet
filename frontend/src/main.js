@@ -11,6 +11,7 @@ import ApplicationDetail from './views/ApplicationDetail.vue';
 import Doctors from './views/Doctors.vue';
 import Settings from './views/Settings.vue';
 import Reviews from './views/Reviews.vue';
+import PromoCodes from './views/PromoCodes.vue';
 import Privacy from './views/Privacy.vue';
 
 const routes = [
@@ -27,6 +28,7 @@ const routes = [
       { path: 'applications/:id', component: ApplicationDetail },
       { path: 'doctors', component: Doctors },
       { path: 'reviews', component: Reviews },
+      { path: 'promo-codes', component: PromoCodes },
       { path: 'settings', component: Settings }
     ]
   }

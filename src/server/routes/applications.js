@@ -285,6 +285,53 @@ router.post('/:id/approve', async (req, res) => {
 });
 
 /**
+ * POST /api/applications/:id/remind-payment
+ * Send payment reminder to client
+ */
+router.post('/:id/remind-payment', async (req, res) => {
+  try {
+    const applicationId = parseInt(req.params.id);
+    const application = await getApplicationById(applicationId);
+
+    if (!application) {
+      return res.status(404).json({ error: 'Application not found' });
+    }
+
+    if (application.status !== 'PENDING_PAYMENT') {
+      return res.status(400).json({ error: 'Application is not awaiting payment' });
+    }
+
+    // Create fresh payment URL
+    const { processPayment } = await import('../../services/payment.js');
+    const result = await processPayment(applicationId);
+
+    if (result.alreadyPaid || result.freeWithPromo) {
+      return res.json({ success: true, message: 'Заявка уже оплачена' });
+    }
+
+    // Send reminder
+    const { sendPaymentReminder } = await import('../../services/notifications.js');
+    const sentVia = await sendPaymentReminder(application, result.confirmationUrl);
+
+    // Update reminder timestamp
+    const { updateApplicationReminderTime } = await import('../../db/applications.js');
+    await updateApplicationReminderTime(applicationId);
+
+    res.json({
+      success: true,
+      sentVia,
+      message: sentVia
+        ? `Напоминание отправлено (${sentVia})`
+        : 'Не удалось отправить: нет контакта клиента'
+    });
+
+  } catch (error) {
+    console.error('[APPLICATIONS] Error sending payment reminder:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
  * GET /api/applications/:id/history
  * Get application status history
  */

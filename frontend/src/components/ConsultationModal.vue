@@ -230,12 +230,44 @@
             </div>
           </div>
 
+          <!-- Promo Code -->
+          <div class="promo-section">
+            <div class="promo-input-row">
+              <input
+                v-model="promoInput"
+                type="text"
+                placeholder="Промокод"
+                class="form-input promo-field"
+                :disabled="promoValidating || !!promoResult"
+                @input="promoInput = promoInput.toUpperCase()"
+                @keydown.enter.prevent="applyPromo"
+              />
+              <button
+                v-if="!promoResult"
+                class="btn-promo-apply"
+                @click="applyPromo"
+                :disabled="promoValidating || !promoInput.trim()"
+              >
+                {{ promoValidating ? '...' : 'Применить' }}
+              </button>
+              <button
+                v-else
+                class="btn-promo-clear"
+                @click="clearPromo"
+              >Убрать</button>
+            </div>
+            <div v-if="promoError" class="promo-error">{{ promoError }}</div>
+            <div v-if="promoResult" class="promo-success">
+              Скидка {{ promoResult.discount }}%: -{{ promoResult.discountAmount }} ₽
+            </div>
+          </div>
+
           <div v-if="submitError" class="error-banner">{{ submitError }}</div>
 
           <div class="step-buttons">
             <button class="btn-back" @click="step = 4" :disabled="submitting">Назад</button>
             <button class="btn-pay" @click="submitAndPay" :disabled="submitting">
-              {{ submitting ? 'Обработка...' : 'Оплатить 500 ₽' }}
+              {{ submitting ? 'Обработка...' : `Оплатить ${displayPrice} ₽` }}
             </button>
           </div>
         </div>
@@ -260,7 +292,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import { submitWebApplication, payWebApplication, getWebSkinProblems } from '../api/index.js';
+import { submitWebApplication, payWebApplication, getWebSkinProblems, validatePromoCodeApi } from '../api/index.js';
 
 const props = defineProps({
   visible: Boolean
@@ -273,6 +305,10 @@ const submitError = ref('');
 const isDragging = ref(false);
 const skinProblems = ref([]);
 const applicationDisplayNumber = ref(null);
+const promoInput = ref('');
+const promoValidating = ref(false);
+const promoResult = ref(null);
+const promoError = ref('');
 
 const skinTypes = [
   { value: 'DRY', label: 'Сухая' },
@@ -312,6 +348,39 @@ const allProblems = computed(() => {
   return problems.join(', ');
 });
 
+const displayPrice = computed(() => {
+  if (promoResult.value) {
+    return promoResult.value.finalAmount;
+  }
+  return 500;
+});
+
+async function applyPromo() {
+  if (!promoInput.value.trim()) return;
+  promoValidating.value = true;
+  promoError.value = '';
+  promoResult.value = null;
+
+  try {
+    const res = await validatePromoCodeApi(promoInput.value.trim());
+    if (res.data.valid) {
+      promoResult.value = res.data;
+    } else {
+      promoError.value = res.data.error || 'Промокод недействителен';
+    }
+  } catch (err) {
+    promoError.value = err.response?.data?.error || 'Ошибка проверки промокода';
+  } finally {
+    promoValidating.value = false;
+  }
+}
+
+function clearPromo() {
+  promoInput.value = '';
+  promoResult.value = null;
+  promoError.value = '';
+}
+
 watch(() => props.visible, (val) => {
   if (val) {
     document.body.style.overflow = 'hidden';
@@ -346,6 +415,9 @@ function resetForm() {
   submitting.value = false;
   submitError.value = '';
   errors.value = {};
+  promoInput.value = '';
+  promoResult.value = null;
+  promoError.value = '';
   form.value = {
     fullName: '',
     email: '',
@@ -462,10 +534,11 @@ async function submitAndPay() {
     const applicationId = res.data.applicationId;
     applicationDisplayNumber.value = res.data.displayNumber || applicationId;
 
-    // Create YooKassa payment
-    const payRes = await payWebApplication(applicationId);
+    // Create payment (with promo code if applied)
+    const promoCode = promoResult.value ? promoInput.value.trim() : null;
+    const payRes = await payWebApplication(applicationId, promoCode);
 
-    if (payRes.data.alreadyPaid) {
+    if (payRes.data.alreadyPaid || payRes.data.freeWithPromo) {
       step.value = 6;
       return;
     }
@@ -813,6 +886,77 @@ async function submitAndPay() {
   text-align: right;
   color: var(--color-rich-ebony, #2D2420);
   font-weight: 500;
+}
+
+.promo-section {
+  margin-bottom: 16px;
+}
+
+.promo-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.promo-field {
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.btn-promo-apply {
+  padding: 12px 20px;
+  background: var(--color-warm-nude, #E8DED4);
+  color: var(--color-rich-ebony, #2D2420);
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-body, 'Manrope', sans-serif);
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.btn-promo-apply:hover:not(:disabled) {
+  background: var(--color-burgundy, #8B3A4A);
+  color: #fff;
+}
+
+.btn-promo-apply:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-promo-clear {
+  padding: 12px 20px;
+  background: transparent;
+  color: var(--color-cocoa, #5C4A3D);
+  border: 1px solid var(--color-warm-nude, #E8DED4);
+  border-radius: 12px;
+  font-size: 14px;
+  font-family: var(--font-body, 'Manrope', sans-serif);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-promo-clear:hover {
+  border-color: var(--color-burgundy, #8B3A4A);
+  color: var(--color-burgundy, #8B3A4A);
+}
+
+.promo-error {
+  font-size: 13px;
+  color: #d44;
+  margin-top: 6px;
+}
+
+.promo-success {
+  font-size: 14px;
+  color: #16a34a;
+  font-weight: 600;
+  margin-top: 6px;
 }
 
 .step-buttons {

@@ -1,6 +1,7 @@
-import { createPaymentRecord, completePayment, failPayment, getPaymentByApplicationId, getPaymentByExternalId, updatePaymentExternalId } from '../db/payments.js';
+import { createPaymentRecord, completePayment, failPayment, getPaymentByApplicationId, getPaymentByExternalId, updatePaymentExternalId, updatePaymentWithPromo } from '../db/payments.js';
 import { updateApplicationStatus, getApplicationById } from '../db/applications.js';
 import { notifyAdminsNewApplication } from './notifications.js';
+import { validatePromoCode, incrementPromoCodeUsage } from '../db/promoCodes.js';
 import config from '../config/environment.js';
 
 export const PAYMENT_AMOUNT = 500;
@@ -9,17 +10,24 @@ const PROVIDER = 'YOOKASSA';
 
 /**
  * Create a pending payment for an application.
+ * Optionally applies promo code discount.
  */
-export async function createPayment(applicationId) {
+export async function createPayment(applicationId, promoCodeId = null, discountPercent = 0) {
+  const discountAmount = discountPercent > 0 ? Math.round(PAYMENT_AMOUNT * discountPercent / 100) : 0;
+  const finalAmount = PAYMENT_AMOUNT - discountAmount;
+
   return createPaymentRecord({
     applicationId,
-    amount: PAYMENT_AMOUNT,
-    provider: PROVIDER
+    amount: finalAmount,
+    provider: PROVIDER,
+    promoCodeId,
+    discountAmount: discountAmount > 0 ? discountAmount : null
   });
 }
 
 /**
  * Create a YooKassa payment and return the confirmation URL.
+ * Uses payment.amount from DB (supports discounts).
  */
 async function createYooKassaPayment(applicationId) {
   const payment = await getPaymentByApplicationId(applicationId);
@@ -31,18 +39,20 @@ async function createYooKassaPayment(applicationId) {
     return { alreadyPaid: true };
   }
 
+  // Use amount from DB (may include discount)
+  const paymentAmount = payment.amount;
+
   // Get displayNumber for return URL
   const application = await getApplicationById(applicationId);
   const displayNumber = application?.displayNumber || applicationId;
 
-  // If we already have an externalId, the payment was already created at YooKassa.
-  // Create a new one with a fresh idempotence key to get a valid confirmation URL.
-
   const idempotenceKey = `app_${applicationId}_${Date.now()}`;
+
+  const amountValue = paymentAmount % 1 === 0 ? `${paymentAmount}.00` : paymentAmount.toFixed(2);
 
   const body = {
     amount: {
-      value: `${PAYMENT_AMOUNT}.00`,
+      value: amountValue,
       currency: 'RUB'
     },
     confirmation: {
@@ -59,7 +69,7 @@ async function createYooKassaPayment(applicationId) {
         description: 'Онлайн-консультация косметолога',
         quantity: '1.00',
         amount: {
-          value: `${PAYMENT_AMOUNT}.00`,
+          value: amountValue,
           currency: 'RUB'
         },
         vat_code: 1,
@@ -95,18 +105,119 @@ async function createYooKassaPayment(applicationId) {
   // Save YooKassa payment ID
   await updatePaymentExternalId(payment.id, data.id);
 
-  console.log(`[PAYMENT] YooKassa payment created: ${data.id} for application ${applicationId}`);
+  console.log(`[PAYMENT] YooKassa payment created: ${data.id} for application ${applicationId}, amount: ${paymentAmount}`);
 
   return {
     alreadyPaid: false,
-    confirmationUrl: data.confirmation.confirmation_url
+    confirmationUrl: data.confirmation.confirmation_url,
+    amount: paymentAmount
   };
 }
 
 /**
- * Process payment — creates YooKassa payment and returns URL.
+ * Complete payment immediately (for 100% discount).
+ * Moves application to NEW and notifies admins.
  */
-export async function processPayment(applicationId) {
+async function completeFreePayment(applicationId) {
+  const payment = await getPaymentByApplicationId(applicationId);
+  if (!payment) {
+    throw new Error(`Payment not found for application ${applicationId}`);
+  }
+
+  if (payment.status === 'COMPLETED') {
+    return { alreadyPaid: true, freeWithPromo: true };
+  }
+
+  await completePayment(payment.id, 'FREE_PROMO');
+
+  // Increment promo code usage
+  if (payment.promoCodeId) {
+    await incrementPromoCodeUsage(payment.promoCodeId);
+  }
+
+  // Move application to NEW
+  await updateApplicationStatus(
+    applicationId,
+    'NEW',
+    null,
+    'CLIENT',
+    'Оплата по промокоду (100% скидка)'
+  );
+
+  // Notify admins
+  const fullApplication = await getApplicationById(applicationId);
+  await notifyAdminsNewApplication(fullApplication);
+
+  // Send confirmation email
+  if (fullApplication?.client?.email) {
+    try {
+      const { sendPaymentConfirmation } = await import('./email.js');
+      await sendPaymentConfirmation({
+        to: fullApplication.client.email,
+        displayNumber: fullApplication.displayNumber || applicationId
+      });
+    } catch (err) {
+      console.error('[PAYMENT] Error sending confirmation email:', err.message);
+    }
+  }
+
+  // Telegram notification
+  if (fullApplication?.client?.telegramId) {
+    try {
+      const { getClientBot } = await import('../clientBot/index.js');
+      const bot = getClientBot();
+      if (bot) {
+        const appNum = fullApplication.displayNumber || applicationId;
+        await bot.telegram.sendMessage(
+          fullApplication.client.telegramId.toString(),
+          `*Заявка #${appNum} оформлена!*\n\n` +
+          'Промокод применён — оплата не требуется.\n\n' +
+          'Эксперт изучит вашу анкету и фотографии, после чего вы получите персональные рекомендации.\n\n' +
+          'Вам ответят в течение 24 часов.',
+          { parse_mode: 'Markdown' }
+        );
+      }
+    } catch (err) {
+      console.error('[PAYMENT] Error sending Telegram notification:', err.message);
+    }
+  }
+
+  console.log(`[PAYMENT] Free payment completed for application ${applicationId}`);
+
+  return { alreadyPaid: false, freeWithPromo: true };
+}
+
+/**
+ * Process payment — creates YooKassa payment and returns URL.
+ * If amount is 0 (100% discount), completes immediately.
+ */
+export async function processPayment(applicationId, promoCode = null) {
+  // If promo code provided (web flow), validate and apply
+  if (promoCode) {
+    const { valid, promoCode: promo, error } = await validatePromoCode(promoCode);
+    if (!valid) {
+      throw new Error(error);
+    }
+
+    const payment = await getPaymentByApplicationId(applicationId);
+    if (payment && payment.status === 'PENDING') {
+      const discountAmount = Math.round(PAYMENT_AMOUNT * promo.discount / 100);
+      const finalAmount = PAYMENT_AMOUNT - discountAmount;
+
+      await updatePaymentWithPromo(payment.id, {
+        promoCodeId: promo.id,
+        discountAmount,
+        amount: finalAmount
+      });
+    }
+  }
+
+  // Check if payment amount is 0 (100% discount)
+  const payment = await getPaymentByApplicationId(applicationId);
+  if (payment && payment.amount === 0) {
+    return completeFreePayment(applicationId);
+  }
+
   return createYooKassaPayment(applicationId);
 }
 
@@ -154,6 +265,11 @@ export async function handleYooKassaWebhook(body) {
     }
 
     await completePayment(localPayment.id, yookassaPaymentId);
+
+    // Increment promo code usage if applicable
+    if (localPayment.promoCodeId) {
+      await incrementPromoCodeUsage(localPayment.promoCodeId);
+    }
 
     // Move application to NEW
     await updateApplicationStatus(

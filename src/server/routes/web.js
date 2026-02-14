@@ -152,8 +152,43 @@ router.post('/applications', upload.array('photos', 6), async (req, res) => {
 });
 
 /**
+ * POST /api/web/validate-promo
+ * Validate a promo code (public)
+ */
+router.post('/validate-promo', async (req, res) => {
+  try {
+    const { code } = req.body;
+    if (!code || !code.trim()) {
+      return res.status(400).json({ valid: false, error: 'Введите промокод' });
+    }
+
+    const { validatePromoCode } = await import('../../db/promoCodes.js');
+    const { PAYMENT_AMOUNT } = await import('../../services/payment.js');
+    const { valid, promoCode, error } = await validatePromoCode(code);
+
+    if (!valid) {
+      return res.json({ valid: false, error });
+    }
+
+    const discountAmount = Math.round(PAYMENT_AMOUNT * promoCode.discount / 100);
+    const finalAmount = PAYMENT_AMOUNT - discountAmount;
+
+    res.json({
+      valid: true,
+      discount: promoCode.discount,
+      discountAmount,
+      finalAmount,
+      originalAmount: PAYMENT_AMOUNT
+    });
+  } catch (error) {
+    console.error('[WEB] Error validating promo:', error);
+    res.status(500).json({ valid: false, error: 'Internal server error' });
+  }
+});
+
+/**
  * POST /api/web/applications/:id/pay
- * Process mock payment for web application
+ * Process payment for web application (optionally with promo code)
  */
 router.post('/applications/:id/pay', async (req, res) => {
   try {
@@ -173,10 +208,15 @@ router.post('/applications/:id/pay', async (req, res) => {
       return res.status(400).json({ error: 'Application is not awaiting payment' });
     }
 
-    const result = await processPayment(applicationId);
+    const promoCode = req.body?.promoCode || null;
+    const result = await processPayment(applicationId, promoCode);
 
     if (result.alreadyPaid) {
       return res.json({ success: true, alreadyPaid: true });
+    }
+
+    if (result.freeWithPromo) {
+      return res.json({ success: true, freeWithPromo: true });
     }
 
     res.json({
@@ -185,7 +225,7 @@ router.post('/applications/:id/pay', async (req, res) => {
     });
   } catch (error) {
     console.error('[WEB] Error processing payment:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 

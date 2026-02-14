@@ -277,6 +277,57 @@ export async function notifyAdminsDecline(application, reason) {
   await sendToAdminsViaDoctorBot(message);
 }
 
+// Send payment reminder to client
+export async function sendPaymentReminder(application, confirmationUrl) {
+  const appNum = application.displayNumber || application.id;
+
+  // Send via Telegram if client has telegramId
+  if (application.client?.telegramId && clientBot) {
+    try {
+      const { Markup } = await import('telegraf');
+      const message = `Привет! Ваша заявка #${appNum} всё ещё ждёт 🤍\n\n` +
+        'Врач готов начать работу — осталось только оплатить.\n' +
+        'Если передумали — ничего страшного, можно отменить заявку.';
+
+      await clientBot.telegram.sendMessage(
+        Number(application.client.telegramId),
+        message,
+        {
+          parse_mode: 'Markdown',
+          ...Markup.inlineKeyboard([
+            [Markup.button.callback('🏷 Ввести промокод', `promo_for_${application.id}`)],
+            [Markup.button.url(`💳 Оплатить`, confirmationUrl)],
+            [Markup.button.callback('❌ Отменить заявку', `cancel_app_${application.id}`)]
+          ])
+        }
+      );
+      console.log(`[NOTIFICATIONS] Payment reminder sent via Telegram to client ${application.client.id}`);
+      return 'telegram';
+    } catch (error) {
+      console.error('[NOTIFICATIONS] Error sending Telegram reminder:', error.message);
+    }
+  }
+
+  // Send via email if client has email
+  if (application.client?.email) {
+    try {
+      const { sendPaymentReminderEmail } = await import('./email.js');
+      await sendPaymentReminderEmail({
+        to: application.client.email,
+        displayNumber: appNum,
+        paymentUrl: confirmationUrl
+      });
+      console.log(`[NOTIFICATIONS] Payment reminder sent via email to ${application.client.email}`);
+      return 'email';
+    } catch (error) {
+      console.error('[NOTIFICATIONS] Error sending email reminder:', error.message);
+    }
+  }
+
+  console.log('[NOTIFICATIONS] No contact method for payment reminder');
+  return null;
+}
+
 // Store pending photo requests (applicationId -> clientTelegramId)
 export const pendingPhotoRequests = new Map();
 
