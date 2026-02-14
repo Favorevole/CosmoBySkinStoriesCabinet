@@ -20,9 +20,9 @@
     <section class="hero">
       <div class="hero-content">
         <div class="hero-text">
-          <span class="badge">Skin Stories</span>
-          <h1>Персональные рекомендации<br>по уходу за кожей</h1>
-          <p class="hero-subtitle">Настоящие дерматологи изучат вашу кожу и подготовят индивидуальный план ухода.</p>
+          <span class="badge">AI Research Phase</span>
+          <h1>Мы обучаем AI <br>понимать настоящую кожу</h1>
+          <p class="hero-subtitle">Получите экспертные рекомендации по уходу за кожей от наших дерматологов — пока наш AI&nbsp;учится.</p>
           <p class="hero-cta-label">Начать консультацию</p>
           <div class="hero-cta-buttons">
             <button class="btn btn-primary" @click="showModal = true">
