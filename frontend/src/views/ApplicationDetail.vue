@@ -57,7 +57,7 @@
               class="photo-thumb"
               @click="openPhoto(photo)"
             >
-              <img :src="getPhotoUrl(application.id, photo.id)" alt="">
+              <img :src="getPhotoUrl(application.id, photo.id)" alt="" @error="onPhotoError">
               <div class="photo-overlay">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="11" cy="11" r="8"/>
@@ -484,6 +484,11 @@ async function remindPayment() {
   } finally {
     reminding.value = false;
   }
+}
+
+function onPhotoError(e) {
+  e.target.style.display = 'none';
+  e.target.parentElement.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);color:rgba(255,255,255,0.4);font-size:11px;text-align:center;padding:8px">Не удалось загрузить</div>';
 }
 
 function formatDate(date) {
