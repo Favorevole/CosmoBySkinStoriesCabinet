@@ -67,14 +67,19 @@ export async function deletePhoto(id) {
 }
 
 export async function getPhotoData(photo) {
+  // 1. Try S3
   if (photo.s3Key) {
-    return downloadPhoto(photo.s3Key);
+    try {
+      return await downloadPhoto(photo.s3Key);
+    } catch (error) {
+      console.error(`[PHOTOS] S3 download failed for photo ${photo.id} (key: ${photo.s3Key}):`, error.message);
+    }
   }
-  // Fallback: read binary data from DB (for old photos)
+
+  // 2. Fallback: read binary data from DB
   if (photo.data) {
     return Buffer.isBuffer(photo.data) ? photo.data : Buffer.from(photo.data);
   }
-  // If no data in-memory, fetch from DB
   const fullPhoto = await prisma.photo.findUnique({
     where: { id: photo.id },
     select: { data: true }
@@ -82,6 +87,24 @@ export async function getPhotoData(photo) {
   if (fullPhoto?.data) {
     return Buffer.isBuffer(fullPhoto.data) ? fullPhoto.data : Buffer.from(fullPhoto.data);
   }
+
+  // 3. Fallback: download from Telegram API
+  if (photo.telegramFileId) {
+    try {
+      const config = (await import('../config/environment.js')).default;
+      const token = config.clientBot.token;
+      const fileRes = await fetch(`https://api.telegram.org/bot${token}/getFile?file_id=${photo.telegramFileId}`);
+      const fileData = await fileRes.json();
+      if (fileData.ok) {
+        const fileUrl = `https://api.telegram.org/file/bot${token}/${fileData.result.file_path}`;
+        const imgRes = await fetch(fileUrl);
+        return Buffer.from(await imgRes.arrayBuffer());
+      }
+    } catch (error) {
+      console.error(`[PHOTOS] Telegram download failed for photo ${photo.id}:`, error.message);
+    }
+  }
+
   return null;
 }
 

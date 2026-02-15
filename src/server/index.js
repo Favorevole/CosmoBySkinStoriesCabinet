@@ -31,7 +31,8 @@ export function setBotsForWebhook(client, doctor) {
 // Security headers
 app.use(helmet({
   contentSecurityPolicy: false, // CSP managed separately for frontend
-  crossOriginEmbedderPolicy: false
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: 'cross-origin' }
 }));
 
 // CORS — restrict to allowed origins
