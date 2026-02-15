@@ -58,6 +58,11 @@ export async function handleStartRecommendation(ctx) {
   }
 }
 
+// Escape Telegram Markdown v1 special characters
+function escapeMarkdown(text) {
+  return text.replace(/([_*`\[])/g, '\\$1');
+}
+
 export async function handleRecommendationText(ctx) {
   const telegramId = ctx.from.id;
   const session = getSession(telegramId);
@@ -83,7 +88,8 @@ export async function handleRecommendationText(ctx) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   const links = text.match(urlRegex) || [];
 
-  let preview = `*Предпросмотр вашего ответа:*\n\n${text}\n`;
+  const escaped = escapeMarkdown(text);
+  let preview = `*Предпросмотр вашего ответа:*\n\n${escaped}\n`;
 
   if (links.length > 0) {
     preview += `\n_Найдено ссылок: ${links.length}_`;
@@ -91,11 +97,23 @@ export async function handleRecommendationText(ctx) {
 
   preview += '\n\nВсё верно?';
 
-  await ctx.reply(preview, {
-    parse_mode: 'Markdown',
-    disable_web_page_preview: true,
-    ...confirmRecommendationKeyboard(session.currentApplicationId)
-  });
+  try {
+    await ctx.reply(preview, {
+      parse_mode: 'Markdown',
+      disable_web_page_preview: true,
+      ...confirmRecommendationKeyboard(session.currentApplicationId)
+    });
+  } catch (err) {
+    // Fallback: send without Markdown if escaping still fails
+    console.warn('[DOCTOR_BOT] Markdown preview failed, sending plain text:', err.message);
+    await ctx.reply(
+      `Предпросмотр вашего ответа:\n\n${text}\n${links.length > 0 ? `\nНайдено ссылок: ${links.length}` : ''}\n\nВсё верно?`,
+      {
+        disable_web_page_preview: true,
+        ...confirmRecommendationKeyboard(session.currentApplicationId)
+      }
+    );
+  }
 
   return true;
 }

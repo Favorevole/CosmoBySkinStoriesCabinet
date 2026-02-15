@@ -114,6 +114,11 @@ ${application.additionalComment ? `💬 *Комментарий:* ${application.
   }
 }
 
+// Escape Telegram Markdown v1 special characters
+function escapeMarkdown(text) {
+  return text.replace(/([_*`\[])/g, '\\$1');
+}
+
 // Notify client about ready recommendation
 export async function notifyClientRecommendation(application) {
   // Web clients: send via email
@@ -146,12 +151,13 @@ export async function notifyClientRecommendation(application) {
     const recommendation = application.recommendation;
 
     const appNum = application.displayNumber || application.id;
+    const escapedText = escapeMarkdown(recommendation.text);
     let message = `
 *Ваши рекомендации готовы!*
 
 Заявка #${appNum}
 
-${recommendation.text}
+${escapedText}
 `;
 
     // Add links if present
@@ -164,10 +170,26 @@ ${recommendation.text}
 
     message += '\nСпасибо, что выбрали нас!';
 
-    await clientBot.telegram.sendMessage(Number(application.client.telegramId), message, {
-      parse_mode: 'Markdown',
-      disable_web_page_preview: true
-    });
+    try {
+      await clientBot.telegram.sendMessage(Number(application.client.telegramId), message, {
+        parse_mode: 'Markdown',
+        disable_web_page_preview: true
+      });
+    } catch (mdErr) {
+      // Fallback: send without Markdown if parsing fails
+      console.warn('[NOTIFICATIONS] Markdown send failed, retrying plain text:', mdErr.message);
+      let plainMessage = `Ваши рекомендации готовы!\n\nЗаявка #${appNum}\n\n${recommendation.text}\n`;
+      if (recommendation.links && Array.isArray(recommendation.links) && recommendation.links.length > 0) {
+        plainMessage += '\nПолезные ссылки:\n';
+        for (const link of recommendation.links) {
+          plainMessage += `• ${link.title}: ${link.url}\n`;
+        }
+      }
+      plainMessage += '\nСпасибо, что выбрали нас!';
+      await clientBot.telegram.sendMessage(Number(application.client.telegramId), plainMessage, {
+        disable_web_page_preview: true
+      });
+    }
 
     // Send review request after a short delay
     try {
