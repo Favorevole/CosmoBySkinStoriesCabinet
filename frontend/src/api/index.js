@@ -152,6 +152,9 @@ export const deletePromoCodeApi = (id) =>
 export const getPayments = () =>
   api.get('/payments');
 
+export const updateExcludedClients = (clientIds) =>
+  api.put('/payments/excluded-clients', { clientIds });
+
 // Promo code validation (public)
 export const validatePromoCodeApi = (code) =>
   api.post('/web/validate-promo', { code });
