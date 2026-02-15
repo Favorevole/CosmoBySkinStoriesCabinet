@@ -77,6 +77,63 @@
       </div>
     </div>
 
+    <!-- Revenue -->
+    <div class="section-title">Выручка</div>
+    <div class="system-overview revenue-overview" v-if="systemStats?.revenue">
+      <div class="overview-card highlight">
+        <div class="overview-icon revenue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+          </svg>
+        </div>
+        <div class="overview-content">
+          <div class="overview-value">{{ formatMoney(systemStats.revenue.total) }} ₽</div>
+          <div class="overview-label">Выручка</div>
+        </div>
+      </div>
+      <div class="overview-card">
+        <div class="overview-icon payments">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+            <line x1="1" y1="10" x2="23" y2="10"/>
+          </svg>
+        </div>
+        <div class="overview-content">
+          <div class="overview-value">{{ systemStats.revenue.count }}</div>
+          <div class="overview-label">Оплат</div>
+        </div>
+      </div>
+      <div class="overview-card">
+        <div class="overview-icon discounts">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="5" x2="5" y2="19"/>
+            <circle cx="6.5" cy="6.5" r="2.5"/>
+            <circle cx="17.5" cy="17.5" r="2.5"/>
+          </svg>
+        </div>
+        <div class="overview-content">
+          <div class="overview-value">{{ formatMoney(systemStats.revenue.totalDiscount) }} ₽</div>
+          <div class="overview-label">Скидки</div>
+        </div>
+      </div>
+      <div class="overview-card">
+        <div class="overview-icon promo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 12 20 22 4 22 4 12"/>
+            <rect x="2" y="7" width="20" height="5"/>
+            <line x1="12" y1="22" x2="12" y2="7"/>
+            <path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/>
+            <path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/>
+          </svg>
+        </div>
+        <div class="overview-content">
+          <div class="overview-value">{{ systemStats.revenue.freePromoCount }}</div>
+          <div class="overview-label">Промокоды (100%)</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Applications Stats -->
     <div class="section-title">Статус заявок</div>
     <div class="stats-row" v-if="stats">
@@ -289,6 +346,10 @@ function changePage(page) {
   loadApplications();
 }
 
+function formatMoney(value) {
+  return Number(value || 0).toLocaleString('ru-RU');
+}
+
 function formatDate(date) {
   return new Date(date).toLocaleDateString('ru-RU', {
     day: 'numeric',
@@ -395,6 +456,34 @@ function formatDate(date) {
 }
 .overview-icon.completed svg {
   color: #4ADE80;
+}
+
+.overview-icon.revenue {
+  background: rgba(74, 222, 128, 0.15);
+}
+.overview-icon.revenue svg {
+  color: #4ADE80;
+}
+
+.overview-icon.payments {
+  background: rgba(59, 130, 246, 0.15);
+}
+.overview-icon.payments svg {
+  color: #60A5FA;
+}
+
+.overview-icon.discounts {
+  background: rgba(251, 191, 36, 0.15);
+}
+.overview-icon.discounts svg {
+  color: #FBBF24;
+}
+
+.overview-icon.promo {
+  background: rgba(244, 114, 182, 0.15);
+}
+.overview-icon.promo svg {
+  color: #F472B6;
 }
 
 .overview-value {
