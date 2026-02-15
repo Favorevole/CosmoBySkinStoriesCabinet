@@ -63,44 +63,6 @@
       </div>
     </div>
 
-    <!-- Exclude Clients Section -->
-    <div class="exclude-section" v-if="clients.length > 0">
-      <div class="exclude-header" @click="excludeExpanded = !excludeExpanded">
-        <div class="exclude-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="exclude-icon">
-            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <line x1="18" y1="8" x2="23" y2="13"/>
-            <line x1="23" y1="8" x2="18" y2="13"/>
-          </svg>
-          <span>Исключить из выручки</span>
-          <span class="exclude-count" v-if="excludedClientIds.length > 0">{{ excludedClientIds.length }}</span>
-        </div>
-        <svg
-          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          class="chevron" :class="{ expanded: excludeExpanded }"
-        >
-          <polyline points="6 9 12 15 18 9"/>
-        </svg>
-      </div>
-      <div class="exclude-body" v-if="excludeExpanded">
-        <label
-          v-for="client in clients"
-          :key="client.id"
-          class="exclude-client"
-        >
-          <input
-            type="checkbox"
-            :checked="excludedClientIds.includes(client.id)"
-            @change="toggleExcluded(client.id)"
-            :disabled="savingExcluded"
-          />
-          <span class="client-name">{{ client.fullName || 'Без имени' }}</span>
-          <span class="client-username" v-if="client.telegramUsername">@{{ client.telegramUsername }}</span>
-        </label>
-      </div>
-    </div>
-
     <!-- Payments List -->
     <div class="section-title">Список оплат</div>
     <div class="payments-list" v-if="!loading">
@@ -166,14 +128,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { getPayments, updateExcludedClients } from '../api/index.js';
+import { getPayments } from '../api/index.js';
 
 const payments = ref([]);
 const summary = ref(null);
-const clients = ref([]);
-const excludedClientIds = ref([]);
-const excludeExpanded = ref(false);
-const savingExcluded = ref(false);
 const loading = ref(true);
 
 onMounted(async () => {
@@ -186,31 +144,10 @@ async function loadPayments() {
     const response = await getPayments();
     payments.value = response.data.payments;
     summary.value = response.data.summary;
-    clients.value = response.data.clients || [];
-    excludedClientIds.value = response.data.excludedClientIds || [];
   } catch (error) {
     console.error('Failed to load payments:', error);
   } finally {
     loading.value = false;
-  }
-}
-
-async function toggleExcluded(clientId) {
-  savingExcluded.value = true;
-  try {
-    const idx = excludedClientIds.value.indexOf(clientId);
-    const newIds = [...excludedClientIds.value];
-    if (idx >= 0) {
-      newIds.splice(idx, 1);
-    } else {
-      newIds.push(clientId);
-    }
-    await updateExcludedClients(newIds);
-    await loadPayments();
-  } catch (error) {
-    console.error('Failed to update excluded clients:', error);
-  } finally {
-    savingExcluded.value = false;
   }
 }
 
@@ -340,105 +277,6 @@ function formatDate(date) {
   font-size: 13px;
   color: rgba(255, 255, 255, 0.5);
   margin-top: 4px;
-}
-
-/* Exclude Section */
-.exclude-section {
-  background: linear-gradient(135deg, #222224 0%, #1E1E20 100%);
-  border: 1px solid rgba(201, 169, 98, 0.1);
-  border-radius: 16px;
-  margin-bottom: 24px;
-  overflow: hidden;
-}
-
-.exclude-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  cursor: pointer;
-  user-select: none;
-  transition: background 0.2s ease;
-}
-
-.exclude-header:hover {
-  background: rgba(201, 169, 98, 0.05);
-}
-
-.exclude-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.exclude-icon {
-  width: 18px;
-  height: 18px;
-  color: #C9A962;
-}
-
-.exclude-count {
-  background: rgba(239, 68, 68, 0.2);
-  color: #F87171;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 10px;
-}
-
-.chevron {
-  width: 18px;
-  height: 18px;
-  color: rgba(255, 255, 255, 0.4);
-  transition: transform 0.2s ease;
-}
-
-.chevron.expanded {
-  transform: rotate(180deg);
-}
-
-.exclude-body {
-  padding: 4px 20px 16px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.exclude-client {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 13px;
-}
-
-.exclude-client:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(201, 169, 98, 0.2);
-}
-
-.exclude-client input[type="checkbox"] {
-  accent-color: #C9A962;
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-}
-
-.client-name {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.client-username {
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 12px;
 }
 
 .section-title {
@@ -700,17 +538,5 @@ function formatDate(date) {
     border-radius: 14px;
   }
 
-  .exclude-header {
-    padding: 14px 16px;
-  }
-
-  .exclude-body {
-    padding: 4px 16px 14px;
-  }
-
-  .exclude-client {
-    padding: 6px 10px;
-    font-size: 12px;
-  }
 }
 </style>
