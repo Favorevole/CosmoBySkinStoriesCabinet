@@ -183,7 +183,8 @@ router.get('/me', async (req, res) => {
         id: admin.id,
         fullName: admin.fullName,
         telegramUsername: admin.telegramUsername,
-        status: admin.status
+        status: admin.status,
+        canSeeRevenue: admin.canSeeRevenue || false
       });
 
     } catch (error) {

@@ -148,6 +148,10 @@ export const updatePromoCodeApi = (id, data) =>
 export const deletePromoCodeApi = (id) =>
   api.delete(`/promo-codes/${id}`);
 
+// Payments (admin, requires canSeeRevenue)
+export const getPayments = () =>
+  api.get('/payments');
+
 // Promo code validation (public)
 export const validatePromoCodeApi = (code) =>
   api.post('/web/validate-promo', { code });

@@ -13,6 +13,7 @@ import webRoutes from './routes/web.js';
 import settingsRoutes from './routes/settings.js';
 import reviewsRoutes from './routes/reviews.js';
 import promoCodesRoutes from './routes/promoCodes.js';
+import paymentsRoutes from './routes/payments.js';
 
 const app = express();
 
@@ -127,6 +128,7 @@ app.use('/api/web', webFormLimiter, webRoutes);
 app.use('/api/settings', apiLimiter, settingsRoutes);
 app.use('/api/reviews', apiLimiter, reviewsRoutes);
 app.use('/api/promo-codes', apiLimiter, promoCodesRoutes);
+app.use('/api/payments', apiLimiter, paymentsRoutes);
 
 // YooKassa webhook IP whitelist
 // https://yookassa.ru/developers/using-api/webhooks#ip
