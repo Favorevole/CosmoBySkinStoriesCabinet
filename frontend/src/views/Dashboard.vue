@@ -35,6 +35,13 @@
           </svg>
           Промокоды
         </router-link>
+        <router-link v-if="canSeeRevenue" to="/admin/payments" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+          </svg>
+          Финансы
+        </router-link>
         <router-link to="/admin/settings" class="nav-item">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
@@ -78,6 +85,7 @@ const stats = ref({
 });
 
 const adminName = ref('');
+const canSeeRevenue = ref(false);
 
 const adminInitials = computed(() => {
   if (!adminName.value) return '?';
@@ -94,6 +102,7 @@ onMounted(async () => {
     stats.value.pendingDoctors = statsResponse.data.doctors?.pending || 0;
     stats.value.pendingReviews = statsResponse.data.reviews?.pending || 0;
     adminName.value = meResponse.data.fullName || meResponse.data.telegramUsername || 'Admin';
+    canSeeRevenue.value = meResponse.data.canSeeRevenue || false;
   } catch (error) {
     console.error('Failed to load data:', error);
   }

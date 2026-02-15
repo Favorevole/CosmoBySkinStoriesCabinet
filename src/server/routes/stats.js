@@ -15,7 +15,7 @@ router.use(requireAdmin);
 router.get('/dashboard', async (req, res) => {
   try {
     // Use a single transaction for better performance
-    const [applicationStats, doctorStats, clientCount, pendingReviewsCount, paymentStats, freePromoCount] = await Promise.all([
+    const [applicationStats, doctorStats, clientCount, pendingReviewsCount] = await Promise.all([
       getApplicationStats(),
 
       prisma.doctor.groupBy({
@@ -25,25 +25,7 @@ router.get('/dashboard', async (req, res) => {
 
       prisma.client.count(),
 
-      prisma.review.count({ where: { isApproved: false } }),
-
-      prisma.payment.aggregate({
-        where: {
-          status: 'COMPLETED',
-          provider: 'YOOKASSA',
-          externalId: { not: null, notIn: ['FREE_PROMO'] }
-        },
-        _sum: { amount: true, discountAmount: true },
-        _count: { id: true }
-      }),
-
-      prisma.payment.count({
-        where: {
-          status: 'COMPLETED',
-          provider: 'YOOKASSA',
-          externalId: 'FREE_PROMO'
-        }
-      })
+      prisma.review.count({ where: { isApproved: false } })
     ]);
 
     // Recent applications removed from dashboard stats to improve performance
@@ -71,12 +53,6 @@ router.get('/dashboard', async (req, res) => {
       },
       reviews: {
         pending: pendingReviewsCount
-      },
-      revenue: {
-        total: paymentStats._sum.amount || 0,
-        count: paymentStats._count.id || 0,
-        totalDiscount: paymentStats._sum.discountAmount || 0,
-        freePromoCount: freePromoCount
       }
     });
 
