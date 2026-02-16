@@ -1,7 +1,8 @@
 import { createPaymentRecord, completePayment, failPayment, getPaymentByApplicationId, getPaymentByExternalId, updatePaymentExternalId, updatePaymentWithPromo } from '../db/payments.js';
+import { createGiftCertificate, getGiftCertificateById, getGiftCertificateByExternalId, updateGiftCertificateExternalId, completeGiftCertificate, failGiftCertificate } from '../db/giftCertificates.js';
 import { updateApplicationStatus, getApplicationById } from '../db/applications.js';
 import { notifyAdminsNewApplication } from './notifications.js';
-import { validatePromoCode, incrementPromoCodeUsage } from '../db/promoCodes.js';
+import { validatePromoCode, incrementPromoCodeUsage, createPromoCode } from '../db/promoCodes.js';
 import config from '../config/environment.js';
 
 export const PAYMENT_AMOUNT = 500;
@@ -285,6 +286,7 @@ async function completeSucceededPayment(localPayment, applicationId, externalId)
 
 /**
  * Handle YooKassa webhook notification.
+ * Routes to gift certificate handler if metadata.type === 'gift_certificate'.
  */
 export async function handleYooKassaWebhook(body) {
   const event = body.event;
@@ -297,6 +299,14 @@ export async function handleYooKassaWebhook(body) {
 
   const yookassaPaymentId = paymentData.id;
   const status = paymentData.status;
+
+  // Route gift certificate payments separately
+  if (paymentData.metadata?.type === 'gift_certificate') {
+    console.log(`[PAYMENT] Webhook: gift certificate payment, id=${yookassaPaymentId}, status=${status}`);
+    await handleGiftCertificateWebhook(paymentData, event);
+    return;
+  }
+
   const applicationId = parseInt(paymentData.metadata?.applicationId);
 
   console.log(`[PAYMENT] Webhook: event=${event}, paymentId=${yookassaPaymentId}, status=${status}, appId=${applicationId}`);
@@ -392,4 +402,271 @@ export async function checkYooKassaPaymentStatus(applicationId) {
   }
 
   return result;
+}
+
+// ==================== Gift Certificates ====================
+
+const GIFT_AMOUNT = 500;
+const GIFT_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/1/I
+
+/**
+ * Generate a readable gift code like GIFT-XXXX-XXXX.
+ */
+function generateGiftCode() {
+  let code = 'GIFT-';
+  for (let i = 0; i < 8; i++) {
+    if (i === 4) code += '-';
+    code += GIFT_CHARS[Math.floor(Math.random() * GIFT_CHARS.length)];
+  }
+  return code;
+}
+
+/**
+ * Create a gift certificate payment via YooKassa.
+ * Accepts { buyerTelegramId } (bot) or { buyerEmail } (web).
+ * Returns { giftCertificateId, confirmationUrl }.
+ */
+export async function createGiftPayment({ buyerTelegramId, buyerEmail } = {}) {
+  const gift = await createGiftCertificate({
+    buyerTelegramId: buyerTelegramId ? BigInt(buyerTelegramId) : null,
+    buyerEmail: buyerEmail || null,
+    amount: GIFT_AMOUNT,
+    provider: 'YOOKASSA'
+  });
+
+  const idempotenceKey = `gift_${gift.id}_${Date.now()}`;
+  const amountValue = `${GIFT_AMOUNT}.00`;
+
+  const body = {
+    amount: {
+      value: amountValue,
+      currency: 'RUB'
+    },
+    confirmation: {
+      type: 'redirect',
+      return_url: `${config.yookassa.returnUrl}&gift=${gift.id}`
+    },
+    capture: true,
+    description: 'Подарочный сертификат на консультацию косметолога',
+    receipt: {
+      customer: {
+        email: 'receipt@skinstories.ru'
+      },
+      items: [{
+        description: 'Подарочный сертификат на консультацию косметолога',
+        quantity: '1.00',
+        amount: {
+          value: amountValue,
+          currency: 'RUB'
+        },
+        vat_code: 1,
+        payment_subject: 'service',
+        payment_mode: 'full_payment'
+      }]
+    },
+    metadata: {
+      type: 'gift_certificate',
+      giftCertificateId: String(gift.id)
+    }
+  };
+
+  const credentials = Buffer.from(`${config.yookassa.shopId}:${config.yookassa.apiKey}`).toString('base64');
+
+  const response = await fetch('https://api.yookassa.ru/v3/payments', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Basic ${credentials}`,
+      'Idempotence-Key': idempotenceKey
+    },
+    body: JSON.stringify(body)
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('[GIFT] YooKassa error:', response.status, errorText);
+    throw new Error(`YooKassa API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  await updateGiftCertificateExternalId(gift.id, data.id);
+
+  console.log(`[GIFT] YooKassa payment created: ${data.id} for gift certificate ${gift.id}`);
+
+  return {
+    giftCertificateId: gift.id,
+    confirmationUrl: data.confirmation.confirmation_url
+  };
+}
+
+/**
+ * Handle YooKassa webhook for gift certificate payments.
+ */
+async function handleGiftCertificateWebhook(paymentData, event) {
+  const yookassaPaymentId = paymentData.id;
+  const status = paymentData.status;
+  const giftCertificateId = parseInt(paymentData.metadata?.giftCertificateId);
+
+  // Find gift certificate
+  let gift = await getGiftCertificateByExternalId(yookassaPaymentId);
+  if (!gift && giftCertificateId) {
+    gift = await getGiftCertificateById(giftCertificateId);
+    if (gift) {
+      await updateGiftCertificateExternalId(gift.id, yookassaPaymentId);
+    }
+  }
+
+  if (!gift) {
+    console.warn(`[GIFT] Webhook: gift certificate not found for payment ${yookassaPaymentId}`);
+    return;
+  }
+
+  if (event === 'payment.succeeded' || status === 'succeeded') {
+    if (gift.status === 'COMPLETED') {
+      console.log(`[GIFT] Webhook: gift ${gift.id} already completed`);
+      return;
+    }
+
+    // Generate unique promo code
+    const giftCode = generateGiftCode();
+    const promoCode = await createPromoCode({
+      code: giftCode,
+      discount: 100,
+      maxUses: 1
+    });
+
+    await completeGiftCertificate(gift.id, yookassaPaymentId, promoCode.id);
+
+    // Send promo code to buyer via Telegram (if purchased from bot)
+    if (gift.buyerTelegramId) {
+      try {
+        const { getClientBot } = await import('../clientBot/index.js');
+        const bot = getClientBot();
+        if (bot) {
+          await bot.telegram.sendMessage(
+            gift.buyerTelegramId.toString(),
+            `*Подарочный сертификат готов!* 🎁\n\n` +
+            `Ваш промокод на бесплатную консультацию:\n\n` +
+            `\`${giftCode}\`\n\n` +
+            `Передайте этот код получателю. Он вводится при оплате консультации и даёт 100% скидку.\n\n` +
+            `Код одноразовый — действует до первого использования.`,
+            { parse_mode: 'Markdown' }
+          );
+        }
+      } catch (err) {
+        console.error('[GIFT] Error sending Telegram message to buyer:', err.message);
+      }
+    }
+
+    // Send promo code to buyer via email (if purchased from web)
+    if (gift.buyerEmail) {
+      try {
+        const { sendGiftCertificateEmail } = await import('./email.js');
+        await sendGiftCertificateEmail({ to: gift.buyerEmail, giftCode });
+      } catch (err) {
+        console.error('[GIFT] Error sending email to buyer:', err.message);
+      }
+    }
+
+    console.log(`[GIFT] Gift certificate ${gift.id} completed, promo code: ${giftCode}`);
+
+  } else if (event === 'payment.canceled' || status === 'canceled') {
+    if (gift.status !== 'PENDING') {
+      return;
+    }
+    await failGiftCertificate(gift.id);
+    console.log(`[GIFT] Gift certificate ${gift.id} payment canceled`);
+  }
+}
+
+/**
+ * Check gift certificate status. If payment succeeded at YooKassa but webhook
+ * hasn't fired yet, completes the gift certificate and returns the promo code.
+ */
+export async function checkGiftCertificateStatus(giftCertificateId) {
+  const gift = await getGiftCertificateById(giftCertificateId);
+  if (!gift) {
+    throw new Error('Сертификат не найден');
+  }
+
+  // Already completed — return promo code
+  if (gift.status === 'COMPLETED' && gift.promoCodeId) {
+    const { getPromoCodeById } = await import('../db/promoCodes.js');
+    const promo = await getPromoCodeById(gift.promoCodeId);
+    return { status: 'COMPLETED', promoCode: promo?.code || null };
+  }
+
+  if (gift.status === 'FAILED') {
+    return { status: 'FAILED' };
+  }
+
+  // Still pending — check with YooKassa
+  if (!gift.externalId) {
+    return { status: 'PENDING' };
+  }
+
+  const credentials = Buffer.from(`${config.yookassa.shopId}:${config.yookassa.apiKey}`).toString('base64');
+
+  const response = await fetch(`https://api.yookassa.ru/v3/payments/${gift.externalId}`, {
+    method: 'GET',
+    headers: { 'Authorization': `Basic ${credentials}` }
+  });
+
+  if (!response.ok) {
+    return { status: 'PENDING' };
+  }
+
+  const data = await response.json();
+
+  if (data.status === 'succeeded') {
+    // Complete the gift certificate (webhook may not have fired yet)
+    const giftCode = generateGiftCode();
+    const promoCode = await createPromoCode({
+      code: giftCode,
+      discount: 100,
+      maxUses: 1
+    });
+
+    await completeGiftCertificate(gift.id, gift.externalId, promoCode.id);
+
+    // Also send notifications
+    if (gift.buyerTelegramId) {
+      try {
+        const { getClientBot } = await import('../clientBot/index.js');
+        const bot = getClientBot();
+        if (bot) {
+          await bot.telegram.sendMessage(
+            gift.buyerTelegramId.toString(),
+            `*Подарочный сертификат готов!* 🎁\n\n` +
+            `Ваш промокод на бесплатную консультацию:\n\n` +
+            `\`${giftCode}\`\n\n` +
+            `Передайте этот код получателю. Он вводится при оплате консультации и даёт 100% скидку.\n\n` +
+            `Код одноразовый — действует до первого использования.`,
+            { parse_mode: 'Markdown' }
+          );
+        }
+      } catch (err) {
+        console.error('[GIFT] Error sending Telegram message:', err.message);
+      }
+    }
+
+    if (gift.buyerEmail) {
+      try {
+        const { sendGiftCertificateEmail } = await import('./email.js');
+        await sendGiftCertificateEmail({ to: gift.buyerEmail, giftCode });
+      } catch (err) {
+        console.error('[GIFT] Error sending email:', err.message);
+      }
+    }
+
+    return { status: 'COMPLETED', promoCode: giftCode };
+  }
+
+  if (data.status === 'canceled') {
+    await failGiftCertificate(gift.id);
+    return { status: 'FAILED' };
+  }
+
+  return { status: 'PENDING' };
 }

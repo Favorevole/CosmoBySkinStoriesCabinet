@@ -299,7 +299,27 @@ model PromoCode {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
 
-  payments  Payment[]
+  payments        Payment[]
+  giftCertificate GiftCertificate?
 
   @@map("promo_codes")
+}
+
+model GiftCertificate {
+  id              Int             @id @default(autoincrement())
+  buyerTelegramId BigInt?         @map("buyer_telegram_id")
+  buyerEmail      String?         @map("buyer_email")
+  amount          Float
+  status          PaymentStatus   @default(PENDING)
+  provider        PaymentProvider @default(YOOKASSA)
+  externalId      String?         @map("external_id")
+  promoCodeId     Int?            @unique @map("promo_code_id")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  completedAt     DateTime?       @map("completed_at")
+
+  promoCode       PromoCode?      @relation(fields: [promoCodeId], references: [id])
+
+  @@index([buyerTelegramId])
+  @@index([externalId])
+  @@map("gift_certificates")
 }

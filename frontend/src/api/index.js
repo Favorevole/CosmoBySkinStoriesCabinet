@@ -163,6 +163,13 @@ export const getPayments = () =>
 export const updateExcludedClients = (clientIds) =>
   api.put('/payments/excluded-clients', { clientIds });
 
+// Gift certificates (public)
+export const buyGiftCertificate = (email) =>
+  api.post('/web/gift', { email }, { timeout: 30000 });
+
+export const checkGiftStatus = (id) =>
+  api.get(`/web/gift/${id}/check`, { timeout: 15000 });
+
 // Promo code validation (public)
 export const validatePromoCodeApi = (code) =>
   api.post('/web/validate-promo', { code });

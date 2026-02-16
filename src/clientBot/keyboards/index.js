@@ -137,7 +137,7 @@ export function confirmKeyboard() {
 
 export function mainMenuKeyboard() {
   return Markup.keyboard([
-    ['✨ Новая консультация'],
+    ['✨ Новая консультация', '🎁 Подарить'],
     ['📋 Мои заявки', '❓ Помощь']
   ]).resize();
 }

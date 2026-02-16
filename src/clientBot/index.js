@@ -39,6 +39,7 @@ import {
   handleReviewText
 } from './handlers/review.js';
 import { handlePayment, handlePaymentPromo, handlePaymentPromoInput, handleCancelApplication } from './handlers/payment.js';
+import { handleGift, handleBuyGift } from './handlers/gift.js';
 
 let bot = null;
 let botInfo = null;
@@ -76,6 +77,11 @@ export function createClientBot() {
   bot.command('help', handleHelp);
   bot.command('new', handleStartQuestionnaire);
   bot.command('myapps', handleMyApplications);
+  bot.command('gift', handleGift);
+
+  // Gift certificate
+  bot.action('buy_gift', handleBuyGift);
+  bot.hears('🎁 Подарить', handleGift);
 
   // Callback queries - questionnaire
   bot.action('start_questionnaire', handleStartQuestionnaire);
@@ -172,6 +178,7 @@ export async function startClientBot() {
   // Set bot commands menu
   await bot.telegram.setMyCommands([
     { command: 'new', description: 'Новая консультация' },
+    { command: 'gift', description: 'Подарочный сертификат' },
     { command: 'myapps', description: 'Мои заявки' },
     { command: 'help', description: 'Справка' },
     { command: 'start', description: 'Перезапустить бот' }
