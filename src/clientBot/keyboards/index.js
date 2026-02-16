@@ -29,6 +29,7 @@ export function priceRangeKeyboard() {
     [Markup.button.callback(PRICE_RANGES.UP_TO_5000.label, 'price_UP_TO_5000')],
     [Markup.button.callback(PRICE_RANGES.UP_TO_10000.label, 'price_UP_TO_10000')],
     [Markup.button.callback(PRICE_RANGES.UP_TO_20000.label, 'price_UP_TO_20000')],
+    [Markup.button.callback(PRICE_RANGES.OVER_20000.label, 'price_OVER_20000')],
     [
       Markup.button.callback('⬅️ Назад', 'back_to_skin_type'),
       Markup.button.callback('Отмена', 'cancel')

@@ -18,9 +18,10 @@ export const SKIN_TYPES = {
 };
 
 export const PRICE_RANGES = {
-  UP_TO_5000: { value: 'UP_TO_5000', label: 'До 5 000 ₽' },
+  UP_TO_5000: { value: 'UP_TO_5000', label: 'До 5 000 ₽ (до 2 средств)' },
   UP_TO_10000: { value: 'UP_TO_10000', label: 'До 10 000 ₽' },
-  UP_TO_20000: { value: 'UP_TO_20000', label: 'До 20 000 ₽' }
+  UP_TO_20000: { value: 'UP_TO_20000', label: 'До 20 000 ₽' },
+  OVER_20000: { value: 'OVER_20000', label: 'Более 20 000 ₽' }
 };
 
 // Default skin problems (fallback)

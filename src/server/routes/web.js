@@ -26,7 +26,7 @@ const upload = multer({
 });
 
 const VALID_SKIN_TYPES = ['DRY', 'OILY', 'COMBINATION', 'NORMAL'];
-const VALID_PRICE_RANGES = ['UP_TO_5000', 'UP_TO_10000', 'UP_TO_20000'];
+const VALID_PRICE_RANGES = ['UP_TO_5000', 'UP_TO_10000', 'UP_TO_20000', 'OVER_20000'];
 
 /**
  * GET /api/web/skin-problems
