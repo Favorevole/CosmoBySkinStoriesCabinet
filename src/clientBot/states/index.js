@@ -2,6 +2,8 @@ export const CLIENT_STATES = {
   IDLE: 'idle',
   AWAITING_AGE: 'awaiting_age',
   AWAITING_SKIN_TYPE: 'awaiting_skin_type',
+  AWAITING_CONSULTATION_GOAL: 'awaiting_consultation_goal',
+  AWAITING_ADDITIONAL_PRODUCTS: 'awaiting_additional_products',
   AWAITING_PRICE_RANGE: 'awaiting_price_range',
   AWAITING_PROBLEMS: 'awaiting_problems',
   AWAITING_COMMENT: 'awaiting_comment',
@@ -23,6 +25,24 @@ export const PRICE_RANGES = {
   UP_TO_20000: { value: 'UP_TO_20000', label: 'До 20 000 ₽' },
   OVER_20000: { value: 'OVER_20000', label: 'Более 20 000 ₽' }
 };
+
+export const CONSULTATION_GOALS = {
+  FULL_CARE: { value: 'FULL_CARE', label: 'Подбор ухода' },
+  REVIEW_CARE: { value: 'REVIEW_CARE', label: 'Разбор текущего ухода' },
+  ADDITIONAL_PRODUCTS: { value: 'ADDITIONAL_PRODUCTS', label: 'Нужны дополнительные средства' }
+};
+
+export const ADDITIONAL_PRODUCTS_LIST = [
+  'Крем под глаза',
+  'Сыворотка',
+  'SPF',
+  'Крем для шеи',
+  'Тоник',
+  'Маска',
+  'Пилинг',
+  'Масло для лица',
+  'Мицеллярная вода'
+];
 
 // Default skin problems (fallback)
 export const DEFAULT_SKIN_PROBLEMS = [
@@ -60,6 +80,8 @@ export function createSessionData() {
     applicationData: {
       age: null,
       skinType: null,
+      consultationGoal: null,
+      additionalProducts: null,
       priceRange: null,
       mainProblems: null,
       additionalComment: null
@@ -75,4 +97,8 @@ export function formatSkinType(skinType) {
 
 export function formatPriceRange(priceRange) {
   return PRICE_RANGES[priceRange]?.label || priceRange;
+}
+
+export function formatConsultationGoal(goal) {
+  return CONSULTATION_GOALS[goal]?.label || goal;
 }

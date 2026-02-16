@@ -7,6 +7,10 @@ import { handleStart, handleHelp, handleMyApplications } from './handlers/start.
 import {
   handleStartQuestionnaire,
   handleSkinTypeSelection,
+  handleConsultationGoalSelection,
+  handleAdditionalProductSelection,
+  handleAdditionalProductsDone,
+  handleBackToConsultationGoal,
   handlePriceRangeSelection,
   handleProblemsHelp,
   handleProblemSelection,
@@ -76,6 +80,9 @@ export function createClientBot() {
   // Callback queries - questionnaire
   bot.action('start_questionnaire', handleStartQuestionnaire);
   bot.action(/^skin_(.+)$/, handleSkinTypeSelection);
+  bot.action(/^goal_(.+)$/, handleConsultationGoalSelection);
+  bot.action('addprod_done', handleAdditionalProductsDone);
+  bot.action(/^addprod_(.+)$/, handleAdditionalProductSelection);
   bot.action(/^price_(.+)$/, handlePriceRangeSelection);
   bot.action('problems_help', handleProblemsHelp);
   bot.action(/^problem_(.+)$/, handleProblemSelection);
@@ -88,6 +95,7 @@ export function createClientBot() {
   // Callback queries - back navigation
   bot.action('back_to_age', handleBackToAge);
   bot.action('back_to_skin_type', handleBackToSkinType);
+  bot.action('back_to_consultation_goal', handleBackToConsultationGoal);
   bot.action('back_to_price_range', handleBackToPriceRange);
   bot.action('back_to_problems', handleBackToProblems);
   bot.action('back_to_comment', handleBackToComment);

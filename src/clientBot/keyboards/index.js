@@ -1,5 +1,5 @@
 import { Markup } from 'telegraf';
-import { SKIN_TYPES, SKIN_PROBLEMS, PRICE_RANGES } from '../states/index.js';
+import { SKIN_TYPES, SKIN_PROBLEMS, PRICE_RANGES, CONSULTATION_GOALS, ADDITIONAL_PRODUCTS_LIST } from '../states/index.js';
 
 export function startKeyboard() {
   return Markup.inlineKeyboard([
@@ -24,6 +24,37 @@ export function skinTypeKeyboard() {
   ]);
 }
 
+export function consultationGoalKeyboard() {
+  return Markup.inlineKeyboard([
+    [Markup.button.callback(CONSULTATION_GOALS.FULL_CARE.label, 'goal_FULL_CARE')],
+    [Markup.button.callback(CONSULTATION_GOALS.REVIEW_CARE.label, 'goal_REVIEW_CARE')],
+    [Markup.button.callback(CONSULTATION_GOALS.ADDITIONAL_PRODUCTS.label, 'goal_ADDITIONAL_PRODUCTS')],
+    [
+      Markup.button.callback('⬅️ Назад', 'back_to_skin_type'),
+      Markup.button.callback('Отмена', 'cancel')
+    ]
+  ]);
+}
+
+export function additionalProductsKeyboard(selected = []) {
+  const buttons = ADDITIONAL_PRODUCTS_LIST.map(product => {
+    const isSelected = selected.includes(product);
+    const label = isSelected ? `✓ ${product}` : product;
+    return [Markup.button.callback(label, `addprod_${product}`)];
+  });
+
+  const doneText = selected.length > 0
+    ? `🟢 Готово (${selected.length})`
+    : '🟢 Готово';
+  buttons.push([Markup.button.callback(doneText, 'addprod_done')]);
+  buttons.push([
+    Markup.button.callback('⬅️ Назад', 'back_to_consultation_goal'),
+    Markup.button.callback('Отмена', 'cancel')
+  ]);
+
+  return Markup.inlineKeyboard(buttons);
+}
+
 export function priceRangeKeyboard() {
   return Markup.inlineKeyboard([
     [Markup.button.callback(PRICE_RANGES.UP_TO_5000.label, 'price_UP_TO_5000')],
@@ -31,7 +62,7 @@ export function priceRangeKeyboard() {
     [Markup.button.callback(PRICE_RANGES.UP_TO_20000.label, 'price_UP_TO_20000')],
     [Markup.button.callback(PRICE_RANGES.OVER_20000.label, 'price_OVER_20000')],
     [
-      Markup.button.callback('⬅️ Назад', 'back_to_skin_type'),
+      Markup.button.callback('⬅️ Назад', 'back_to_consultation_goal'),
       Markup.button.callback('Отмена', 'cancel')
     ]
   ]);

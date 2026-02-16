@@ -123,6 +123,8 @@ model Application {
   // Questionnaire data
   age               Int
   skinType          SkinType          @map("skin_type")
+  consultationGoal    String?         @map("consultation_goal")
+  additionalProducts  String?         @map("additional_products")
   priceRange        PriceRange?       @map("price_range")
   mainProblems      String            @map("main_problems") @db.Text
   additionalComment String?           @map("additional_comment") @db.Text

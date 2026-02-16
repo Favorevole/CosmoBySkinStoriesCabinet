@@ -31,6 +31,8 @@ export async function createApplication(data) {
       clientId: data.clientId,
       age: data.age,
       skinType: data.skinType,
+      consultationGoal: data.consultationGoal || null,
+      additionalProducts: data.additionalProducts || null,
       priceRange: data.priceRange,
       mainProblems: data.mainProblems,
       additionalComment: data.additionalComment,

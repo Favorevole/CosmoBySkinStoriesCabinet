@@ -11,7 +11,7 @@ import {
   getDoctorAssignedApplications
 } from '../../db/applications.js';
 import { getApplicationPhotos, getPhotoData } from '../../db/photos.js';
-import { formatSkinType, formatPriceRange } from '../../clientBot/states/index.js';
+import { formatSkinType, formatPriceRange, formatConsultationGoal } from '../../clientBot/states/index.js';
 import config from '../../config/environment.js';
 
 export async function handleMyApplications(ctx) {
@@ -95,6 +95,13 @@ export async function handleViewApplication(ctx) {
     message += `*Данные анкеты:*\n`;
     message += `Возраст: ${application.age}\n`;
     message += `Тип кожи: ${formatSkinType(application.skinType)}\n`;
+    if (application.consultationGoal) {
+      message += `Цель: ${formatConsultationGoal(application.consultationGoal)}`;
+      if (application.consultationGoal === 'ADDITIONAL_PRODUCTS' && application.additionalProducts) {
+        message += ` (${application.additionalProducts})`;
+      }
+      message += '\n';
+    }
     message += `Бюджет: ${application.priceRange ? formatPriceRange(application.priceRange) : 'Не указан'}\n`;
     message += `Проблемы: ${application.mainProblems}\n`;
     if (application.additionalComment) {

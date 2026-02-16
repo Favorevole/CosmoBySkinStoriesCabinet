@@ -27,6 +27,7 @@ const upload = multer({
 
 const VALID_SKIN_TYPES = ['DRY', 'OILY', 'COMBINATION', 'NORMAL'];
 const VALID_PRICE_RANGES = ['UP_TO_5000', 'UP_TO_10000', 'UP_TO_20000', 'OVER_20000'];
+const VALID_CONSULTATION_GOALS = ['FULL_CARE', 'REVIEW_CARE', 'ADDITIONAL_PRODUCTS'];
 
 /**
  * GET /api/web/skin-problems
@@ -48,7 +49,7 @@ router.get('/skin-problems', async (req, res) => {
  */
 router.post('/applications', upload.array('photos', 6), async (req, res) => {
   try {
-    const { age, skinType, priceRange, mainProblems, additionalComment, email, fullName, consentToDataProcessing } = req.body;
+    const { age, skinType, priceRange, mainProblems, additionalComment, email, fullName, consentToDataProcessing, consultationGoal, additionalProducts } = req.body;
     const files = req.files;
 
     // Validation
@@ -102,6 +103,10 @@ router.post('/applications', upload.array('photos', 6), async (req, res) => {
       return res.status(400).json({ error: 'Invalid priceRange' });
     }
 
+    if (consultationGoal && !VALID_CONSULTATION_GOALS.includes(consultationGoal)) {
+      return res.status(400).json({ error: 'Invalid consultationGoal' });
+    }
+
     // Create client (without telegramId for web users)
     const client = await createClient({
       telegramId: null,
@@ -115,6 +120,8 @@ router.post('/applications', upload.array('photos', 6), async (req, res) => {
       clientId: client.id,
       age: ageNum,
       skinType,
+      consultationGoal: consultationGoal || null,
+      additionalProducts: additionalProducts || null,
       priceRange: priceRange || null,
       mainProblems,
       additionalComment: additionalComment || null,
