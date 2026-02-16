@@ -119,17 +119,6 @@ app.get('/doctor-webhook', (req, res) => {
   });
 });
 
-// API routes with rate limiting
-app.use('/api/auth', authLimiter, authRoutes);
-app.use('/api/applications', apiLimiter, applicationsRoutes);
-app.use('/api/doctors', apiLimiter, doctorsRoutes);
-app.use('/api/stats', apiLimiter, statsRoutes);
-app.use('/api/web', webFormLimiter, webRoutes);
-app.use('/api/settings', apiLimiter, settingsRoutes);
-app.use('/api/reviews', apiLimiter, reviewsRoutes);
-app.use('/api/promo-codes', apiLimiter, promoCodesRoutes);
-app.use('/api/payments', apiLimiter, paymentsRoutes);
-
 // YooKassa webhook IP whitelist
 // https://yookassa.ru/developers/using-api/webhooks#ip
 const YOOKASSA_IPS = [
@@ -165,7 +154,7 @@ function isYooKassaIP(requestIp) {
   });
 }
 
-// YooKassa payment webhook
+// YooKassa payment webhook — MUST be before paymentsRoutes to avoid auth middleware
 app.post('/api/payments/yookassa/webhook',
   express.json({ limit: '1mb' }),
   async (req, res) => {
@@ -188,6 +177,17 @@ app.post('/api/payments/yookassa/webhook',
     }
   }
 );
+
+// API routes with rate limiting
+app.use('/api/auth', authLimiter, authRoutes);
+app.use('/api/applications', apiLimiter, applicationsRoutes);
+app.use('/api/doctors', apiLimiter, doctorsRoutes);
+app.use('/api/stats', apiLimiter, statsRoutes);
+app.use('/api/web', webFormLimiter, webRoutes);
+app.use('/api/settings', apiLimiter, settingsRoutes);
+app.use('/api/reviews', apiLimiter, reviewsRoutes);
+app.use('/api/promo-codes', apiLimiter, promoCodesRoutes);
+app.use('/api/payments', apiLimiter, paymentsRoutes);
 
 // Client bot webhook
 app.post('/client-webhook',

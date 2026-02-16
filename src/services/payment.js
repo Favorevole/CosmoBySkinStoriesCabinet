@@ -222,6 +222,68 @@ export async function processPayment(applicationId, promoCode = null) {
 }
 
 /**
+ * Shared logic: complete a succeeded payment, move app to NEW, notify admins & client.
+ */
+async function completeSucceededPayment(localPayment, applicationId, externalId) {
+  await completePayment(localPayment.id, externalId);
+
+  // Increment promo code usage if applicable
+  if (localPayment.promoCodeId) {
+    await incrementPromoCodeUsage(localPayment.promoCodeId);
+  }
+
+  // Move application to NEW
+  await updateApplicationStatus(
+    applicationId,
+    'NEW',
+    null,
+    'CLIENT',
+    'Оплата получена'
+  );
+
+  // Notify admins
+  const fullApplication = await getApplicationById(applicationId);
+  await notifyAdminsNewApplication(fullApplication);
+
+  // Send confirmation email if client has email
+  if (fullApplication?.client?.email) {
+    try {
+      const { sendPaymentConfirmation } = await import('./email.js');
+      await sendPaymentConfirmation({
+        to: fullApplication.client.email,
+        displayNumber: fullApplication.displayNumber || applicationId
+      });
+    } catch (err) {
+      console.error('[PAYMENT] Error sending confirmation email:', err.message);
+    }
+  }
+
+  // If Telegram user — send success message via bot
+  if (fullApplication?.client?.telegramId) {
+    try {
+      const { getClientBot } = await import('../clientBot/index.js');
+      const bot = getClientBot();
+      if (bot) {
+        const appNum = fullApplication.displayNumber || applicationId;
+        await bot.telegram.sendMessage(
+          fullApplication.client.telegramId.toString(),
+          `*Оплата прошла успешно!*\n\n` +
+          `Заявка #${appNum} отправлена специалисту.\n\n` +
+          'Эксперт изучит вашу анкету и фотографии, после чего вы получите персональные рекомендации.\n\n' +
+          'Вам ответят в течение 24 часов.\n\n' +
+          'Мы пришлём вам уведомление, когда ответ будет готов.',
+          { parse_mode: 'Markdown' }
+        );
+      }
+    } catch (err) {
+      console.error('[PAYMENT] Error sending Telegram notification:', err.message);
+    }
+  }
+
+  console.log(`[PAYMENT] Payment completed for application ${applicationId}`);
+}
+
+/**
  * Handle YooKassa webhook notification.
  */
 export async function handleYooKassaWebhook(body) {
@@ -264,62 +326,7 @@ export async function handleYooKassaWebhook(body) {
       return;
     }
 
-    await completePayment(localPayment.id, yookassaPaymentId);
-
-    // Increment promo code usage if applicable
-    if (localPayment.promoCodeId) {
-      await incrementPromoCodeUsage(localPayment.promoCodeId);
-    }
-
-    // Move application to NEW
-    await updateApplicationStatus(
-      applicationId,
-      'NEW',
-      null,
-      'CLIENT',
-      'Оплата получена'
-    );
-
-    // Notify admins
-    const fullApplication = await getApplicationById(applicationId);
-    await notifyAdminsNewApplication(fullApplication);
-
-    // Send confirmation email if client has email
-    if (fullApplication?.client?.email) {
-      try {
-        const { sendPaymentConfirmation } = await import('./email.js');
-        await sendPaymentConfirmation({
-          to: fullApplication.client.email,
-          displayNumber: fullApplication.displayNumber || applicationId
-        });
-      } catch (err) {
-        console.error('[PAYMENT] Error sending confirmation email:', err.message);
-      }
-    }
-
-    // If Telegram user — send success message via bot
-    if (fullApplication?.client?.telegramId) {
-      try {
-        const { getClientBot } = await import('../clientBot/index.js');
-        const bot = getClientBot();
-        if (bot) {
-          const appNum = fullApplication.displayNumber || applicationId;
-          await bot.telegram.sendMessage(
-            fullApplication.client.telegramId.toString(),
-            `*Оплата прошла успешно!*\n\n` +
-            `Заявка #${appNum} отправлена специалисту.\n\n` +
-            'Эксперт изучит вашу анкету и фотографии, после чего вы получите персональные рекомендации.\n\n' +
-            'Вам ответят в течение 24 часов.\n\n' +
-            'Мы пришлём вам уведомление, когда ответ будет готов.',
-            { parse_mode: 'Markdown' }
-          );
-        }
-      } catch (err) {
-        console.error('[PAYMENT] Error sending Telegram notification:', err.message);
-      }
-    }
-
-    console.log(`[PAYMENT] Payment completed for application ${applicationId}`);
+    await completeSucceededPayment(localPayment, applicationId, yookassaPaymentId);
 
   } else if (event === 'payment.canceled' || status === 'canceled') {
     if (localPayment.status !== 'PENDING') {
@@ -328,4 +335,61 @@ export async function handleYooKassaWebhook(body) {
     await failPayment(localPayment.id);
     console.log(`[PAYMENT] Payment canceled for application ${applicationId}`);
   }
+}
+
+/**
+ * Check YooKassa payment status by applicationId.
+ * If succeeded — runs the same completion flow as the webhook.
+ */
+export async function checkYooKassaPaymentStatus(applicationId) {
+  const payment = await getPaymentByApplicationId(applicationId);
+  if (!payment) {
+    throw new Error('Платёж не найден для данной заявки');
+  }
+
+  if (!payment.externalId) {
+    throw new Error('Платёж ещё не был создан в ЮКассе (нет externalId)');
+  }
+
+  if (payment.status === 'COMPLETED') {
+    return { alreadyPaid: true, status: 'succeeded' };
+  }
+
+  const credentials = Buffer.from(`${config.yookassa.shopId}:${config.yookassa.apiKey}`).toString('base64');
+
+  const response = await fetch(`https://api.yookassa.ru/v3/payments/${payment.externalId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Basic ${credentials}`
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('[PAYMENT] YooKassa check error:', response.status, errorText);
+    throw new Error(`Ошибка запроса к ЮКассе: ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  console.log(`[PAYMENT] YooKassa check: app=${applicationId}, externalId=${payment.externalId}, status=${data.status}`);
+
+  const result = {
+    status: data.status,
+    amount: data.amount,
+    paid_at: data.captured_at || data.created_at,
+    payment_method: data.payment_method?.type || null
+  };
+
+  if (data.status === 'succeeded') {
+    await completeSucceededPayment(payment, applicationId, payment.externalId);
+    result.completed = true;
+  } else if (data.status === 'canceled') {
+    if (payment.status === 'PENDING') {
+      await failPayment(payment.id);
+    }
+    result.canceled = true;
+  }
+
+  return result;
 }
