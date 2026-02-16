@@ -332,6 +332,91 @@ router.post('/:id/remind-payment', async (req, res) => {
 });
 
 /**
+ * POST /api/applications/:id/check-payment
+ * Check YooKassa payment status and complete if succeeded
+ */
+router.post('/:id/check-payment', async (req, res) => {
+  try {
+    const applicationId = parseInt(req.params.id);
+    const application = await getApplicationById(applicationId);
+
+    if (!application) {
+      return res.status(404).json({ error: 'Application not found' });
+    }
+
+    if (application.status !== 'PENDING_PAYMENT') {
+      return res.status(400).json({ error: 'Заявка не в статусе ожидания оплаты' });
+    }
+
+    const { checkYooKassaPaymentStatus } = await import('../../services/payment.js');
+    const result = await checkYooKassaPaymentStatus(applicationId);
+
+    res.json(result);
+
+  } catch (error) {
+    console.error('[APPLICATIONS] Error checking payment:', error);
+    res.status(500).json({ error: error.message || 'Internal server error' });
+  }
+});
+
+/**
+ * POST /api/applications/:id/change-status
+ * Manually change application status with audit comment
+ */
+router.post('/:id/change-status', async (req, res) => {
+  try {
+    const applicationId = parseInt(req.params.id);
+    const { status, comment } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ error: 'status required' });
+    }
+
+    const validStatuses = [
+      'PENDING_PAYMENT', 'NEW', 'ASSIGNED', 'RESPONSE_GIVEN',
+      'APPROVED', 'SENT_TO_CLIENT', 'DECLINED', 'CANCELLED'
+    ];
+
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ error: `Invalid status: ${status}` });
+    }
+
+    const application = await getApplicationById(applicationId);
+    if (!application) {
+      return res.status(404).json({ error: 'Application not found' });
+    }
+
+    await updateApplicationStatus(
+      applicationId,
+      status,
+      req.user.id,
+      'ADMIN',
+      comment || 'Статус изменён вручную'
+    );
+
+    const updated = await getApplicationById(applicationId);
+    res.json({
+      success: true,
+      application: {
+        ...updated,
+        client: updated.client ? {
+          ...updated.client,
+          telegramId: updated.client.telegramId?.toString()
+        } : null,
+        doctor: updated.doctor ? {
+          ...updated.doctor,
+          telegramId: updated.doctor.telegramId?.toString()
+        } : null
+      }
+    });
+
+  } catch (error) {
+    console.error('[APPLICATIONS] Error changing status:', error);
+    res.status(500).json({ error: error.message || 'Internal server error' });
+  }
+});
+
+/**
  * GET /api/applications/:id/history
  * Get application status history
  */

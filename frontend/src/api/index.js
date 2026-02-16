@@ -135,6 +135,14 @@ export const updateSkinProblems = (problems) =>
 export const sendPaymentReminder = (id) =>
   api.post(`/applications/${id}/remind-payment`);
 
+// Check YooKassa payment status
+export const checkPayment = (id) =>
+  api.post(`/applications/${id}/check-payment`, null, { timeout: 15000 });
+
+// Manual status change
+export const changeApplicationStatus = (id, status, comment) =>
+  api.post(`/applications/${id}/change-status`, { status, comment });
+
 // Promo codes (admin)
 export const getPromoCodes = () =>
   api.get('/promo-codes');
@@ -151,6 +159,9 @@ export const deletePromoCodeApi = (id) =>
 // Payments (admin, requires canSeeRevenue)
 export const getPayments = () =>
   api.get('/payments');
+
+export const updateExcludedClients = (clientIds) =>
+  api.put('/payments/excluded-clients', { clientIds });
 
 // Promo code validation (public)
 export const validatePromoCodeApi = (code) =>

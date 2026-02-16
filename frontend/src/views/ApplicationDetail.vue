@@ -121,6 +121,26 @@
             </svg>
             {{ reminding ? 'Отправка...' : 'Напомнить об оплате' }}
           </button>
+          <button
+            @click="checkPaymentStatus"
+            :disabled="checkingPayment"
+            class="btn btn-secondary"
+            style="margin-top: 10px"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            {{ checkingPayment ? 'Проверка...' : 'Проверить оплату в ЮКассе' }}
+          </button>
+          <div v-if="paymentCheckResult" class="payment-check-result" :class="'check-' + paymentCheckResult.status">
+            <p class="check-status">Статус ЮКасса: <strong>{{ paymentCheckResult.status }}</strong></p>
+            <p v-if="paymentCheckResult.amount">Сумма: {{ paymentCheckResult.amount.value }} {{ paymentCheckResult.amount.currency }}</p>
+            <p v-if="paymentCheckResult.payment_method">Способ: {{ paymentCheckResult.payment_method }}</p>
+            <p v-if="paymentCheckResult.paid_at">Дата: {{ formatDate(paymentCheckResult.paid_at) }}</p>
+            <p v-if="paymentCheckResult.completed" class="check-success">Оплата подтверждена, заявка переведена в статус «Новая»</p>
+            <p v-if="paymentCheckResult.canceled" class="check-error">Платёж отменён</p>
+            <p v-if="paymentCheckResult.alreadyPaid" class="check-success">Оплата уже была зачтена ранее</p>
+          </div>
         </div>
 
         <!-- Assign Doctor (if NEW) -->
@@ -209,6 +229,44 @@
           </div>
         </div>
 
+        <!-- Manual Status Change -->
+        <div class="subsection" v-if="!['SENT_TO_CLIENT', 'CANCELLED'].includes(application.status)">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"/>
+              <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+            </svg>
+            Сменить статус
+          </h3>
+          <select v-model="newStatus" class="select-doctor">
+            <option value="">Выберите статус</option>
+            <option
+              v-for="(label, key) in statusLabels"
+              :key="key"
+              :value="key"
+              :disabled="key === application.status"
+            >
+              {{ label }}{{ key === application.status ? ' (текущий)' : '' }}
+            </option>
+          </select>
+          <input
+            v-model="statusComment"
+            type="text"
+            placeholder="Комментарий (необязательно)"
+            class="status-comment-input"
+          />
+          <button
+            @click="changeStatus"
+            :disabled="!newStatus || changingStatus"
+            class="btn btn-secondary"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            {{ changingStatus ? 'Сохранение...' : 'Сменить статус' }}
+          </button>
+        </div>
+
         <!-- Status History -->
         <div class="subsection">
           <h3>
@@ -295,7 +353,9 @@ import {
   updateRecommendation,
   approveApplication,
   getPhotoUrl,
-  sendPaymentReminder
+  sendPaymentReminder,
+  checkPayment as apiCheckPayment,
+  changeApplicationStatus as apiChangeStatus
 } from '../api/index.js';
 
 const route = useRoute();
@@ -309,6 +369,11 @@ const assigning = ref(false);
 const saving = ref(false);
 const approving = ref(false);
 const reminding = ref(false);
+const checkingPayment = ref(false);
+const paymentCheckResult = ref(null);
+const changingStatus = ref(false);
+const newStatus = ref('');
+const statusComment = ref('');
 
 // Photo navigation
 const currentPhotoIndex = computed(() => {
@@ -483,6 +548,39 @@ async function remindPayment() {
     alert(error.response?.data?.error || 'Ошибка отправки напоминания');
   } finally {
     reminding.value = false;
+  }
+}
+
+async function checkPaymentStatus() {
+  checkingPayment.value = true;
+  paymentCheckResult.value = null;
+  try {
+    const res = await apiCheckPayment(application.value.id);
+    paymentCheckResult.value = res.data;
+    if (res.data.completed || res.data.alreadyPaid) {
+      await loadApplication();
+    }
+  } catch (error) {
+    alert(error.response?.data?.error || 'Ошибка проверки оплаты');
+  } finally {
+    checkingPayment.value = false;
+  }
+}
+
+async function changeStatus() {
+  if (!newStatus.value) return;
+  if (!confirm(`Сменить статус на «${statusLabels[newStatus.value]}»?`)) return;
+
+  changingStatus.value = true;
+  try {
+    await apiChangeStatus(application.value.id, newStatus.value, statusComment.value);
+    newStatus.value = '';
+    statusComment.value = '';
+    await loadApplication();
+  } catch (error) {
+    alert(error.response?.data?.error || 'Ошибка смены статуса');
+  } finally {
+    changingStatus.value = false;
   }
 }
 
@@ -752,6 +850,61 @@ function formatDate(date) {
   font-size: 13px;
   color: rgba(255, 255, 255, 0.5);
   margin-bottom: 12px;
+}
+
+.payment-check-result {
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+}
+
+.payment-check-result p {
+  margin: 2px 0;
+}
+
+.check-status strong {
+  color: #FFFFFF;
+}
+
+.check-succeeded { border-left: 3px solid #4ADE80; }
+.check-pending, .check-waiting_for_capture { border-left: 3px solid #FBBF24; }
+.check-canceled { border-left: 3px solid #F87171; }
+
+.check-success {
+  color: #4ADE80;
+  font-weight: 600;
+  margin-top: 8px !important;
+}
+
+.check-error {
+  color: #F87171;
+  font-weight: 600;
+  margin-top: 8px !important;
+}
+
+.status-comment-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid rgba(201, 169, 98, 0.2);
+  border-radius: 10px;
+  font-size: 14px;
+  background: rgba(0, 0, 0, 0.2);
+  color: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 12px;
+}
+
+.status-comment-input:focus {
+  outline: none;
+  border-color: #C9A962;
+}
+
+.status-comment-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .select-doctor {
@@ -1302,6 +1455,16 @@ function formatDate(date) {
     border-radius: 12px;
     margin-bottom: 12px;
     min-height: 48px;
+  }
+
+  .status-comment-input {
+    font-size: 16px;
+    border-radius: 12px;
+    min-height: 48px;
+  }
+
+  .payment-check-result {
+    border-radius: 12px;
   }
 
   .doctor-badge {

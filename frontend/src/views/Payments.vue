@@ -63,6 +63,35 @@
       </div>
     </div>
 
+    <!-- Exclude from revenue -->
+    <div class="exclude-section" v-if="clients.length > 0">
+      <div class="exclude-header" @click="excludeOpen = !excludeOpen">
+        <span class="exclude-title">Исключить из выручки</span>
+        <svg
+          class="exclude-chevron"
+          :class="{ open: excludeOpen }"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        >
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+      <div class="exclude-body" v-if="excludeOpen">
+        <label
+          v-for="client in clients"
+          :key="client.id"
+          class="exclude-client"
+        >
+          <input
+            type="checkbox"
+            :checked="excludedClientIds.includes(client.id)"
+            @change="toggleExcluded(client.id, $event.target.checked)"
+            :disabled="savingExclusion"
+          />
+          <span>{{ client.fullName || client.telegramUsername || `ID ${client.id}` }}</span>
+        </label>
+      </div>
+    </div>
+
     <!-- Payments List -->
     <div class="section-title">Список оплат</div>
     <div class="payments-list" v-if="!loading">
@@ -128,10 +157,14 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { getPayments } from '../api/index.js';
+import { getPayments, updateExcludedClients } from '../api/index.js';
 
 const payments = ref([]);
 const summary = ref(null);
+const clients = ref([]);
+const excludedClientIds = ref([]);
+const excludeOpen = ref(false);
+const savingExclusion = ref(false);
 const loading = ref(true);
 
 onMounted(async () => {
@@ -144,10 +177,30 @@ async function loadPayments() {
     const response = await getPayments();
     payments.value = response.data.payments;
     summary.value = response.data.summary;
+    clients.value = response.data.clients || [];
+    excludedClientIds.value = response.data.excludedClientIds || [];
   } catch (error) {
     console.error('Failed to load payments:', error);
   } finally {
     loading.value = false;
+  }
+}
+
+async function toggleExcluded(clientId, checked) {
+  savingExclusion.value = true;
+  try {
+    let ids = [...excludedClientIds.value];
+    if (checked && !ids.includes(clientId)) {
+      ids.push(clientId);
+    } else if (!checked) {
+      ids = ids.filter(id => id !== clientId);
+    }
+    await updateExcludedClients(ids);
+    await loadPayments();
+  } catch (error) {
+    console.error('Failed to update excluded clients:', error);
+  } finally {
+    savingExclusion.value = false;
   }
 }
 
@@ -277,6 +330,81 @@ function formatDate(date) {
   font-size: 13px;
   color: rgba(255, 255, 255, 0.5);
   margin-top: 4px;
+}
+
+/* Exclude Section */
+.exclude-section {
+  background: linear-gradient(135deg, rgba(201, 169, 98, 0.06) 0%, rgba(201, 169, 98, 0.02) 100%);
+  border: 1px solid rgba(201, 169, 98, 0.12);
+  border-radius: 14px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.exclude-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+
+.exclude-header:hover {
+  background: rgba(201, 169, 98, 0.06);
+}
+
+.exclude-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.exclude-chevron {
+  width: 18px;
+  height: 18px;
+  color: rgba(255, 255, 255, 0.4);
+  transition: transform 0.25s ease;
+}
+
+.exclude-chevron.open {
+  transform: rotate(180deg);
+}
+
+.exclude-body {
+  padding: 4px 20px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.exclude-client {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.2s;
+}
+
+.exclude-client:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(201, 169, 98, 0.25);
+}
+
+.exclude-client input[type="checkbox"] {
+  accent-color: #C9A962;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
 }
 
 .section-title {
