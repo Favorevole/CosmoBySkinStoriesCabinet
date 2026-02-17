@@ -178,19 +178,34 @@ export async function startDoctorBot() {
     createDoctorBot();
   }
 
+  // Set bot info for Telegraf internal use
+  const botInfo = await bot.telegram.getMe();
+  bot.botInfo = botInfo;
+  console.log(`[DOCTOR_BOT] Bot username: @${botInfo.username}`);
+
   if (config.isProduction && config.server.webhookUrl) {
     // Production: используем webhook - НЕ вызываем bot.launch()!
     const webhookUrl = `${config.server.webhookUrl}/doctor-webhook`;
     try {
-      await bot.telegram.setWebhook(webhookUrl, { secret_token: config.webhookSecrets.doctor });
+      // Сначала удаляем старый webhook для чистого состояния
+      await bot.telegram.deleteWebhook();
+      console.log(`[DOCTOR_BOT] Old webhook cleared`);
+
+      await bot.telegram.setWebhook(webhookUrl, {
+        secret_token: config.webhookSecrets.doctor,
+        allowed_updates: ['message', 'callback_query', 'inline_query']
+      });
       console.log(`[DOCTOR_BOT] ✅ Webhook set to ${webhookUrl}`);
 
       // Проверяем статус webhook
       const webhookInfo = await bot.telegram.getWebhookInfo();
       console.log(`[DOCTOR_BOT] Webhook info:`, {
         url: webhookInfo.url,
+        has_custom_certificate: webhookInfo.has_custom_certificate,
         pending_update_count: webhookInfo.pending_update_count,
-        last_error_message: webhookInfo.last_error_message || 'none'
+        last_error_date: webhookInfo.last_error_date || 'none',
+        last_error_message: webhookInfo.last_error_message || 'none',
+        max_connections: webhookInfo.max_connections
       });
     } catch (error) {
       console.error('[DOCTOR_BOT] ❌ Error setting webhook:', error.message);
