@@ -279,6 +279,10 @@
         </a>
       </div>
       <span class="cta-note">Конфиденциально • Ответ за 24 часа</span>
+      <button class="cta-gift-btn" @click="openGiftModal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+        Подарить сертификат на консультацию
+      </button>
     </section>
 
     <!-- Payment success banner -->
@@ -1306,6 +1310,29 @@ onMounted(async () => {
   margin-top: 24px;
   font-size: 14px;
   color: rgba(255, 255, 255, 0.6);
+}
+
+.cta-gift-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 32px;
+  padding: 14px 28px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 24px;
+  color: var(--color-white);
+  font-size: 15px;
+  font-weight: 500;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.cta-gift-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
 }
 
 /* Footer */
