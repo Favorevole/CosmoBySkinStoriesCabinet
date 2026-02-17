@@ -295,13 +295,14 @@ onMounted(loadReviews);
 
 <style scoped>
 .reviews-page {
-  padding: 0;
+  padding: 40px;
+  min-height: 100vh;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 28px;
 }
 
@@ -319,19 +320,21 @@ onMounted(loadReviews);
 }
 
 .btn-add {
-  padding: 10px 20px;
-  background: rgba(201, 169, 98, 0.15);
-  border: 1px solid #C9A962;
-  color: #C9A962;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
+  padding: 12px 24px;
+  background: #C9A962;
+  border: none;
+  color: #000;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .btn-add:hover {
-  background: rgba(201, 169, 98, 0.25);
+  background: #D4B96F;
+  transform: translateY(-1px);
 }
 
 .stats-row {
@@ -709,6 +712,12 @@ onMounted(loadReviews);
   font-size: 13px;
 }
 
+@media (max-width: 900px) {
+  .reviews-page {
+    padding: 24px;
+  }
+}
+
 @media (max-width: 768px) {
   .stats-row {
     grid-template-columns: 1fr;
@@ -719,6 +728,14 @@ onMounted(loadReviews);
   .page-header {
     flex-direction: column;
     gap: 16px;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .reviews-page {
+    padding: 16px;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
 }
 </style>
