@@ -69,7 +69,6 @@
     <!-- How We Work -->
     <section id="how-it-works" class="ai-trust">
       <div class="section-header">
-        <span class="tagline">НАШЕ ОТЛИЧИЕ</span>
         <h2>Как это работает и что ты получишь</h2>
       </div>
       <div class="ai-two-columns">
