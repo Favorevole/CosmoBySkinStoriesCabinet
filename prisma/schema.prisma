@@ -264,16 +264,17 @@ model Payment {
 
 model Review {
   id            Int      @id @default(autoincrement())
-  applicationId Int      @unique @map("application_id")
-  clientId      Int      @map("client_id")
+  applicationId Int?     @unique @map("application_id")
+  clientId      Int?     @map("client_id")
   rating        Int      // 1-5 stars
   text          String?  @db.Text
   clientName    String?  @map("client_name")
+  imageS3Key    String?  @map("image_s3_key")
   isApproved    Boolean  @default(false) @map("is_approved")
   createdAt     DateTime @default(now()) @map("created_at")
 
-  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  client        Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  client        Client?      @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
   @@index([isApproved])
   @@map("reviews")

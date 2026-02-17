@@ -54,7 +54,14 @@
           <div class="review-stars">
             <span v-for="s in review.rating" :key="s" class="star">&#x2B50;</span>
           </div>
-          <p class="review-text">{{ review.text }}</p>
+          <p v-if="review.text" class="review-text">{{ review.text }}</p>
+          <img
+            v-if="review.imageS3Key"
+            :src="getPublicReviewImageUrl(review.id)"
+            alt="Отзыв"
+            class="review-image"
+            @click="openLightbox(review.id)"
+          />
         </div>
       </div>
     </section>
@@ -352,6 +359,14 @@
       </div>
     </Teleport>
 
+    <!-- Review Image Lightbox -->
+    <Teleport to="body">
+      <div v-if="lightboxReviewId" class="lightbox-overlay" @click.self="lightboxReviewId = null">
+        <button class="lightbox-close" @click="lightboxReviewId = null">&times;</button>
+        <img :src="getPublicReviewImageUrl(lightboxReviewId)" alt="Отзыв" class="lightbox-image" />
+      </div>
+    </Teleport>
+
     <!-- Consultation Modal -->
     <ConsultationModal :visible="showModal" @close="showModal = false" />
 
@@ -374,7 +389,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { getPublicReviews, buyGiftCertificate, checkGiftStatus, trackEvent, getOrCreateVisitorId } from '../api/index.js';
+import { getPublicReviews, buyGiftCertificate, checkGiftStatus, trackEvent, getOrCreateVisitorId, getReviewImageUrl } from '../api/index.js';
 import ConsultationModal from '../components/ConsultationModal.vue';
 
 const botUsername = import.meta.env.VITE_CLIENT_BOT_USERNAME;
@@ -397,6 +412,15 @@ const showGiftBanner = ref(false);
 const giftPromoCode = ref(null);
 const giftCheckFailed = ref(false);
 const codeCopied = ref(false);
+const lightboxReviewId = ref(null);
+
+function getPublicReviewImageUrl(reviewId) {
+  return getReviewImageUrl(reviewId);
+}
+
+function openLightbox(reviewId) {
+  lightboxReviewId.value = reviewId;
+}
 
 function openConsultation() {
   trackEvent('click_web_form');
@@ -1464,6 +1488,62 @@ onMounted(async () => {
     flex-direction: column;
     gap: 16px;
   }
+}
+
+/* Review images */
+.review-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: contain;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.review-image:hover {
+  opacity: 0.85;
+}
+
+/* Lightbox */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  font-size: 28px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  transition: background 0.2s;
+}
+
+.lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.lightbox-image {
+  max-width: 90vw;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 8px;
 }
 
 /* Payment banner */

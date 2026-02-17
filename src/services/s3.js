@@ -28,6 +28,10 @@ export function buildPhotoKey(applicationId, photoId, fileName) {
   return `applications/${applicationId}/photos/${photoId}_${fileName}`;
 }
 
+export function buildReviewImageKey(reviewId, fileName) {
+  return `reviews/${reviewId}/${fileName}`;
+}
+
 export async function uploadPhoto(key, buffer, mimeType) {
   const client = getClient();
   if (!client) {
