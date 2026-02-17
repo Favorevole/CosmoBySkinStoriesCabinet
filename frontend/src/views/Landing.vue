@@ -190,17 +190,36 @@
     <!-- How We Work -->
     <section id="about" class="ai-trust">
       <div class="section-header">
-        <span class="tagline">ПРОЗРАЧНОСТЬ</span>
-        <h2>Как устроена проверка</h2>
+        <span class="tagline">НАШЕ ОТЛИЧИЕ</span>
+        <h2>Как это работает и что ты получишь</h2>
       </div>
-      <div class="ai-content">
-        <div class="ai-text">
-          <p class="ai-highlight">Каждую заявку разбирает дерматолог. Не нейросеть, не алгоритм — врач.</p>
-          <p>ChatGPT и подобные сервисы дают общие советы из интернета. Мы работаем иначе: ваши фотографии и анкету анализирует назначенный специалист — сертифицированный дерматолог или косметолог с многолетним опытом.</p>
-          <p>Рекомендации включают не только масс-маркет, но и профессиональную лечебную косметику. Каждый план ухода составлен вручную и проходит проверку качества перед отправкой.</p>
+      <div class="ai-two-columns">
+        <div class="ai-column">
+          <h3 class="ai-column-title">Как это работает</h3>
+          <div class="ai-steps">
+            <div class="ai-step">
+              <span class="ai-step-num">1</span>
+              <p>Загружаешь фото, отвечаешь на вопросы</p>
+            </div>
+            <div class="ai-step">
+              <span class="ai-step-num">2</span>
+              <p>Дерматолог анализирует состояние кожи</p>
+            </div>
+            <div class="ai-step">
+              <span class="ai-step-num">3</span>
+              <p>Получаешь персональный план ухода</p>
+            </div>
+          </div>
         </div>
-        <div class="ai-visual">
-          <img src="/ai-visual.png" alt="Skin care" />
+        <div class="ai-column">
+          <h3 class="ai-column-title">Что ты получишь</h3>
+          <ul class="ai-benefits">
+            <li>Понимание типа и состояния кожи</li>
+            <li>Рекомендации по ежедневному уходу</li>
+            <li>Советы, какие средства подойдут именно тебе</li>
+            <li>Ошибки, которые могут ухудшать состояние кожи</li>
+            <li>Рекомендации реальных косметологов-дерматологов с возможностью записи на детальные онлайн или офлайн консультации</li>
+          </ul>
         </div>
       </div>
     </section>
@@ -1094,46 +1113,90 @@ onMounted(async () => {
   background: var(--color-blush);
 }
 
-.ai-content {
+.ai-two-columns {
   display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 60px;
   max-width: 1100px;
   margin: 0 auto;
+  align-items: flex-start;
 }
 
-.ai-text {
-  max-width: 560px;
+.ai-column {
+  flex: 1;
 }
 
-.ai-highlight {
-  font-size: 20px;
-  font-weight: 600;
+.ai-column-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
   color: var(--color-rich-ebony);
-  line-height: 1.5;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--color-burgundy);
+  display: inline-block;
 }
 
-.ai-text p {
-  font-size: 17px;
-  color: var(--color-cocoa);
-  line-height: 1.7;
-  margin-bottom: 16px;
+.ai-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.ai-visual {
-  width: 400px;
-  height: 400px;
-  border-radius: 24px;
-  overflow: hidden;
+.ai-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.ai-step-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-burgundy);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
   flex-shrink: 0;
 }
 
-.ai-visual img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.ai-step p {
+  font-size: 17px;
+  color: var(--color-cocoa);
+  line-height: 1.6;
+  margin: 0;
+  padding-top: 5px;
+}
+
+.ai-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ai-benefits li {
+  font-size: 17px;
+  color: var(--color-cocoa);
+  line-height: 1.6;
+  padding-left: 28px;
+  position: relative;
+}
+
+.ai-benefits li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-burgundy);
+  opacity: 0.7;
 }
 
 /* Telegram Flow */
@@ -1416,13 +1479,25 @@ onMounted(async () => {
     height: 350px;
   }
 
-  .ai-content,
+  .ai-two-columns,
   .telegram-content {
     flex-direction: column;
   }
 
-  .ai-text {
+  .ai-column {
     text-align: center;
+  }
+
+  .ai-column-title {
+    display: block;
+  }
+
+  .ai-step {
+    text-align: left;
+  }
+
+  .ai-benefits li {
+    text-align: left;
   }
 
   .experts-grid {
@@ -1841,13 +1916,8 @@ onMounted(async () => {
     font-size: 18px;
   }
 
-  .ai-visual {
-    width: 100%;
-    height: 400px;
-  }
-
-  .ai-visual img {
-    transform: scale(1.15);
+  .ai-two-columns {
+    gap: 40px;
   }
 
   .phone-mockup {
