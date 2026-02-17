@@ -49,20 +49,39 @@
         <h2>Что говорят наши клиенты</h2>
         <p class="section-desc">Реальные отзывы от тех, кто уже получил рекомендации</p>
       </div>
-      <div class="reviews-grid">
-        <div v-for="review in reviews" :key="review.id" class="review-card">
-          <div class="review-stars">
-            <span v-for="s in review.rating" :key="s" class="star">&#x2B50;</span>
+      <div class="reviews-carousel">
+        <button class="carousel-btn carousel-btn-prev" @click="prevReview" :disabled="currentReview === 0">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="carousel-track-wrapper" @touchstart="onTouchStart" @touchend="onTouchEnd">
+          <div class="carousel-track" :style="{ transform: `translateX(-${currentReview * 100}%)` }">
+            <div v-for="review in reviews" :key="review.id" class="review-card">
+              <div class="review-stars">
+                <span v-for="s in review.rating" :key="s" class="star">&#x2B50;</span>
+              </div>
+              <p v-if="review.text" class="review-text">{{ review.text }}</p>
+              <img
+                v-if="review.imageS3Key"
+                :src="getPublicReviewImageUrl(review.id)"
+                alt="Отзыв"
+                class="review-image"
+                @click="openLightbox(review.id)"
+              />
+            </div>
           </div>
-          <p v-if="review.text" class="review-text">{{ review.text }}</p>
-          <img
-            v-if="review.imageS3Key"
-            :src="getPublicReviewImageUrl(review.id)"
-            alt="Отзыв"
-            class="review-image"
-            @click="openLightbox(review.id)"
-          />
         </div>
+        <button class="carousel-btn carousel-btn-next" @click="nextReview" :disabled="currentReview >= reviews.length - 1">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div class="carousel-dots">
+        <button
+          v-for="(review, idx) in reviews"
+          :key="review.id"
+          class="carousel-dot"
+          :class="{ active: idx === currentReview }"
+          @click="currentReview = idx"
+        />
       </div>
     </section>
 
@@ -365,6 +384,26 @@ const giftPromoCode = ref(null);
 const giftCheckFailed = ref(false);
 const codeCopied = ref(false);
 const lightboxReviewId = ref(null);
+const currentReview = ref(0);
+
+function prevReview() {
+  if (currentReview.value > 0) currentReview.value--;
+}
+
+function nextReview() {
+  if (currentReview.value < reviews.value.length - 1) currentReview.value++;
+}
+
+// Touch swipe for carousel
+let touchStartX = 0;
+function onTouchStart(e) {
+  touchStartX = e.touches[0].clientX;
+}
+function onTouchEnd(e) {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (diff > 50) nextReview();
+  else if (diff < -50) prevReview();
+}
 
 function getPublicReviewImageUrl(reviewId) {
   return getReviewImageUrl(reviewId);
@@ -825,22 +864,82 @@ onMounted(async () => {
   font-size: 28px;
 }
 
-.reviews-grid {
+.reviews-carousel {
   display: flex;
+  align-items: center;
   gap: 16px;
-  justify-content: center;
-  flex-wrap: wrap;
-  max-width: 900px;
+  max-width: 600px;
   margin: 0 auto;
+}
+
+.carousel-track-wrapper {
+  flex: 1;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.4s ease;
+}
+
+.carousel-track .review-card {
+  min-width: 100%;
+  box-sizing: border-box;
+}
+
+.carousel-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-muted-rose);
+  background: var(--color-white);
+  color: var(--color-muted-rose);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.carousel-btn:hover:not(:disabled) {
+  background: var(--color-muted-rose);
+  color: var(--color-white);
+}
+
+.carousel-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-muted-rose);
+  opacity: 0.3;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.2s;
+}
+
+.carousel-dot.active {
+  opacity: 1;
 }
 
 .review-card {
   background: var(--color-white);
   border-radius: 12px;
   padding: 20px 24px;
-  max-width: 280px;
-  flex: 1;
-  min-width: 220px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -1798,14 +1897,18 @@ onMounted(async () => {
     padding: 60px 20px;
   }
 
-  .reviews-grid {
-    flex-direction: column;
-    align-items: center;
+  .reviews-carousel {
+    gap: 8px;
   }
 
-  .review-card {
-    max-width: 100%;
-    min-width: 0;
+  .carousel-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .carousel-btn svg {
+    width: 18px;
+    height: 18px;
   }
 
   .section-header {
