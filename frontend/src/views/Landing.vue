@@ -66,78 +66,8 @@
       </div>
     </section>
 
-    <!-- How It Works -->
-    <section id="how-it-works" class="how-it-works">
-      <div class="section-header">
-        <span class="tagline">ПРОЦЕСС</span>
-        <h2>Как это работает</h2>
-        <p class="section-desc">Три простых шага до персональных рекомендаций</p>
-      </div>
-      <div class="steps">
-        <div class="step-card">
-          <div class="step-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          </div>
-          <span class="step-num">01</span>
-          <h3>Заполните анкету</h3>
-          <p>Ответьте на несколько вопросов и отправьте фото</p>
-        </div>
-        <div class="step-card">
-          <div class="step-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </div>
-          <span class="step-num">02</span>
-          <h3>Врач изучит заявку</h3>
-          <p>Дерматолог-косметолог лично проанализирует вашу кожу</p>
-        </div>
-        <div class="step-card">
-          <div class="step-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 1 4 4c0 1.1-.9 2-2 2h-4c-1.1 0-2-.9-2-2a4 4 0 0 1 4-4z"/><path d="M12 8v6"/><path d="M8 14h8"/><circle cx="12" cy="18" r="4"/><path d="M12 14v4"/></svg>
-          </div>
-          <span class="step-num">03</span>
-          <h3>Получите рекомендации</h3>
-          <p>Персональный план ухода — в течение 24 часов</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Why Join -->
-    <section class="why-join">
-      <div class="section-header">
-        <span class="tagline">ПОЧЕМУ МЫ</span>
-        <h2>Что вы получите</h2>
-        <p class="section-desc">Персональный подход к уходу за кожей — от настоящих дерматологов</p>
-      </div>
-      <div class="benefits-grid">
-        <div class="benefit-card">
-          <div class="benefit-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><path d="M12 8v4"/><path d="M8 12h8"/><circle cx="12" cy="19" r="3"/><path d="M12 16v-4"/></svg>
-          </div>
-          <h3>Экспертный анализ</h3>
-          <p>Ваши фото анализируют реальные косметологи и дерматологи, не автоматика</p>
-        </div>
-        <div class="benefit-card">
-          <div class="benefit-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          </div>
-          <h3>Конфиденциальность</h3>
-          <p>Ваши фото и данные видит только назначенный врач. Без AI, без передачи третьим лицам</p>
-        </div>
-        <div class="benefit-card">
-          <div class="benefit-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
-          </div>
-          <h3>Доступная цена</h3>
-          <p>Консультация настоящего дерматолога — всего 500 ₽, без подписок и допродаж</p>
-        </div>
-      </div>
-      <div class="skin-banner">
-        <img src="/skin-section.png" alt="Skin care" />
-      </div>
-    </section>
-
     <!-- How We Work -->
-    <section id="about" class="ai-trust">
+    <section id="how-it-works" class="ai-trust">
       <div class="section-header">
         <span class="tagline">НАШЕ ОТЛИЧИЕ</span>
         <h2>Как это работает и что ты получишь</h2>
