@@ -34,7 +34,7 @@
               В Телеграм
             </a>
           </div>
-          <a href="#" class="gift-link" @click.prevent="openGiftModal">Купить сертификат на консультацию</a>
+          <!-- <a href="#" class="gift-link" @click.prevent="openGiftModal">Купить сертификат на консультацию</a> -->
         </div>
         <div class="hero-visual">
           <img src="/hero.png" alt="Skin care" />
