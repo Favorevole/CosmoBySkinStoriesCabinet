@@ -4,6 +4,27 @@ import { createAnalyticsEvent, getAnalyticsSummary, getAnalyticsEvents } from '.
 
 const router = express.Router();
 
+// In-memory dedup: same visitorId+event no more than once per 10 seconds
+const DEDUP_TTL = 10_000;
+const DEDUP_MAX_SIZE = 10_000;
+const recentEvents = new Map(); // key -> timestamp
+
+function isDuplicate(visitorId, event) {
+  const key = `${visitorId}:${event}`;
+  const now = Date.now();
+  const last = recentEvents.get(key);
+  if (last && now - last < DEDUP_TTL) return true;
+  recentEvents.set(key, now);
+  // Prevent unbounded growth — purge oldest when too large
+  if (recentEvents.size > DEDUP_MAX_SIZE) {
+    const cutoff = now - DEDUP_TTL;
+    for (const [k, ts] of recentEvents) {
+      if (ts < cutoff) recentEvents.delete(k);
+    }
+  }
+  return false;
+}
+
 const ALLOWED_EVENTS = [
   'page_view',
   'click_web_form',
@@ -26,6 +47,7 @@ router.post('/track', (req, res) => {
 
     if (!visitorId || typeof visitorId !== 'string' || visitorId.length > 50) return;
     if (!event || !ALLOWED_EVENTS.includes(event)) return;
+    if (isDuplicate(visitorId, event)) return;
 
     createAnalyticsEvent({
       visitorId,

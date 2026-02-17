@@ -5,6 +5,7 @@ import { createClientBot, startClientBot, stopClientBot, getClientBot } from './
 import { createDoctorBot, startDoctorBot, stopDoctorBot, getDoctorBot } from './doctorBot/index.js';
 import { setClientBot, setDoctorBot } from './services/notifications.js';
 import { cleanupExpiredCodes } from './db/auth.js';
+import { cleanupAnalytics } from './db/analytics.js';
 
 console.log(`
 ╔═══════════════════════════════════════════╗
@@ -56,6 +57,21 @@ async function main() {
         console.error('[CLEANUP] Error:', error);
       }
     }, 10 * 60 * 1000); // Every 10 minutes
+
+    // 7. Analytics cleanup — every 24 hours (TTL 90 days, hard cap 100k rows)
+    setInterval(async () => {
+      try {
+        const result = await cleanupAnalytics();
+        console.log(`[ANALYTICS] Cleanup done: ${result.totalAfter} rows remaining`);
+      } catch (error) {
+        console.error('[ANALYTICS] Cleanup error:', error.message);
+      }
+    }, 24 * 60 * 60 * 1000);
+
+    // Run cleanup once on startup
+    cleanupAnalytics().catch(err => {
+      console.error('[ANALYTICS] Initial cleanup error:', err.message);
+    });
 
     const botMode = config.isProduction && config.server.webhookUrl ? 'Webhook' : 'Polling';
     console.log(`

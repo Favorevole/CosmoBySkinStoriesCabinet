@@ -61,6 +61,45 @@ export async function getAnalyticsSummary() {
   };
 }
 
+const RETENTION_DAYS = 90;
+const MAX_ROWS = 100_000;
+const TRIM_TO = 50_000;
+
+/**
+ * Cleanup: delete events older than 90 days, then hard-cap at 100k rows
+ */
+export async function cleanupAnalytics() {
+  // 1. TTL — delete old events
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - RETENTION_DAYS);
+
+  const deleted = await prisma.analyticsEvent.deleteMany({
+    where: { createdAt: { lt: cutoff } }
+  });
+  if (deleted.count > 0) {
+    console.log(`[ANALYTICS] TTL cleanup: deleted ${deleted.count} events older than ${RETENTION_DAYS} days`);
+  }
+
+  // 2. Hard cap — if still too many rows, keep only newest TRIM_TO
+  const total = await prisma.analyticsEvent.count();
+  if (total > MAX_ROWS) {
+    const threshold = await prisma.analyticsEvent.findMany({
+      orderBy: { createdAt: 'desc' },
+      skip: TRIM_TO,
+      take: 1,
+      select: { createdAt: true }
+    });
+    if (threshold.length > 0) {
+      const trimmed = await prisma.analyticsEvent.deleteMany({
+        where: { createdAt: { lt: threshold[0].createdAt } }
+      });
+      console.log(`[ANALYTICS] Hard cap cleanup: ${total} rows exceeded ${MAX_ROWS}, trimmed ${trimmed.count} to keep ${TRIM_TO}`);
+    }
+  }
+
+  return { deletedByTTL: deleted.count, totalAfter: await prisma.analyticsEvent.count() };
+}
+
 export async function getAnalyticsEvents({ page = 1, limit = 50 }) {
   const skip = (page - 1) * limit;
 
