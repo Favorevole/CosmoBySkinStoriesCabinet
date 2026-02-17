@@ -15,6 +15,7 @@ export function applicationViewKeyboard(applicationId, photoCount = 0, canReques
     buttons.push([Markup.button.callback(`🖼 Посмотреть фото (${photoCount})`, `show_photos_${applicationId}`)]);
   }
 
+  buttons.push([Markup.button.callback('🤖 AI-рекомендация', `ai_rec_${applicationId}`)]);
   buttons.push([Markup.button.callback('Дать рекомендацию', `recommend_${applicationId}`)]);
 
   if (canRequestPhotos) {
@@ -34,6 +35,19 @@ export function confirmRecommendationKeyboard(applicationId) {
       Markup.button.callback('Редактировать', `edit_rec_${applicationId}`)
     ],
     [Markup.button.callback('Отмена', 'cancel_rec')]
+  ]);
+}
+
+export function aiResultKeyboard(applicationId) {
+  return Markup.inlineKeyboard([
+    [
+      Markup.button.callback('Отправить', `ai_send_${applicationId}`),
+      Markup.button.callback('Доработать', `ai_refine_${applicationId}`)
+    ],
+    [
+      Markup.button.callback('Написать вручную', `ai_manual_${applicationId}`),
+      Markup.button.callback('Отмена', 'cancel_rec')
+    ]
   ]);
 }
 

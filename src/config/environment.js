@@ -74,6 +74,11 @@ const config = {
     returnUrl: process.env.YOOKASSA_RETURN_URL || 'http://localhost:5173/?payment=success'
   },
 
+  openai: {
+    apiKey: process.env.OPENAI_API_KEY,
+    model: process.env.OPENAI_MODEL || 'gpt-4o-mini'
+  },
+
   adminTelegramIds: (process.env.ADMIN_TELEGRAM_IDS || '')
     .split(',')
     .map(id => id.trim())

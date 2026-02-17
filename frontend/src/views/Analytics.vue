@@ -101,6 +101,32 @@
       </div>
     </div>
 
+    <!-- Bot Funnel -->
+    <div class="section-title">Воронка бота (30 дней)</div>
+    <div class="funnel" v-if="summary?.eventCounts">
+      <div class="funnel-step">
+        <div class="funnel-bar bot-start" :style="{ width: '100%' }"></div>
+        <div class="funnel-info">
+          <span class="funnel-label">Старт бота</span>
+          <span class="funnel-value">{{ ec.botStart || 0 }}</span>
+        </div>
+      </div>
+      <div class="funnel-step">
+        <div class="funnel-bar bot-quest" :style="{ width: botFunnelPct(ec.botQuestStart) }"></div>
+        <div class="funnel-info">
+          <span class="funnel-label">Начали анкету</span>
+          <span class="funnel-value">{{ ec.botQuestStart || 0 }} <span class="funnel-pct">{{ botFunnelPct(ec.botQuestStart) }}</span></span>
+        </div>
+      </div>
+      <div class="funnel-step">
+        <div class="funnel-bar bot-complete" :style="{ width: botFunnelPct(ec.botQuestComplete) }"></div>
+        <div class="funnel-info">
+          <span class="funnel-label">Завершили анкету</span>
+          <span class="funnel-value">{{ ec.botQuestComplete || 0 }} <span class="funnel-pct">{{ botFunnelPct(ec.botQuestComplete) }}</span></span>
+        </div>
+      </div>
+    </div>
+
     <!-- Daily Stats -->
     <div class="section-title">По дням (30 дней)</div>
     <div class="table-wrap" v-if="summary?.dailyStats?.length">
@@ -113,6 +139,9 @@
             <th>Телеграм</th>
             <th>Анкеты</th>
             <th>Сертификаты</th>
+            <th>Бот старт</th>
+            <th>Анкета</th>
+            <th>Завершил</th>
           </tr>
         </thead>
         <tbody>
@@ -123,6 +152,9 @@
             <td>{{ day.clickTelegram }}</td>
             <td>{{ day.formSubmit }}</td>
             <td>{{ day.clickGift }}</td>
+            <td>{{ day.botStart || 0 }}</td>
+            <td>{{ day.botQuestStart || 0 }}</td>
+            <td>{{ day.botQuestComplete || 0 }}</td>
           </tr>
         </tbody>
       </table>
@@ -184,6 +216,11 @@ function funnelPct(val) {
   return Math.round((val || 0) / pv * 100) + '%';
 }
 
+function botFunnelPct(val) {
+  const bs = ec.value.botStart || 1;
+  return Math.round((val || 0) / bs * 100) + '%';
+}
+
 const EVENT_LABELS = {
   page_view: 'Просмотр страницы',
   click_web_form: 'Клик "На сайте"',
@@ -192,7 +229,10 @@ const EVENT_LABELS = {
   form_step: 'Шаг анкеты',
   form_submit: 'Отправка анкеты',
   payment_start: 'Начало оплаты',
-  bot_start: 'Старт бота'
+  bot_start: 'Старт бота',
+  bot_quest_start: 'Бот: начал анкету',
+  bot_form_step: 'Бот: шаг анкеты',
+  bot_quest_complete: 'Бот: завершил анкету'
 };
 
 function eventLabel(event) {
@@ -413,6 +453,9 @@ onMounted(() => {
 .funnel-bar.clicks { background: #A855F7; }
 .funnel-bar.submits { background: #4ADE80; }
 .funnel-bar.payments { background: #C9A962; }
+.funnel-bar.bot-start { background: #38BDF8; }
+.funnel-bar.bot-quest { background: #818CF8; }
+.funnel-bar.bot-complete { background: #34D399; }
 
 .funnel-info {
   display: flex;

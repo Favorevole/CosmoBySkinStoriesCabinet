@@ -24,6 +24,13 @@ import {
   handleCancelDecline
 } from './handlers/recommendation.js';
 import {
+  handleAiRecommendation,
+  handleAiSend,
+  handleAiRefine,
+  handleAiManual,
+  handleAiDialogText
+} from './handlers/ai.js';
+import {
   handleAdminViewApp,
   handleAdminShowPhotos,
   handleAdminPhotoNav,
@@ -79,6 +86,12 @@ export function createDoctorBot() {
   // Callback queries - photo request
   bot.action(/^request_photos_(\d+)$/, handleRequestPhotos);
 
+  // Callback queries - AI recommendations
+  bot.action(/^ai_rec_(\d+)$/, handleAiRecommendation);
+  bot.action(/^ai_send_(\d+)$/, handleAiSend);
+  bot.action(/^ai_refine_(\d+)$/, handleAiRefine);
+  bot.action(/^ai_manual_(\d+)$/, handleAiManual);
+
   // Callback queries - recommendations
   bot.action(/^recommend_(\d+)$/, handleStartRecommendation);
   bot.action(/^confirm_rec_(\d+)$/, handleConfirmRecommendation);
@@ -132,6 +145,12 @@ export function createDoctorBot() {
     // Handle decline reason
     if (session.state === DOCTOR_STATES.CONFIRMING_DECLINE) {
       await handleDeclineReason(ctx);
+      return;
+    }
+
+    // Handle AI dialog text
+    if (session.state === DOCTOR_STATES.AI_DIALOG) {
+      await handleAiDialogText(ctx);
       return;
     }
 

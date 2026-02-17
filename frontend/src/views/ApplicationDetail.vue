@@ -31,6 +31,18 @@
             <span class="label">Тип кожи</span>
             <span class="value">{{ skinTypeLabels[application.skinType] }}</span>
           </div>
+          <div class="info-item" v-if="application.consultationGoal">
+            <span class="label">Цель консультации</span>
+            <span class="value">{{ goalLabels[application.consultationGoal] }}</span>
+          </div>
+          <div class="info-item" v-if="application.priceRange">
+            <span class="label">Бюджет</span>
+            <span class="value">{{ priceLabels[application.priceRange] }}</span>
+          </div>
+          <div class="info-item full" v-if="application.additionalProducts">
+            <span class="label">Дополнительные средства</span>
+            <span class="value">{{ application.additionalProducts }}</span>
+          </div>
           <div class="info-item full">
             <span class="label">Основные проблемы</span>
             <span class="value">{{ application.mainProblems }}</span>
@@ -461,6 +473,19 @@ const skinTypeLabels = {
   OILY: 'Жирная',
   COMBINATION: 'Комбинированная',
   NORMAL: 'Нормальная'
+};
+
+const goalLabels = {
+  FULL_CARE: 'Подбор ухода',
+  REVIEW_CARE: 'Разбор текущего ухода',
+  ADDITIONAL_PRODUCTS: 'Дополнительные средства'
+};
+
+const priceLabels = {
+  UP_TO_5000: 'До 5 000 ₽',
+  UP_TO_10000: 'До 10 000 ₽',
+  UP_TO_20000: 'До 20 000 ₽',
+  OVER_20000: 'Более 20 000 ₽'
 };
 
 onMounted(async () => {

@@ -33,7 +33,9 @@ export async function getAnalyticsSummary() {
         COUNT(*) FILTER (WHERE event = 'click_gift')::int AS "clickGift",
         COUNT(*) FILTER (WHERE event = 'form_submit')::int AS "formSubmit",
         COUNT(*) FILTER (WHERE event = 'payment_start')::int AS "paymentStart",
-        COUNT(*) FILTER (WHERE event = 'bot_start')::int AS "botStart"
+        COUNT(*) FILTER (WHERE event = 'bot_start')::int AS "botStart",
+        COUNT(*) FILTER (WHERE event = 'bot_quest_start')::int AS "botQuestStart",
+        COUNT(*) FILTER (WHERE event = 'bot_quest_complete')::int AS "botQuestComplete"
       FROM analytics_events
       WHERE created_at >= ${monthStart}
     `,
@@ -46,7 +48,10 @@ export async function getAnalyticsSummary() {
         COUNT(*) FILTER (WHERE event = 'click_web_form')::int AS "clickWebForm",
         COUNT(*) FILTER (WHERE event = 'click_telegram')::int AS "clickTelegram",
         COUNT(*) FILTER (WHERE event = 'form_submit')::int AS "formSubmit",
-        COUNT(*) FILTER (WHERE event = 'click_gift')::int AS "clickGift"
+        COUNT(*) FILTER (WHERE event = 'click_gift')::int AS "clickGift",
+        COUNT(*) FILTER (WHERE event = 'bot_start')::int AS "botStart",
+        COUNT(*) FILTER (WHERE event = 'bot_quest_start')::int AS "botQuestStart",
+        COUNT(*) FILTER (WHERE event = 'bot_quest_complete')::int AS "botQuestComplete"
       FROM analytics_events
       WHERE created_at >= ${monthStart}
       GROUP BY created_at::date
