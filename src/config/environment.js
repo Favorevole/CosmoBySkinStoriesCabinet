@@ -26,7 +26,7 @@ const WEBHOOK_URL = process.env.WEBHOOK_URL ||
 const config = {
   nodeEnv: NODE_ENV,
   isDevelopment: NODE_ENV === 'development',
-  isProduction: NODE_ENV === 'production',
+  isProduction: NODE_ENV === 'production' || NODE_ENV === 'test',
 
   database: {
     // DATABASE_URL - стандартная переменная для Railway

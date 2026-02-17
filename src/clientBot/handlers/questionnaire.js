@@ -4,7 +4,8 @@ import {
   createSessionData,
   formatSkinType,
   formatPriceRange,
-  formatConsultationGoal
+  formatConsultationGoal,
+  getAdditionalProductsList
 } from '../states/index.js';
 import {
   skinTypeKeyboard,
@@ -128,6 +129,34 @@ export async function handleSkinTypeSelection(ctx) {
   );
 }
 
+// Handle skip consultation goal
+export async function handleSkipGoal(ctx) {
+  const telegramId = ctx.from.id;
+  const session = getSession(telegramId);
+
+  if (session.state !== CLIENT_STATES.AWAITING_CONSULTATION_GOAL) {
+    await ctx.answerCbQuery('Пожалуйста, начните заново');
+    return;
+  }
+
+  session.applicationData.consultationGoal = null;
+  session.applicationData.additionalProducts = null;
+  session.state = CLIENT_STATES.AWAITING_PRICE_RANGE;
+  clientSessions.set(telegramId, session);
+  trackBotEvent(telegramId, 'bot_form_step', { step: 'goal' });
+
+  await ctx.answerCbQuery();
+  await ctx.editMessageText('Цель консультации: пропущено');
+
+  await ctx.reply(
+    '*Вопрос 4 из 6*\n\nНа какой бюджет для средств по уходу вам было бы комфортно ориентироваться?\n\nЭто поможет врачу подобрать подходящие средства.',
+    {
+      parse_mode: 'Markdown',
+      ...priceRangeKeyboard()
+    }
+  );
+}
+
 // Handle consultation goal selection
 export async function handleConsultationGoalSelection(ctx) {
   const telegramId = ctx.from.id;
@@ -148,12 +177,14 @@ export async function handleConsultationGoalSelection(ctx) {
 
   if (goal === 'ADDITIONAL_PRODUCTS') {
     session.selectedAdditionalProducts = [];
+    const productsList = await getAdditionalProductsList();
+    session.additionalProductsList = productsList;
     session.state = CLIENT_STATES.AWAITING_ADDITIONAL_PRODUCTS;
     clientSessions.set(telegramId, session);
 
     await ctx.reply(
       'Какие средства вам нужны? Выберите из списка:',
-      additionalProductsKeyboard([])
+      additionalProductsKeyboard([], productsList)
     );
   } else {
     session.applicationData.additionalProducts = null;
@@ -197,12 +228,14 @@ export async function handleAdditionalProductSelection(ctx) {
 
   await ctx.answerCbQuery(idx === -1 ? `✓ ${product}` : `✗ ${product}`);
 
+  const productsList = session.additionalProductsList || await getAdditionalProductsList();
+
   await ctx.editMessageText(
     'Какие средства вам нужны? Выберите из списка:' +
     (session.selectedAdditionalProducts.length > 0
       ? `\n\n✓ ${session.selectedAdditionalProducts.join('\n✓ ')}`
       : ''),
-    additionalProductsKeyboard(session.selectedAdditionalProducts)
+    additionalProductsKeyboard(session.selectedAdditionalProducts, productsList)
   );
 }
 

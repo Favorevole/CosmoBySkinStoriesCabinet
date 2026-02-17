@@ -66,73 +66,40 @@
       </div>
     </section>
 
-    <!-- How It Works -->
-    <section id="how-it-works" class="how-it-works">
+    <!-- How We Work -->
+    <section id="how-it-works" class="ai-trust">
       <div class="section-header">
-        <span class="tagline">ПРОЦЕСС</span>
-        <h2>Как это работает</h2>
-        <p class="section-desc">Три простых шага до персональных рекомендаций</p>
+        <span class="tagline">НАШЕ ОТЛИЧИЕ</span>
+        <h2>Как это работает и что ты получишь</h2>
       </div>
-      <div class="steps">
-        <div class="step-card">
-          <div class="step-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      <div class="ai-two-columns">
+        <div class="ai-column">
+          <h3 class="ai-column-title">Как это работает</h3>
+          <div class="ai-steps">
+            <div class="ai-step">
+              <span class="ai-step-num">1</span>
+              <p>Загружаешь фото, отвечаешь на вопросы</p>
+            </div>
+            <div class="ai-step">
+              <span class="ai-step-num">2</span>
+              <p>Дерматолог анализирует состояние кожи</p>
+            </div>
+            <div class="ai-step">
+              <span class="ai-step-num">3</span>
+              <p>Получаешь персональный план ухода</p>
+            </div>
           </div>
-          <span class="step-num">01</span>
-          <h3>Заполните анкету</h3>
-          <p>Ответьте на несколько вопросов и отправьте фото</p>
         </div>
-        <div class="step-card">
-          <div class="step-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </div>
-          <span class="step-num">02</span>
-          <h3>Врач изучит заявку</h3>
-          <p>Дерматолог-косметолог лично проанализирует вашу кожу</p>
+        <div class="ai-column">
+          <h3 class="ai-column-title">Что ты получишь</h3>
+          <ul class="ai-benefits">
+            <li>Понимание типа и состояния кожи</li>
+            <li>Рекомендации по ежедневному уходу</li>
+            <li>Советы, какие средства подойдут именно тебе</li>
+            <li>Ошибки, которые могут ухудшать состояние кожи</li>
+            <li>Рекомендации реальных косметологов-дерматологов с возможностью записи на детальные онлайн или офлайн консультации</li>
+          </ul>
         </div>
-        <div class="step-card">
-          <div class="step-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 1 4 4c0 1.1-.9 2-2 2h-4c-1.1 0-2-.9-2-2a4 4 0 0 1 4-4z"/><path d="M12 8v6"/><path d="M8 14h8"/><circle cx="12" cy="18" r="4"/><path d="M12 14v4"/></svg>
-          </div>
-          <span class="step-num">03</span>
-          <h3>Получите рекомендации</h3>
-          <p>Персональный план ухода — в течение 24 часов</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Why Join -->
-    <section class="why-join">
-      <div class="section-header">
-        <span class="tagline">ПОЧЕМУ МЫ</span>
-        <h2>Что вы получите</h2>
-        <p class="section-desc">Персональный подход к уходу за кожей — от настоящих дерматологов</p>
-      </div>
-      <div class="benefits-grid">
-        <div class="benefit-card">
-          <div class="benefit-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><path d="M12 8v4"/><path d="M8 12h8"/><circle cx="12" cy="19" r="3"/><path d="M12 16v-4"/></svg>
-          </div>
-          <h3>Экспертный анализ</h3>
-          <p>Ваши фото анализируют реальные косметологи и дерматологи, не автоматика</p>
-        </div>
-        <div class="benefit-card">
-          <div class="benefit-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          </div>
-          <h3>Конфиденциальность</h3>
-          <p>Ваши фото и данные видит только назначенный врач. Без AI, без передачи третьим лицам</p>
-        </div>
-        <div class="benefit-card">
-          <div class="benefit-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
-          </div>
-          <h3>Доступная цена</h3>
-          <p>Консультация настоящего дерматолога — всего 500 ₽, без подписок и допродаж</p>
-        </div>
-      </div>
-      <div class="skin-banner">
-        <img src="/skin-section.png" alt="Skin care" />
       </div>
     </section>
 
@@ -183,24 +150,6 @@
           <h3>Александр Щелкушкин</h3>
           <span class="expert-role">Архитектор и тех.лид</span>
           <p>Эксперт по дата анализу</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- How We Work -->
-    <section id="about" class="ai-trust">
-      <div class="section-header">
-        <span class="tagline">ПРОЗРАЧНОСТЬ</span>
-        <h2>Как устроена проверка</h2>
-      </div>
-      <div class="ai-content">
-        <div class="ai-text">
-          <p class="ai-highlight">Каждую заявку разбирает живой дерматолог. Никакие алгоритмы не заменяют врача.</p>
-          <p>Ваши фотографии и данные анализирует только назначенный специалист — сертифицированный дерматолог или косметолог с многолетним опытом.</p>
-          <p>Рекомендации проходят проверку качества перед отправкой. Мы не используем автоматическую генерацию — каждый план ухода составлен вручную.</p>
-        </div>
-        <div class="ai-visual">
-          <img src="/ai-visual.png" alt="Skin care" />
         </div>
       </div>
     </section>
@@ -1094,46 +1043,90 @@ onMounted(async () => {
   background: var(--color-blush);
 }
 
-.ai-content {
+.ai-two-columns {
   display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 60px;
   max-width: 1100px;
   margin: 0 auto;
+  align-items: flex-start;
 }
 
-.ai-text {
-  max-width: 560px;
+.ai-column {
+  flex: 1;
 }
 
-.ai-highlight {
-  font-size: 20px;
-  font-weight: 600;
+.ai-column-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
   color: var(--color-rich-ebony);
-  line-height: 1.5;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--color-burgundy);
+  display: inline-block;
 }
 
-.ai-text p {
-  font-size: 17px;
-  color: var(--color-cocoa);
-  line-height: 1.7;
-  margin-bottom: 16px;
+.ai-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.ai-visual {
-  width: 400px;
-  height: 400px;
-  border-radius: 24px;
-  overflow: hidden;
+.ai-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.ai-step-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-burgundy);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
   flex-shrink: 0;
 }
 
-.ai-visual img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.ai-step p {
+  font-size: 17px;
+  color: var(--color-cocoa);
+  line-height: 1.6;
+  margin: 0;
+  padding-top: 5px;
+}
+
+.ai-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ai-benefits li {
+  font-size: 17px;
+  color: var(--color-cocoa);
+  line-height: 1.6;
+  padding-left: 28px;
+  position: relative;
+}
+
+.ai-benefits li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-burgundy);
+  opacity: 0.7;
 }
 
 /* Telegram Flow */
@@ -1416,13 +1409,25 @@ onMounted(async () => {
     height: 350px;
   }
 
-  .ai-content,
+  .ai-two-columns,
   .telegram-content {
     flex-direction: column;
   }
 
-  .ai-text {
+  .ai-column {
     text-align: center;
+  }
+
+  .ai-column-title {
+    display: block;
+  }
+
+  .ai-step {
+    text-align: left;
+  }
+
+  .ai-benefits li {
+    text-align: left;
   }
 
   .experts-grid {
@@ -1841,13 +1846,8 @@ onMounted(async () => {
     font-size: 18px;
   }
 
-  .ai-visual {
-    width: 100%;
-    height: 400px;
-  }
-
-  .ai-visual img {
-    transform: scale(1.15);
+  .ai-two-columns {
+    gap: 40px;
   }
 
   .phone-mockup {

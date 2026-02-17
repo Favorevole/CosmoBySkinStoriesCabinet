@@ -108,6 +108,38 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Webhook diagnostics (only for debug — check if bots have webhook set)
+app.get('/health/webhooks', async (req, res) => {
+  try {
+    const results = {};
+    if (clientBot) {
+      const info = await clientBot.telegram.getWebhookInfo();
+      results.client = {
+        url: info.url,
+        pending: info.pending_update_count,
+        lastError: info.last_error_message || 'none',
+        lastErrorDate: info.last_error_date || null
+      };
+    } else {
+      results.client = { error: 'bot not initialized' };
+    }
+    if (doctorBot) {
+      const info = await doctorBot.telegram.getWebhookInfo();
+      results.doctor = {
+        url: info.url,
+        pending: info.pending_update_count,
+        lastError: info.last_error_message || 'none',
+        lastErrorDate: info.last_error_date || null
+      };
+    } else {
+      results.doctor = { error: 'bot not initialized' };
+    }
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 // Тестовые endpoints для проверки webhook путей
 app.get('/client-webhook', (req, res) => {

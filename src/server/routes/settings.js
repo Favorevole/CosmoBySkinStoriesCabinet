@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authenticateToken, requireAdmin } from '../middleware/auth.js';
-import { getSkinProblems, updateSkinProblems, getAllSettings, setSetting } from '../../db/settings.js';
+import { getSkinProblems, updateSkinProblems, getAdditionalProducts, updateAdditionalProducts, getAllSettings, setSetting } from '../../db/settings.js';
 
 const router = Router();
 
@@ -43,6 +43,36 @@ router.put('/skin-problems', async (req, res, next) => {
 
     await updateSkinProblems(problems);
     res.json({ success: true, problems });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Get additional products
+router.get('/additional-products', async (req, res, next) => {
+  try {
+    const products = await getAdditionalProducts();
+    res.json(products);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Update additional products
+router.put('/additional-products', async (req, res, next) => {
+  try {
+    const { products } = req.body;
+
+    if (!Array.isArray(products)) {
+      return res.status(400).json({ error: 'Products must be an array' });
+    }
+
+    if (products.some(p => typeof p !== 'string' || p.trim() === '')) {
+      return res.status(400).json({ error: 'All products must be non-empty strings' });
+    }
+
+    await updateAdditionalProducts(products);
+    res.json({ success: true, products });
   } catch (error) {
     next(error);
   }

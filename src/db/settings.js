@@ -12,6 +12,18 @@ const DEFAULT_SKIN_PROBLEMS = [
   'Чувствительность'
 ];
 
+const DEFAULT_ADDITIONAL_PRODUCTS = [
+  'Крем под глаза',
+  'Сыворотка',
+  'SPF',
+  'Крем для шеи',
+  'Тоник',
+  'Маска',
+  'Пилинг',
+  'Масло для лица',
+  'Мицеллярная вода'
+];
+
 // Get a setting by key
 export async function getSetting(key) {
   const setting = await prisma.setting.findUnique({
@@ -48,4 +60,15 @@ export async function getSkinProblems() {
 // Update skin problems list
 export async function updateSkinProblems(problems) {
   return setSetting('skin_problems', problems);
+}
+
+// Get additional products list
+export async function getAdditionalProducts() {
+  const products = await getSetting('additional_products');
+  return products || DEFAULT_ADDITIONAL_PRODUCTS;
+}
+
+// Update additional products list
+export async function updateAdditionalProducts(products) {
+  return setSetting('additional_products', products);
 }
