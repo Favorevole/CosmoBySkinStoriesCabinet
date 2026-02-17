@@ -188,7 +188,7 @@ export async function startClientBot() {
     // Production: используем webhook - НЕ вызываем bot.launch()!
     const webhookUrl = `${config.server.webhookUrl}/client-webhook`;
     try {
-      await bot.telegram.setWebhook(webhookUrl);
+      await bot.telegram.setWebhook(webhookUrl, { secret_token: config.webhookSecrets.client });
       console.log(`[CLIENT_BOT] ✅ Webhook set to ${webhookUrl}`);
 
       // Проверяем статус webhook

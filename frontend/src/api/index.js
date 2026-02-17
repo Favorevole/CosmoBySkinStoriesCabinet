@@ -124,6 +124,20 @@ export const rejectReviewApi = (id) =>
 export const deleteReviewApi = (id) =>
   api.delete(`/reviews/${id}`);
 
+export const createReviewApi = (formData) =>
+  api.post('/reviews', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 30000
+  });
+
+export const getReviewImageUrl = (reviewId) =>
+  `${API_BASE}/web/reviews/${reviewId}/image`;
+
+export const getAdminReviewImageUrl = (reviewId) => {
+  const token = localStorage.getItem('token');
+  return `${API_BASE}/reviews/${reviewId}/image${token ? `?token=${token}` : ''}`;
+};
+
 // Settings
 export const getSkinProblems = () =>
   api.get('/settings/skin-problems');

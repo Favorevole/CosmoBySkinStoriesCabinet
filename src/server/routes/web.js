@@ -291,6 +291,32 @@ router.get('/reviews', async (req, res) => {
 });
 
 /**
+ * GET /api/web/reviews/:id/image
+ * Serve review image publicly (only for approved reviews)
+ */
+router.get('/reviews/:id/image', async (req, res) => {
+  try {
+    const { getReviewById } = await import('../../db/reviews.js');
+    const { downloadPhoto } = await import('../../services/s3.js');
+
+    const review = await getReviewById(parseInt(req.params.id));
+    if (!review || !review.imageS3Key || !review.isApproved) {
+      return res.status(404).json({ error: 'Image not found' });
+    }
+
+    const buffer = await downloadPhoto(review.imageS3Key);
+    const ext = review.imageS3Key.split('.').pop().toLowerCase();
+    const mimeTypes = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', gif: 'image/gif' };
+    res.set('Content-Type', mimeTypes[ext] || 'image/jpeg');
+    res.set('Cache-Control', 'public, max-age=86400');
+    res.send(buffer);
+  } catch (error) {
+    console.error('[WEB] Error serving review image:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
  * POST /api/web/gift
  * Create a gift certificate payment (public, requires email)
  */

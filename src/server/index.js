@@ -201,6 +201,13 @@ app.use('/api/analytics', analyticsLimiter, analyticsRoutes);
 app.post('/client-webhook',
   express.raw({ type: 'application/json' }),
   async (req, res) => {
+    // Verify Telegram webhook signature
+    const secretToken = req.headers['x-telegram-bot-api-secret-token'];
+    if (config.webhookSecrets.client && secretToken !== config.webhookSecrets.client) {
+      console.warn('[WEBHOOK] ❌ Client bot: invalid secret token');
+      return res.sendStatus(403);
+    }
+
     console.log('[WEBHOOK] ✅ Client bot request received');
 
     if (!clientBot) {
@@ -236,6 +243,13 @@ app.post('/client-webhook',
 app.post('/doctor-webhook',
   express.raw({ type: 'application/json' }),
   async (req, res) => {
+    // Verify Telegram webhook signature
+    const secretToken = req.headers['x-telegram-bot-api-secret-token'];
+    if (config.webhookSecrets.doctor && secretToken !== config.webhookSecrets.doctor) {
+      console.warn('[WEBHOOK] ❌ Doctor bot: invalid secret token');
+      return res.sendStatus(403);
+    }
+
     console.log('[WEBHOOK] ✅ Doctor bot request received');
 
     if (!doctorBot) {

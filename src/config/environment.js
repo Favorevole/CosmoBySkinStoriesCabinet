@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import path from 'path';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -83,13 +84,22 @@ const config = {
     .split(',')
     .map(id => id.trim())
     .filter(Boolean)
-    .map(id => BigInt(id))
+    .map(id => BigInt(id)),
+
+  webhookSecrets: {
+    client: process.env.CLIENT_BOT_TOKEN
+      ? crypto.createHash('sha256').update(`webhook-secret:${process.env.CLIENT_BOT_TOKEN}`).digest('hex').substring(0, 64)
+      : null,
+    doctor: process.env.DOCTOR_BOT_TOKEN
+      ? crypto.createHash('sha256').update(`webhook-secret:${process.env.DOCTOR_BOT_TOKEN}`).digest('hex').substring(0, 64)
+      : null
+  }
 };
 
 // Validation
 const requiredVars = ['DATABASE_URL', 'CLIENT_BOT_TOKEN', 'DOCTOR_BOT_TOKEN'];
 if (config.isProduction) {
-  requiredVars.push('S3_ACCESS_KEY_ID', 'S3_SECRET_ACCESS_KEY', 'S3_BUCKET', 'YOOKASSA_SHOP_ID', 'YOOKASSA_API_KEY');
+  requiredVars.push('JWT_SECRET', 'S3_ACCESS_KEY_ID', 'S3_SECRET_ACCESS_KEY', 'S3_BUCKET', 'YOOKASSA_SHOP_ID', 'YOOKASSA_API_KEY');
 }
 const missing = requiredVars.filter(v => !process.env[v]);
 

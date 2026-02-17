@@ -45,6 +45,8 @@
       </div>
     </div>
 
+    <button class="btn btn-add" @click="showCreateModal = true">+ Добавить отзыв</button>
+
     <!-- Filter -->
     <div class="filter-row">
       <button
@@ -77,7 +79,11 @@
         </div>
 
         <p class="review-text" v-if="review.text">{{ review.text }}</p>
-        <p class="review-text empty" v-else>Без комментария</p>
+        <p class="review-text empty" v-else-if="!review.imageS3Key">Без комментария</p>
+
+        <div v-if="review.imageS3Key" class="review-image-wrap">
+          <img :src="getAdminImageUrl(review.id)" alt="Скриншот отзыва" class="review-thumbnail" />
+        </div>
 
         <div class="review-meta">
           <span v-if="review.clientName">{{ review.clientName }}</span>
@@ -115,16 +121,76 @@
       <div class="loading-spinner"></div>
       <span>Загрузка...</span>
     </div>
+
+    <!-- Create Review Modal -->
+    <Teleport to="body">
+      <div v-if="showCreateModal" class="modal-overlay" @click.self="showCreateModal = false">
+        <div class="modal-content">
+          <button class="modal-close" @click="showCreateModal = false">&times;</button>
+          <h2>Добавить отзыв</h2>
+
+          <form @submit.prevent="handleCreate" class="create-form">
+            <div class="form-group">
+              <label>Рейтинг</label>
+              <div class="star-picker">
+                <span
+                  v-for="s in 5"
+                  :key="s"
+                  class="star-pick"
+                  :class="{ active: s <= newReview.rating }"
+                  @click="newReview.rating = s"
+                >&#x2B50;</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Имя клиента (необязательно)</label>
+              <input v-model="newReview.clientName" type="text" placeholder="Имя" />
+            </div>
+
+            <div class="form-group">
+              <label>Текст отзыва (необязательно)</label>
+              <textarea v-model="newReview.text" rows="4" placeholder="Текст отзыва..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Скриншот (необязательно)</label>
+              <input type="file" accept="image/*" @change="onFileChange" ref="fileInput" />
+              <img v-if="imagePreview" :src="imagePreview" class="image-preview" alt="Preview" />
+            </div>
+
+            <p v-if="createError" class="form-error">{{ createError }}</p>
+
+            <button type="submit" class="btn btn-primary" :disabled="creating">
+              {{ creating ? 'Создание...' : 'Создать' }}
+            </button>
+          </form>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { getAdminReviews, approveReviewApi, rejectReviewApi, deleteReviewApi } from '../api/index.js';
+import { getAdminReviews, approveReviewApi, rejectReviewApi, deleteReviewApi, createReviewApi, getAdminReviewImageUrl } from '../api/index.js';
 
 const reviews = ref([]);
 const loading = ref(true);
 const filter = ref('all');
+
+const showCreateModal = ref(false);
+const creating = ref(false);
+const createError = ref('');
+const imagePreview = ref(null);
+const fileInput = ref(null);
+const selectedFile = ref(null);
+
+const newReview = ref({
+  rating: 5,
+  clientName: '',
+  text: ''
+});
 
 const pendingCount = computed(() => reviews.value.filter(r => !r.isApproved).length);
 const approvedCount = computed(() => reviews.value.filter(r => r.isApproved).length);
@@ -135,8 +201,55 @@ const filteredReviews = computed(() => {
   return reviews.value;
 });
 
+function getAdminImageUrl(reviewId) {
+  return getAdminReviewImageUrl(reviewId);
+}
+
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function onFileChange(e) {
+  const file = e.target.files[0];
+  if (file) {
+    selectedFile.value = file;
+    const reader = new FileReader();
+    reader.onload = (ev) => { imagePreview.value = ev.target.result; };
+    reader.readAsDataURL(file);
+  } else {
+    selectedFile.value = null;
+    imagePreview.value = null;
+  }
+}
+
+async function handleCreate() {
+  createError.value = '';
+
+  if (!newReview.value.text && !selectedFile.value) {
+    createError.value = 'Укажите текст или загрузите скриншот';
+    return;
+  }
+
+  creating.value = true;
+  try {
+    const formData = new FormData();
+    formData.append('rating', newReview.value.rating);
+    if (newReview.value.text) formData.append('text', newReview.value.text);
+    if (newReview.value.clientName) formData.append('clientName', newReview.value.clientName);
+    if (selectedFile.value) formData.append('image', selectedFile.value);
+
+    await createReviewApi(formData);
+
+    showCreateModal.value = false;
+    newReview.value = { rating: 5, clientName: '', text: '' };
+    selectedFile.value = null;
+    imagePreview.value = null;
+    await loadReviews();
+  } catch (error) {
+    createError.value = error.response?.data?.error || 'Ошибка при создании отзыва';
+  } finally {
+    creating.value = false;
+  }
 }
 
 async function loadReviews() {
@@ -183,13 +296,14 @@ onMounted(loadReviews);
 
 <style scoped>
 .reviews-page {
-  padding: 0;
+  padding: 40px;
+  min-height: 100vh;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 28px;
 }
 
@@ -204,6 +318,25 @@ onMounted(loadReviews);
   color: rgba(255, 255, 255, 0.5);
   font-size: 14px;
   margin-top: 4px;
+}
+
+.btn-add {
+  padding: 12px 24px;
+  background: #C9A962;
+  border: none;
+  color: #000;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  margin-bottom: 16px;
+}
+
+.btn-add:hover {
+  background: #D4B96F;
+  transform: translateY(-1px);
 }
 
 .stats-row {
@@ -339,6 +472,18 @@ onMounted(loadReviews);
   font-style: italic;
 }
 
+.review-image-wrap {
+  margin-bottom: 12px;
+}
+
+.review-thumbnail {
+  max-width: 200px;
+  max-height: 150px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .review-meta {
   display: flex;
   gap: 16px;
@@ -394,6 +539,24 @@ onMounted(loadReviews);
   background: rgba(239, 68, 68, 0.2);
 }
 
+.btn-primary {
+  background: #C9A962;
+  color: #000;
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+  border-radius: 10px;
+}
+
+.btn-primary:hover {
+  background: #D4B96F;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .empty-state {
   text-align: center;
   padding: 60px 20px;
@@ -434,12 +597,147 @@ onMounted(loadReviews);
   to { transform: rotate(360deg); }
 }
 
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-content {
+  background: #1E1E20;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  max-width: 480px;
+  width: 100%;
+  padding: 32px;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 24px;
+}
+
+.create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 12px;
+  color: #FFFFFF;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+  resize: vertical;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+  border-color: #C9A962;
+}
+
+.form-group input[type="file"] {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.star-picker {
+  display: flex;
+  gap: 4px;
+}
+
+.star-pick {
+  font-size: 24px;
+  cursor: pointer;
+  opacity: 0.3;
+  transition: opacity 0.2s;
+}
+
+.star-pick.active {
+  opacity: 1;
+}
+
+.image-preview {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 10px;
+  margin-top: 8px;
+  object-fit: contain;
+}
+
+.form-error {
+  color: #EF4444;
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .reviews-page {
+    padding: 24px;
+  }
+}
+
 @media (max-width: 768px) {
   .stats-row {
     grid-template-columns: 1fr;
   }
   .filter-row {
     flex-wrap: wrap;
+  }
+  .page-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .reviews-page {
+    padding: 16px;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
 }
 </style>
