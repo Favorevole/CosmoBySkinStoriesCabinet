@@ -215,3 +215,40 @@ export async function sendRecommendationEmail(email, application, recommendation
     html: emailWrapper(content)
   });
 }
+
+export async function sendGiftCertificateEmail({ to, giftCode }) {
+  const content = `
+    <h2 style="margin: 0 0 8px; color: #8B3A4A; font-size: 22px; font-weight: 600;">Подарочный сертификат готов!</h2>
+    <p style="margin: 0 0 20px; font-size: 14px; color: #8B7355;">Спасибо за покупку</p>
+
+    <p style="margin: 0 0 12px; font-size: 16px; color: #2D2420; line-height: 1.6;">Здравствуйте!</p>
+    <p style="margin: 0 0 20px; font-size: 16px; color: #2D2420; line-height: 1.6;">
+      Ваш подарочный сертификат на бесплатную консультацию косметолога готов.
+    </p>
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="background: #FAF8F5; border-radius: 12px; margin-bottom: 20px;">
+      <tr><td align="center" style="padding: 24px 20px;">
+        <p style="margin: 0 0 8px; font-size: 13px; color: #8B7355;">Промокод</p>
+        <p style="margin: 0; font-size: 28px; font-weight: 700; color: #8B3A4A; letter-spacing: 2px;">${giftCode}</p>
+        <p style="margin: 12px 0 0; font-size: 13px; color: #B5A99A;">Одноразовый &bull; 100% скидка</p>
+      </td></tr>
+    </table>
+
+    <p style="margin: 0 0 12px; font-size: 16px; color: #2D2420; line-height: 1.6;">
+      Передайте этот код получателю. При оплате консультации он вводит промокод — и получает консультацию бесплатно.
+    </p>
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-top: 1px solid #F5F0EB;">
+      <tr><td style="padding-top: 16px;">
+        <p style="margin: 0; font-size: 14px; color: #8B7355;">Код действует без ограничения по времени — до первого использования.</p>
+      </td></tr>
+    </table>
+  `;
+
+  return sendEmail({
+    to,
+    subject: 'Ваш подарочный сертификат | Skin Stories',
+    text: `Подарочный сертификат готов!\n\nВаш промокод на бесплатную консультацию: ${giftCode}\n\nПередайте этот код получателю. При оплате консультации он вводит промокод — и получает консультацию бесплатно.\n\nКод одноразовый, действует без ограничения по времени.\n\nС заботой о вашей коже,\nКоманда Skin Stories`,
+    html: emailWrapper(content)
+  });
+}

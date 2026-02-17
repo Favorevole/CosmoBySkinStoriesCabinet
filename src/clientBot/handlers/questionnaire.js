@@ -3,10 +3,13 @@ import {
   SKIN_PROBLEMS,
   createSessionData,
   formatSkinType,
-  formatPriceRange
+  formatPriceRange,
+  formatConsultationGoal
 } from '../states/index.js';
 import {
   skinTypeKeyboard,
+  consultationGoalKeyboard,
+  additionalProductsKeyboard,
   priceRangeKeyboard,
   problemsInputKeyboard,
   problemsHelpKeyboard,
@@ -41,18 +44,21 @@ export async function handleStartQuestionnaire(ctx) {
   session.applicationData = {
     age: null,
     skinType: null,
+    consultationGoal: null,
+    additionalProducts: null,
     priceRange: null,
     mainProblems: null,
     additionalComment: null
   };
   session.photos = [];
   session.selectedProblems = [];
+  session.selectedAdditionalProducts = [];
 
   clientSessions.set(telegramId, session);
 
   if (ctx.callbackQuery) await ctx.answerCbQuery();
   await ctx.reply(
-    'Через 2 минуты ваша заявка будет у дерматолога.\nОтветьте на 5 коротких вопросов — это поможет врачу подготовить точные рекомендации.\n\n*Вопрос 1 из 5*\n\nСколько вам лет?',
+    'Через 2 минуты ваша заявка будет у дерматолога.\nОтветьте на 6 коротких вопросов — это поможет врачу подготовить точные рекомендации.\n\n*Вопрос 1 из 6*\n\nСколько вам лет?',
     { parse_mode: 'Markdown' }
   );
 }
@@ -79,7 +85,7 @@ export async function handleAgeInput(ctx) {
   clientSessions.set(telegramId, session);
 
   await ctx.reply(
-    '*Вопрос 2 из 5*\n\nВыберите тип вашей кожи:',
+    '*Вопрос 2 из 6*\n\nВыберите тип вашей кожи:',
     {
       parse_mode: 'Markdown',
       ...skinTypeKeyboard()
@@ -101,7 +107,7 @@ export async function handleSkinTypeSelection(ctx) {
 
   const skinType = ctx.callbackQuery.data.replace('skin_', '');
   session.applicationData.skinType = skinType;
-  session.state = CLIENT_STATES.AWAITING_PRICE_RANGE;
+  session.state = CLIENT_STATES.AWAITING_CONSULTATION_GOAL;
   clientSessions.set(telegramId, session);
 
   await ctx.answerCbQuery();
@@ -110,12 +116,138 @@ export async function handleSkinTypeSelection(ctx) {
   );
 
   await ctx.reply(
-    '*Вопрос 3 из 5*\n\nНа какой бюджет для средств по уходу вам было бы комфортно ориентироваться?\n\nЭто поможет врачу подобрать подходящие средства.',
+    '*Вопрос 3 из 6*\n\nКакая у вас цель консультации?',
+    {
+      parse_mode: 'Markdown',
+      ...consultationGoalKeyboard()
+    }
+  );
+}
+
+// Handle consultation goal selection
+export async function handleConsultationGoalSelection(ctx) {
+  const telegramId = ctx.from.id;
+  const session = getSession(telegramId);
+
+  if (session.state !== CLIENT_STATES.AWAITING_CONSULTATION_GOAL) {
+    await ctx.answerCbQuery('Пожалуйста, начните заново с /start');
+    return;
+  }
+
+  const goal = ctx.callbackQuery.data.replace('goal_', '');
+  session.applicationData.consultationGoal = goal;
+  clientSessions.set(telegramId, session);
+
+  await ctx.answerCbQuery();
+  await ctx.editMessageText(`Цель: ${formatConsultationGoal(goal)}`);
+
+  if (goal === 'ADDITIONAL_PRODUCTS') {
+    session.selectedAdditionalProducts = [];
+    session.state = CLIENT_STATES.AWAITING_ADDITIONAL_PRODUCTS;
+    clientSessions.set(telegramId, session);
+
+    await ctx.reply(
+      'Какие средства вам нужны? Выберите из списка:',
+      additionalProductsKeyboard([])
+    );
+  } else {
+    session.applicationData.additionalProducts = null;
+    session.state = CLIENT_STATES.AWAITING_PRICE_RANGE;
+    clientSessions.set(telegramId, session);
+
+    await ctx.reply(
+      '*Вопрос 4 из 6*\n\nНа какой бюджет для средств по уходу вам было бы комфортно ориентироваться?\n\nЭто поможет врачу подобрать подходящие средства.',
+      {
+        parse_mode: 'Markdown',
+        ...priceRangeKeyboard()
+      }
+    );
+  }
+}
+
+// Handle additional product toggle
+export async function handleAdditionalProductSelection(ctx) {
+  const telegramId = ctx.from.id;
+  const session = getSession(telegramId);
+
+  if (session.state !== CLIENT_STATES.AWAITING_ADDITIONAL_PRODUCTS) {
+    await ctx.answerCbQuery('Пожалуйста, начните заново');
+    return;
+  }
+
+  const product = ctx.callbackQuery.data.replace('addprod_', '');
+
+  if (!session.selectedAdditionalProducts) {
+    session.selectedAdditionalProducts = [];
+  }
+
+  const idx = session.selectedAdditionalProducts.indexOf(product);
+  if (idx === -1) {
+    session.selectedAdditionalProducts.push(product);
+  } else {
+    session.selectedAdditionalProducts.splice(idx, 1);
+  }
+
+  clientSessions.set(telegramId, session);
+
+  await ctx.answerCbQuery(idx === -1 ? `✓ ${product}` : `✗ ${product}`);
+
+  await ctx.editMessageText(
+    'Какие средства вам нужны? Выберите из списка:' +
+    (session.selectedAdditionalProducts.length > 0
+      ? `\n\n✓ ${session.selectedAdditionalProducts.join('\n✓ ')}`
+      : ''),
+    additionalProductsKeyboard(session.selectedAdditionalProducts)
+  );
+}
+
+// Handle additional products done
+export async function handleAdditionalProductsDone(ctx) {
+  const telegramId = ctx.from.id;
+  const session = getSession(telegramId);
+
+  if (session.state !== CLIENT_STATES.AWAITING_ADDITIONAL_PRODUCTS) {
+    await ctx.answerCbQuery('Пожалуйста, начните заново');
+    return;
+  }
+
+  if (!session.selectedAdditionalProducts || session.selectedAdditionalProducts.length === 0) {
+    await ctx.answerCbQuery('Выберите хотя бы одно средство');
+    return;
+  }
+
+  session.applicationData.additionalProducts = session.selectedAdditionalProducts.join(', ');
+  session.state = CLIENT_STATES.AWAITING_PRICE_RANGE;
+  clientSessions.set(telegramId, session);
+
+  await ctx.answerCbQuery();
+  await ctx.editMessageText(`Доп. средства: ${session.applicationData.additionalProducts}`);
+
+  await ctx.reply(
+    '*Вопрос 4 из 6*\n\nНа какой бюджет для средств по уходу вам было бы комфортно ориентироваться?\n\nЭто поможет врачу подобрать подходящие средства.',
     {
       parse_mode: 'Markdown',
       ...priceRangeKeyboard()
     }
   );
+}
+
+// Handle back to consultation goal
+export async function handleBackToConsultationGoal(ctx) {
+  const telegramId = ctx.from.id;
+  const session = getSession(telegramId);
+  session.state = CLIENT_STATES.AWAITING_CONSULTATION_GOAL;
+  session.applicationData.consultationGoal = null;
+  session.applicationData.additionalProducts = null;
+  session.selectedAdditionalProducts = [];
+  session.applicationData.priceRange = null;
+  clientSessions.set(telegramId, session);
+
+  await ctx.answerCbQuery();
+  await ctx.editMessageText('*Вопрос 3 из 6*\n\nКакая у вас цель консультации?', {
+    parse_mode: 'Markdown',
+    ...consultationGoalKeyboard()
+  });
 }
 
 // Handle price range selection
@@ -140,7 +272,7 @@ export async function handlePriceRangeSelection(ctx) {
   );
 
   await ctx.reply(
-    '*Вопрос 4 из 5*\n\nОпишите основные проблемы с кожей, которые вас беспокоят.\n\nВы можете написать своими словами или воспользоваться подсказками:',
+    '*Вопрос 5 из 6*\n\nОпишите основные проблемы с кожей, которые вас беспокоят.\n\nВы можете написать своими словами или воспользоваться подсказками:',
     {
       parse_mode: 'Markdown',
       ...problemsInputKeyboard()
@@ -227,7 +359,7 @@ export async function handleProblemsDone(ctx) {
   await ctx.editMessageText(`Проблемы: ${session.applicationData.mainProblems}`);
 
   await ctx.reply(
-    '*Вопрос 5 из 5*\n\nЕсть ли дополнительная информация, которую вы хотите сообщить?\n\n(текущий уход, аллергии, хронические заболевания и т.д.)',
+    '*Вопрос 6 из 6*\n\nЕсть ли дополнительная информация, которую вы хотите сообщить?\n\n(текущий уход, аллергии, хронические заболевания и т.д.)',
     {
       parse_mode: 'Markdown',
       ...skipCommentKeyboard()
@@ -256,7 +388,7 @@ export async function handleProblemsTextInput(ctx) {
   clientSessions.set(telegramId, session);
 
   await ctx.reply(
-    '*Вопрос 5 из 5*\n\nЕсть ли дополнительная информация, которую вы хотите сообщить?\n\n(текущий уход, аллергии, хронические заболевания и т.д.)',
+    '*Вопрос 6 из 6*\n\nЕсть ли дополнительная информация, которую вы хотите сообщить?\n\n(текущий уход, аллергии, хронические заболевания и т.д.)',
     {
       parse_mode: 'Markdown',
       ...skipCommentKeyboard()
@@ -284,7 +416,7 @@ export async function handleSkipProblems(ctx) {
   await ctx.editMessageText('Проблемы: пропущено');
 
   await ctx.reply(
-    '*Вопрос 5 из 5*\n\nЕсть ли дополнительная информация, которую вы хотите сообщить?\n\n(текущий уход, аллергии, хронические заболевания и т.д.)',
+    '*Вопрос 6 из 6*\n\nЕсть ли дополнительная информация, которую вы хотите сообщить?\n\n(текущий уход, аллергии, хронические заболевания и т.д.)',
     {
       parse_mode: 'Markdown',
       ...skipCommentKeyboard()
@@ -360,18 +492,20 @@ export async function handleBackToAge(ctx) {
   clientSessions.set(telegramId, session);
 
   await ctx.answerCbQuery();
-  await ctx.editMessageText('*Вопрос 1 из 5*\n\nСколько вам лет?', { parse_mode: 'Markdown' });
+  await ctx.editMessageText('*Вопрос 1 из 6*\n\nСколько вам лет?', { parse_mode: 'Markdown' });
 }
 
 export async function handleBackToSkinType(ctx) {
   const telegramId = ctx.from.id;
   const session = getSession(telegramId);
   session.state = CLIENT_STATES.AWAITING_SKIN_TYPE;
-  session.applicationData.priceRange = null;
+  session.applicationData.consultationGoal = null;
+  session.applicationData.additionalProducts = null;
+  session.selectedAdditionalProducts = [];
   clientSessions.set(telegramId, session);
 
   await ctx.answerCbQuery();
-  await ctx.editMessageText('*Вопрос 2 из 5*\n\nВыберите тип вашей кожи:', {
+  await ctx.editMessageText('*Вопрос 2 из 6*\n\nВыберите тип вашей кожи:', {
     parse_mode: 'Markdown',
     ...skinTypeKeyboard()
   });
@@ -386,7 +520,7 @@ export async function handleBackToPriceRange(ctx) {
   clientSessions.set(telegramId, session);
 
   await ctx.answerCbQuery();
-  await ctx.editMessageText('*Вопрос 3 из 5*\n\nНа какой бюджет для средств по уходу вам было бы комфортно ориентироваться?\n\nЭто поможет врачу подобрать подходящие средства.', {
+  await ctx.editMessageText('*Вопрос 4 из 6*\n\nНа какой бюджет для средств по уходу вам было бы комфортно ориентироваться?\n\nЭто поможет врачу подобрать подходящие средства.', {
     parse_mode: 'Markdown',
     ...priceRangeKeyboard()
   });
@@ -400,7 +534,7 @@ export async function handleBackToProblems(ctx) {
   clientSessions.set(telegramId, session);
 
   await ctx.answerCbQuery();
-  await ctx.editMessageText('*Вопрос 4 из 5*\n\nОпишите основные проблемы с кожей, которые вас беспокоят.\n\nВы можете написать своими словами или воспользоваться подсказками:', {
+  await ctx.editMessageText('*Вопрос 5 из 6*\n\nОпишите основные проблемы с кожей, которые вас беспокоят.\n\nВы можете написать своими словами или воспользоваться подсказками:', {
     parse_mode: 'Markdown',
     ...problemsInputKeyboard()
   });
@@ -414,7 +548,7 @@ export async function handleBackToComment(ctx) {
   clientSessions.set(telegramId, session);
 
   await ctx.answerCbQuery();
-  await ctx.editMessageText('*Вопрос 5 из 5*\n\nЕсть ли дополнительная информация, которую вы хотите сообщить?\n\n(текущий уход, аллергии, хронические заболевания и т.д.)', {
+  await ctx.editMessageText('*Вопрос 6 из 6*\n\nЕсть ли дополнительная информация, которую вы хотите сообщить?\n\n(текущий уход, аллергии, хронические заболевания и т.д.)', {
     parse_mode: 'Markdown',
     ...skipCommentKeyboard()
   });
@@ -471,14 +605,23 @@ export async function showConfirmation(ctx) {
   session.state = CLIENT_STATES.CONFIRMING;
   clientSessions.set(telegramId, session);
 
-  const { age, skinType, priceRange, mainProblems, additionalComment } = session.applicationData;
+  const { age, skinType, consultationGoal, additionalProducts, priceRange, mainProblems, additionalComment } = session.applicationData;
+
+  let goalLine = '';
+  if (consultationGoal) {
+    goalLine = `Цель: ${formatConsultationGoal(consultationGoal)}`;
+    if (consultationGoal === 'ADDITIONAL_PRODUCTS' && additionalProducts) {
+      goalLine += ` (${additionalProducts})`;
+    }
+    goalLine += '\n';
+  }
 
   const summary = `
 *Проверьте данные заявки:*
 
 Возраст: ${age} лет
 Тип кожи: ${formatSkinType(skinType)}
-Бюджет: ${formatPriceRange(priceRange)}
+${goalLine}Бюджет: ${formatPriceRange(priceRange)}
 Проблемы: ${mainProblems}
 ${additionalComment ? `Комментарий: ${additionalComment}` : 'Комментарий: нет'}
 Фотографий: ${session.photos.length}
@@ -518,6 +661,8 @@ export async function handleConfirmSubmit(ctx) {
       clientId: client.id,
       age: session.applicationData.age,
       skinType: session.applicationData.skinType,
+      consultationGoal: session.applicationData.consultationGoal,
+      additionalProducts: session.applicationData.additionalProducts,
       priceRange: session.applicationData.priceRange,
       mainProblems: session.applicationData.mainProblems,
       additionalComment: session.applicationData.additionalComment,
@@ -585,16 +730,19 @@ export async function handleTextMessage(ctx) {
     session.applicationData = {
       age: null,
       skinType: null,
+      consultationGoal: null,
+      additionalProducts: null,
       priceRange: null,
       mainProblems: null,
       additionalComment: null
     };
     session.photos = [];
     session.selectedProblems = [];
+    session.selectedAdditionalProducts = [];
     clientSessions.set(telegramId, session);
 
     await ctx.reply(
-      'Через 2 минуты ваша заявка будет у дерматолога.\nОтветьте на 5 коротких вопросов — это поможет врачу подготовить точные рекомендации.\n\n*Вопрос 1 из 5*\n\nСколько вам лет?',
+      'Через 2 минуты ваша заявка будет у дерматолога.\nОтветьте на 6 коротких вопросов — это поможет врачу подготовить точные рекомендации.\n\n*Вопрос 1 из 6*\n\nСколько вам лет?',
       { parse_mode: 'Markdown' }
     );
     return true;

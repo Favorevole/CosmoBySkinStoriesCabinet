@@ -48,6 +48,7 @@ enum PriceRange {
   UP_TO_5000
   UP_TO_10000
   UP_TO_20000
+  OVER_20000
 }
 
 enum ApplicationSource {
@@ -122,6 +123,8 @@ model Application {
   // Questionnaire data
   age               Int
   skinType          SkinType          @map("skin_type")
+  consultationGoal    String?         @map("consultation_goal")
+  additionalProducts  String?         @map("additional_products")
   priceRange        PriceRange?       @map("price_range")
   mainProblems      String            @map("main_problems") @db.Text
   additionalComment String?           @map("additional_comment") @db.Text
@@ -296,7 +299,41 @@ model PromoCode {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
 
-  payments  Payment[]
+  payments        Payment[]
+  giftCertificate GiftCertificate?
 
   @@map("promo_codes")
+}
+
+model GiftCertificate {
+  id              Int             @id @default(autoincrement())
+  buyerTelegramId BigInt?         @map("buyer_telegram_id")
+  buyerEmail      String?         @map("buyer_email")
+  amount          Float
+  status          PaymentStatus   @default(PENDING)
+  provider        PaymentProvider @default(YOOKASSA)
+  externalId      String?         @map("external_id")
+  promoCodeId     Int?            @unique @map("promo_code_id")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  completedAt     DateTime?       @map("completed_at")
+
+  promoCode       PromoCode?      @relation(fields: [promoCodeId], references: [id])
+
+  @@index([buyerTelegramId])
+  @@index([externalId])
+  @@map("gift_certificates")
+}
+
+model AnalyticsEvent {
+  id        Int      @id @default(autoincrement())
+  visitorId String   @map("visitor_id")
+  event     String
+  referrer  String?
+  metadata  Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([visitorId])
+  @@index([event])
+  @@index([createdAt])
+  @@map("analytics_events")
 }

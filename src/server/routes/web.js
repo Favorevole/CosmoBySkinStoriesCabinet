@@ -5,7 +5,7 @@ import { createApplication } from '../../db/applications.js';
 import { addPhotoToApplication } from '../../db/photos.js';
 import { notifyAdminsNewApplication } from '../../services/notifications.js';
 import { getSkinProblems } from '../../db/settings.js';
-import { createPayment, processPayment } from '../../services/payment.js';
+import { createPayment, processPayment, createGiftPayment, checkGiftCertificateStatus } from '../../services/payment.js';
 
 const router = express.Router();
 
@@ -26,7 +26,8 @@ const upload = multer({
 });
 
 const VALID_SKIN_TYPES = ['DRY', 'OILY', 'COMBINATION', 'NORMAL'];
-const VALID_PRICE_RANGES = ['UP_TO_5000', 'UP_TO_10000', 'UP_TO_20000'];
+const VALID_PRICE_RANGES = ['UP_TO_5000', 'UP_TO_10000', 'UP_TO_20000', 'OVER_20000'];
+const VALID_CONSULTATION_GOALS = ['FULL_CARE', 'REVIEW_CARE', 'ADDITIONAL_PRODUCTS'];
 
 /**
  * GET /api/web/skin-problems
@@ -48,7 +49,7 @@ router.get('/skin-problems', async (req, res) => {
  */
 router.post('/applications', upload.array('photos', 6), async (req, res) => {
   try {
-    const { age, skinType, priceRange, mainProblems, additionalComment, email, fullName, consentToDataProcessing } = req.body;
+    const { age, skinType, priceRange, mainProblems, additionalComment, email, fullName, consentToDataProcessing, consultationGoal, additionalProducts } = req.body;
     const files = req.files;
 
     // Validation
@@ -102,6 +103,10 @@ router.post('/applications', upload.array('photos', 6), async (req, res) => {
       return res.status(400).json({ error: 'Invalid priceRange' });
     }
 
+    if (consultationGoal && !VALID_CONSULTATION_GOALS.includes(consultationGoal)) {
+      return res.status(400).json({ error: 'Invalid consultationGoal' });
+    }
+
     // Create client (without telegramId for web users)
     const client = await createClient({
       telegramId: null,
@@ -115,6 +120,8 @@ router.post('/applications', upload.array('photos', 6), async (req, res) => {
       clientId: client.id,
       age: ageNum,
       skinType,
+      consultationGoal: consultationGoal || null,
+      additionalProducts: additionalProducts || null,
       priceRange: priceRange || null,
       mainProblems,
       additionalComment: additionalComment || null,
@@ -280,6 +287,55 @@ router.get('/reviews', async (req, res) => {
   } catch (error) {
     console.error('[WEB] Error getting reviews:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * POST /api/web/gift
+ * Create a gift certificate payment (public, requires email)
+ */
+router.post('/gift', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email || !email.trim()) {
+      return res.status(400).json({ error: 'Email обязателен' });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      return res.status(400).json({ error: 'Некорректный email' });
+    }
+
+    const result = await createGiftPayment({ buyerEmail: email.trim() });
+
+    res.json({
+      success: true,
+      giftCertificateId: result.giftCertificateId,
+      confirmationUrl: result.confirmationUrl
+    });
+  } catch (error) {
+    console.error('[WEB] Error creating gift payment:', error);
+    res.status(500).json({ error: 'Ошибка при создании платежа' });
+  }
+});
+
+/**
+ * GET /api/web/gift/:id/check
+ * Check gift certificate status & return promo code if ready
+ */
+router.get('/gift/:id/check', async (req, res) => {
+  try {
+    const giftId = parseInt(req.params.id);
+    if (isNaN(giftId)) {
+      return res.status(400).json({ error: 'Invalid gift certificate ID' });
+    }
+
+    const result = await checkGiftCertificateStatus(giftId);
+    res.json(result);
+  } catch (error) {
+    console.error('[WEB] Error checking gift status:', error);
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 

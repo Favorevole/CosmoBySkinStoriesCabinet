@@ -10,9 +10,9 @@
           <a href="#how-it-works">Как это работает</a>
           <a href="#experts">Эксперты</a>
           <a href="#about">О проекте</a>
-          <button class="nav-cta" @click="showModal = true">Начать</button>
+          <button class="nav-cta" @click="openConsultation">Начать</button>
         </nav>
-        <button class="mobile-cta" @click="showModal = true">Начать</button>
+        <button class="mobile-cta" @click="openConsultation">Начать</button>
       </div>
     </header>
 
@@ -25,15 +25,16 @@
           <p class="hero-subtitle">Получите экспертные рекомендации по уходу за кожей от наших дерматологов — пока наш AI&nbsp;учится.</p>
           <p class="hero-cta-label">Начать консультацию</p>
           <div class="hero-cta-buttons">
-            <button class="btn btn-primary" @click="showModal = true">
+            <button class="btn btn-primary" @click="openConsultation">
               <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M14 9l3 3-3 3"/></svg>
               На сайте
             </button>
-            <a :href="telegramBotLink" target="_blank" class="btn btn-primary">
+            <a :href="telegramBotLink" target="_blank" class="btn btn-primary" @click="trackTelegramClick">
               <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="m22 2-11 11"/></svg>
               В Телеграм
             </a>
           </div>
+          <!-- <a href="#" class="gift-link" @click.prevent="openGiftModal">Купить сертификат на консультацию</a> -->
         </div>
         <div class="hero-visual">
           <img src="/hero.png" alt="Skin care" />
@@ -261,11 +262,11 @@
       <h2>Готовы получить рекомендации от дерматолога?</h2>
       <p class="cta-subtitle">Заполните анкету — ответ в течение 24 часов</p>
       <div class="cta-buttons">
-        <button class="btn btn-white" @click="showModal = true">
+        <button class="btn btn-white" @click="openConsultation">
           <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M14 9l3 3-3 3"/></svg>
           Заполнить на сайте
         </button>
-        <a :href="telegramBotLink" target="_blank" class="btn btn-white">
+        <a :href="telegramBotLink" target="_blank" class="btn btn-white" @click="trackTelegramClick">
           <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="m22 2-11 11"/></svg>
           Открыть Telegram
         </a>
@@ -291,6 +292,66 @@
       </div>
     </Teleport>
 
+    <!-- Gift Certificate Modal -->
+    <Teleport to="body">
+      <div v-if="showGiftModal" class="payment-overlay" @click.self="showGiftModal = false">
+        <div class="payment-banner gift-modal">
+          <button class="payment-banner-close" @click="showGiftModal = false">&times;</button>
+          <div class="payment-banner-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="56" height="56"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+          </div>
+          <h2>Подарочный сертификат</h2>
+          <p>Подарите близкому человеку персональную консультацию косметолога. После оплаты вы получите промокод на 100% скидку.</p>
+          <form class="gift-form" @submit.prevent="handleGiftPurchase">
+            <input
+              v-model="giftEmail"
+              type="email"
+              placeholder="Ваш email для получения промокода"
+              class="gift-input"
+              required
+            />
+            <p v-if="giftError" class="gift-error">{{ giftError }}</p>
+            <button type="submit" class="payment-banner-btn" :disabled="giftLoading">
+              {{ giftLoading ? 'Создаём платёж...' : 'Оплатить 500 ₽' }}
+            </button>
+          </form>
+          <p class="payment-banner-note">Код одноразовый, действует без ограничения по времени</p>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Gift Success Banner -->
+    <Teleport to="body">
+      <div v-if="showGiftBanner" class="payment-overlay" @click.self="showGiftBanner = false">
+        <div class="payment-banner">
+          <button class="payment-banner-close" @click="showGiftBanner = false">&times;</button>
+          <div class="payment-banner-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="56" height="56"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+          </div>
+          <template v-if="giftPromoCode">
+            <h2>Сертификат готов!</h2>
+            <p>Ваш промокод на бесплатную консультацию:</p>
+            <div class="gift-code-box" @click="copyGiftCode">
+              <span class="gift-code">{{ giftPromoCode }}</span>
+              <span class="gift-code-hint">{{ codeCopied ? 'Скопировано!' : 'Нажмите, чтобы скопировать' }}</span>
+            </div>
+            <p>Передайте код получателю — он вводится при оплате консультации.</p>
+            <p class="payment-banner-note">Промокод также отправлен на вашу почту.</p>
+          </template>
+          <template v-else-if="giftCheckFailed">
+            <h2>Оплата обрабатывается</h2>
+            <p>Промокод будет отправлен на вашу почту, как только оплата подтвердится.</p>
+            <p class="payment-banner-note">Обычно это занимает несколько минут.</p>
+          </template>
+          <template v-else>
+            <h2>Проверяем оплату...</h2>
+            <p>Пожалуйста, подождите.</p>
+          </template>
+          <button class="payment-banner-btn" @click="showGiftBanner = false">Понятно</button>
+        </div>
+      </div>
+    </Teleport>
+
     <!-- Consultation Modal -->
     <ConsultationModal :visible="showModal" @close="showModal = false" />
 
@@ -312,26 +373,118 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { getPublicReviews } from '../api/index.js';
+import { ref, computed, onMounted } from 'vue';
+import { getPublicReviews, buyGiftCertificate, checkGiftStatus, trackEvent, getOrCreateVisitorId } from '../api/index.js';
 import ConsultationModal from '../components/ConsultationModal.vue';
 
 const botUsername = import.meta.env.VITE_CLIENT_BOT_USERNAME;
-const telegramBotLink = `https://t.me/${botUsername}`;
+const telegramBotLink = computed(() => {
+  const vid = getOrCreateVisitorId();
+  return `https://t.me/${botUsername}?start=web_${vid}`;
+});
 
 const reviews = ref([]);
 const showModal = ref(false);
 const showPaymentBanner = ref(false);
 const paymentAppNumber = ref(null);
 
+// Gift certificate state
+const showGiftModal = ref(false);
+const giftEmail = ref('');
+const giftError = ref('');
+const giftLoading = ref(false);
+const showGiftBanner = ref(false);
+const giftPromoCode = ref(null);
+const giftCheckFailed = ref(false);
+const codeCopied = ref(false);
+
+function openConsultation() {
+  trackEvent('click_web_form');
+  showModal.value = true;
+}
+
+function trackTelegramClick() {
+  trackEvent('click_telegram');
+}
+
+function openGiftModal() {
+  trackEvent('click_gift');
+  showGiftModal.value = true;
+}
+
+async function handleGiftPurchase() {
+  giftError.value = '';
+  giftLoading.value = true;
+  try {
+    const res = await buyGiftCertificate(giftEmail.value);
+    const { confirmationUrl } = res.data;
+    // Validate URL before redirecting
+    if (confirmationUrl && /^https:\/\/(yookassa\.ru|yoomoney\.ru)/.test(confirmationUrl)) {
+      window.location.href = confirmationUrl;
+    } else {
+      giftError.value = 'Ошибка создания платежа';
+    }
+  } catch (err) {
+    giftError.value = err.response?.data?.error || 'Ошибка при создании платежа';
+  } finally {
+    giftLoading.value = false;
+  }
+}
+
+async function pollGiftStatus(giftId) {
+  for (let i = 0; i < 6; i++) {
+    try {
+      const res = await checkGiftStatus(giftId);
+      if (res.data.status === 'COMPLETED' && res.data.promoCode) {
+        giftPromoCode.value = res.data.promoCode;
+        return;
+      }
+      if (res.data.status === 'FAILED') {
+        giftCheckFailed.value = true;
+        return;
+      }
+    } catch (e) {
+      // continue polling
+    }
+    await new Promise(r => setTimeout(r, 3000));
+  }
+  // After retries — tell user to check email
+  giftCheckFailed.value = true;
+}
+
+function copyGiftCode() {
+  if (giftPromoCode.value) {
+    navigator.clipboard.writeText(giftPromoCode.value).then(() => {
+      codeCopied.value = true;
+      setTimeout(() => { codeCopied.value = false; }, 2000);
+    });
+  }
+}
+
 onMounted(async () => {
-  // Check if returning from YooKassa payment
   const params = new URLSearchParams(window.location.search);
+
+  // Track page view
+  trackEvent('page_view', {
+    utm_source: params.get('utm_source'),
+    utm_medium: params.get('utm_medium'),
+    utm_campaign: params.get('utm_campaign')
+  });
+
+  // Check if returning from YooKassa payment
   if (params.get('payment') === 'success') {
-    showPaymentBanner.value = true;
-    paymentAppNumber.value = params.get('app') || null;
-    // Clean up URL
-    window.history.replaceState({}, '', window.location.pathname);
+    const giftId = params.get('gift');
+    if (giftId && giftId !== '1') {
+      // Returning from gift certificate payment
+      showGiftBanner.value = true;
+      window.history.replaceState({}, '', window.location.pathname);
+      pollGiftStatus(giftId);
+    } else {
+      // Regular consultation payment
+      showPaymentBanner.value = true;
+      paymentAppNumber.value = params.get('app') || null;
+      window.history.replaceState({}, '', window.location.pathname);
+    }
   }
 
   try {
@@ -552,6 +705,21 @@ onMounted(async () => {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.gift-link {
+  display: inline-block;
+  margin-top: 16px;
+  font-size: 15px;
+  color: var(--color-burgundy);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--color-burgundy);
+  transition: opacity 0.3s;
+  cursor: pointer;
+}
+
+.gift-link:hover {
+  opacity: 0.7;
 }
 
 .hero-visual {
@@ -1381,6 +1549,74 @@ onMounted(async () => {
   background: var(--color-burgundy-dark, #6E2E3B);
 }
 
+.payment-banner-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Gift modal */
+.gift-form {
+  margin: 20px 0 8px;
+}
+
+.gift-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--color-warm-nude, #E8DED4);
+  border-radius: 12px;
+  font-size: 16px;
+  font-family: var(--font-body, 'Manrope', sans-serif);
+  color: var(--color-rich-ebony, #2D2420);
+  background: var(--color-white, #fff);
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.gift-input:focus {
+  border-color: var(--color-burgundy, #8B3A4A);
+}
+
+.gift-input::placeholder {
+  color: var(--color-cocoa, #5C4A3D);
+  opacity: 0.5;
+}
+
+.gift-error {
+  color: #c0392b;
+  font-size: 14px;
+  margin: 8px 0 0;
+}
+
+.gift-code-box {
+  background: var(--color-soft-ivory, #F5F0EB);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 16px 0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.gift-code-box:hover {
+  background: var(--color-warm-nude, #E8DED4);
+}
+
+.gift-code {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-burgundy, #8B3A4A);
+  letter-spacing: 3px;
+  margin-bottom: 4px;
+}
+
+.gift-code-hint {
+  display: block;
+  font-size: 12px;
+  color: var(--color-cocoa, #5C4A3D);
+  opacity: 0.6;
+}
+
 @media (max-width: 480px) {
   .header {
     padding-top: env(safe-area-inset-top, 0px);
@@ -1425,6 +1661,11 @@ onMounted(async () => {
 
   .hero-cta-buttons .btn {
     width: 100%;
+  }
+
+  .gift-link {
+    display: block;
+    text-align: center;
   }
 
   .cta-buttons {

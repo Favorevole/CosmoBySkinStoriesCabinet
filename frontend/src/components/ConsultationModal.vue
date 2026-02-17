@@ -83,6 +83,32 @@
           </div>
 
           <div class="form-group">
+            <label>Цель консультации</label>
+            <div class="btn-group">
+              <button
+                v-for="g in consultationGoals"
+                :key="g.value"
+                class="btn-option"
+                :class="{ active: form.consultationGoal === g.value }"
+                @click="form.consultationGoal = form.consultationGoal === g.value ? null : g.value"
+              >{{ g.label }}</button>
+            </div>
+          </div>
+
+          <div v-if="form.consultationGoal === 'ADDITIONAL_PRODUCTS'" class="form-group">
+            <label>Какие средства вам нужны?</label>
+            <div class="problems-grid">
+              <button
+                v-for="product in additionalProductsList"
+                :key="product"
+                class="btn-problem"
+                :class="{ active: form.additionalProducts.includes(product) }"
+                @click="toggleAdditionalProduct(product)"
+              >{{ product }}</button>
+            </div>
+          </div>
+
+          <div class="form-group">
             <label>Бюджет на уход</label>
             <div class="btn-group">
               <button
@@ -212,6 +238,10 @@
               <span class="summary-label">Тип кожи</span>
               <span>{{ skinTypeLabel }}</span>
             </div>
+            <div v-if="form.consultationGoal" class="summary-row">
+              <span class="summary-label">Цель</span>
+              <span>{{ consultationGoalLabel }}</span>
+            </div>
             <div v-if="form.priceRange" class="summary-row">
               <span class="summary-label">Бюджет</span>
               <span>{{ priceRangeLabel }}</span>
@@ -292,7 +322,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import { submitWebApplication, payWebApplication, getWebSkinProblems, validatePromoCodeApi } from '../api/index.js';
+import { submitWebApplication, payWebApplication, getWebSkinProblems, validatePromoCodeApi, trackEvent } from '../api/index.js';
 
 const props = defineProps({
   visible: Boolean
@@ -318,9 +348,21 @@ const skinTypes = [
 ];
 
 const priceRanges = [
-  { value: 'UP_TO_5000', label: 'До 5 000 ₽' },
+  { value: 'UP_TO_5000', label: 'До 5 000 ₽ (до 2 средств)' },
   { value: 'UP_TO_10000', label: 'До 10 000 ₽' },
-  { value: 'UP_TO_20000', label: 'До 20 000 ₽' }
+  { value: 'UP_TO_20000', label: 'До 20 000 ₽' },
+  { value: 'OVER_20000', label: 'Более 20 000 ₽' }
+];
+
+const consultationGoals = [
+  { value: 'FULL_CARE', label: 'Подбор ухода' },
+  { value: 'REVIEW_CARE', label: 'Разбор текущего ухода' },
+  { value: 'ADDITIONAL_PRODUCTS', label: 'Нужны дополнительные средства' }
+];
+
+const additionalProductsList = [
+  'Крем под глаза', 'Сыворотка', 'SPF', 'Крем для шеи',
+  'Тоник', 'Маска', 'Пилинг', 'Масло для лица', 'Мицеллярная вода'
 ];
 
 const form = ref({
@@ -329,6 +371,8 @@ const form = ref({
   consent: false,
   age: null,
   skinType: null,
+  consultationGoal: null,
+  additionalProducts: [],
   priceRange: null,
   selectedProblems: [],
   customProblem: '',
@@ -340,6 +384,14 @@ const errors = ref({});
 
 const skinTypeLabel = computed(() => skinTypes.find(t => t.value === form.value.skinType)?.label || '');
 const priceRangeLabel = computed(() => priceRanges.find(p => p.value === form.value.priceRange)?.label || '');
+const consultationGoalLabel = computed(() => {
+  const goal = consultationGoals.find(g => g.value === form.value.consultationGoal);
+  if (!goal) return '';
+  if (form.value.consultationGoal === 'ADDITIONAL_PRODUCTS' && form.value.additionalProducts.length > 0) {
+    return `${goal.label} (${form.value.additionalProducts.join(', ')})`;
+  }
+  return goal.label;
+});
 const allProblems = computed(() => {
   const problems = [...form.value.selectedProblems];
   if (form.value.customProblem.trim()) {
@@ -424,6 +476,8 @@ function resetForm() {
     consent: false,
     age: null,
     skinType: null,
+    consultationGoal: null,
+    additionalProducts: [],
     priceRange: null,
     selectedProblems: [],
     customProblem: '',
@@ -441,7 +495,10 @@ function validateStep1() {
     errors.value.email = 'Некорректный email';
   }
   if (!form.value.consent) errors.value.consent = 'Необходимо согласие';
-  if (Object.keys(errors.value).length === 0) step.value = 2;
+  if (Object.keys(errors.value).length === 0) {
+    trackEvent('form_step', { step: 2 });
+    step.value = 2;
+  }
 }
 
 function validateStep2() {
@@ -450,12 +507,16 @@ function validateStep2() {
     errors.value.age = 'Введите возраст (12-120)';
   }
   if (!form.value.skinType) errors.value.skinType = 'Выберите тип кожи';
-  if (Object.keys(errors.value).length === 0) step.value = 3;
+  if (Object.keys(errors.value).length === 0) {
+    trackEvent('form_step', { step: 3 });
+    step.value = 3;
+  }
 }
 
 function validateStep3() {
   errors.value = {};
   // Problems are optional — user can skip
+  trackEvent('form_step', { step: 4 });
   step.value = 4;
 }
 
@@ -464,7 +525,19 @@ function validateStep4() {
   if (form.value.photos.length === 0) {
     errors.value.photos = 'Загрузите хотя бы одно фото';
   }
-  if (Object.keys(errors.value).length === 0) step.value = 5;
+  if (Object.keys(errors.value).length === 0) {
+    trackEvent('form_step', { step: 5 });
+    step.value = 5;
+  }
+}
+
+function toggleAdditionalProduct(product) {
+  const idx = form.value.additionalProducts.indexOf(product);
+  if (idx === -1) {
+    form.value.additionalProducts.push(product);
+  } else {
+    form.value.additionalProducts.splice(idx, 1);
+  }
 }
 
 function toggleProblem(problem) {
@@ -506,6 +579,7 @@ function removePhoto(idx) {
 async function submitAndPay() {
   submitting.value = true;
   submitError.value = '';
+  trackEvent('form_submit');
 
   try {
     // Build FormData
@@ -516,6 +590,10 @@ async function submitAndPay() {
     fd.append('age', String(form.value.age));
     fd.append('skinType', form.value.skinType);
     if (form.value.priceRange) fd.append('priceRange', form.value.priceRange);
+    if (form.value.consultationGoal) fd.append('consultationGoal', form.value.consultationGoal);
+    if (form.value.consultationGoal === 'ADDITIONAL_PRODUCTS' && form.value.additionalProducts.length > 0) {
+      fd.append('additionalProducts', form.value.additionalProducts.join(', '));
+    }
 
     const problems = [...form.value.selectedProblems];
     if (form.value.customProblem.trim()) problems.push(form.value.customProblem.trim());
@@ -535,6 +613,7 @@ async function submitAndPay() {
     applicationDisplayNumber.value = res.data.displayNumber || applicationId;
 
     // Create payment (with promo code if applied)
+    trackEvent('payment_start');
     const promoCode = promoResult.value ? promoInput.value.trim() : null;
     const payRes = await payWebApplication(applicationId, promoCode);
 
