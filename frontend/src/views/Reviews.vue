@@ -5,7 +5,6 @@
         <h1>Отзывы</h1>
         <p class="subtitle">Модерация отзывов клиентов</p>
       </div>
-      <button class="btn btn-add" @click="showCreateModal = true">+ Добавить отзыв</button>
     </header>
 
     <div class="stats-row">
@@ -45,6 +44,8 @@
         </div>
       </div>
     </div>
+
+    <button class="btn btn-add" @click="showCreateModal = true">+ Добавить отзыв</button>
 
     <!-- Filter -->
     <div class="filter-row">
@@ -330,6 +331,7 @@ onMounted(loadReviews);
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
+  margin-bottom: 16px;
 }
 
 .btn-add:hover {
