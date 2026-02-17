@@ -136,6 +136,43 @@
       </div>
     </section>
 
+    <!-- How We Work -->
+    <section id="about" class="ai-trust">
+      <div class="section-header">
+        <span class="tagline">НАШЕ ОТЛИЧИЕ</span>
+        <h2>Как это работает и что ты получишь</h2>
+      </div>
+      <div class="ai-two-columns">
+        <div class="ai-column">
+          <h3 class="ai-column-title">Как это работает</h3>
+          <div class="ai-steps">
+            <div class="ai-step">
+              <span class="ai-step-num">1</span>
+              <p>Загружаешь фото, отвечаешь на вопросы</p>
+            </div>
+            <div class="ai-step">
+              <span class="ai-step-num">2</span>
+              <p>Дерматолог анализирует состояние кожи</p>
+            </div>
+            <div class="ai-step">
+              <span class="ai-step-num">3</span>
+              <p>Получаешь персональный план ухода</p>
+            </div>
+          </div>
+        </div>
+        <div class="ai-column">
+          <h3 class="ai-column-title">Что ты получишь</h3>
+          <ul class="ai-benefits">
+            <li>Понимание типа и состояния кожи</li>
+            <li>Рекомендации по ежедневному уходу</li>
+            <li>Советы, какие средства подойдут именно тебе</li>
+            <li>Ошибки, которые могут ухудшать состояние кожи</li>
+            <li>Рекомендации реальных косметологов-дерматологов с возможностью записи на детальные онлайн или офлайн консультации</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
     <!-- Experts -->
     <section id="experts" class="experts">
       <div class="section-header">
@@ -183,43 +220,6 @@
           <h3>Александр Щелкушкин</h3>
           <span class="expert-role">Архитектор и тех.лид</span>
           <p>Эксперт по дата анализу</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- How We Work -->
-    <section id="about" class="ai-trust">
-      <div class="section-header">
-        <span class="tagline">НАШЕ ОТЛИЧИЕ</span>
-        <h2>Как это работает и что ты получишь</h2>
-      </div>
-      <div class="ai-two-columns">
-        <div class="ai-column">
-          <h3 class="ai-column-title">Как это работает</h3>
-          <div class="ai-steps">
-            <div class="ai-step">
-              <span class="ai-step-num">1</span>
-              <p>Загружаешь фото, отвечаешь на вопросы</p>
-            </div>
-            <div class="ai-step">
-              <span class="ai-step-num">2</span>
-              <p>Дерматолог анализирует состояние кожи</p>
-            </div>
-            <div class="ai-step">
-              <span class="ai-step-num">3</span>
-              <p>Получаешь персональный план ухода</p>
-            </div>
-          </div>
-        </div>
-        <div class="ai-column">
-          <h3 class="ai-column-title">Что ты получишь</h3>
-          <ul class="ai-benefits">
-            <li>Понимание типа и состояния кожи</li>
-            <li>Рекомендации по ежедневному уходу</li>
-            <li>Советы, какие средства подойдут именно тебе</li>
-            <li>Ошибки, которые могут ухудшать состояние кожи</li>
-            <li>Рекомендации реальных косметологов-дерматологов с возможностью записи на детальные онлайн или офлайн консультации</li>
-          </ul>
         </div>
       </div>
     </section>
