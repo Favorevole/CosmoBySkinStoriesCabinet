@@ -66,6 +66,20 @@
       </div>
     </section>
 
+    <!-- Gift Certificate Banner -->
+    <section class="gift-banner">
+      <div class="gift-banner-content">
+        <div class="gift-banner-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+        </div>
+        <div class="gift-banner-text">
+          <h3>Подарите заботу о коже</h3>
+          <p>Сертификат на персональную консультацию дерматолога — идеальный подарок для близких</p>
+        </div>
+        <button class="btn btn-gift" @click="openGiftModal">Подарить сертификат</button>
+      </div>
+    </section>
+
     <!-- How It Works -->
     <section id="how-it-works" class="how-it-works">
       <div class="section-header">
@@ -908,6 +922,79 @@ onMounted(async () => {
   flex: 1;
 }
 
+/* Gift Banner */
+.gift-banner {
+  padding: 48px 80px;
+  background: var(--color-white);
+}
+
+.gift-banner-content {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  background: linear-gradient(135deg, var(--color-blush) 0%, var(--color-soft-ivory) 100%);
+  border-radius: 24px;
+  padding: 36px 40px;
+}
+
+.gift-banner-icon {
+  width: 56px;
+  height: 56px;
+  background: var(--color-white);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-burgundy);
+}
+
+.gift-banner-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.gift-banner-text {
+  flex: 1;
+}
+
+.gift-banner-text h3 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--color-rich-ebony);
+  margin-bottom: 4px;
+}
+
+.gift-banner-text p {
+  font-size: 15px;
+  color: var(--color-cocoa);
+  line-height: 1.5;
+}
+
+.btn-gift {
+  padding: 16px 32px;
+  background: var(--color-burgundy);
+  color: var(--color-white);
+  border-radius: 24px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.3s;
+  box-shadow: 0 4px 16px rgba(139, 58, 74, 0.25);
+}
+
+.btn-gift:hover {
+  background: var(--color-burgundy-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 58, 74, 0.35);
+}
+
 /* How It Works */
 .how-it-works {
   padding: 100px 80px;
@@ -1404,6 +1491,13 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
+  .gift-banner-content {
+    flex-direction: column;
+    text-align: center;
+    padding: 28px 24px;
+    gap: 16px;
+  }
+
   .nav {
     display: none;
   }
@@ -1765,6 +1859,29 @@ onMounted(async () => {
   .ai-trust,
   .telegram-flow {
     padding: 60px 20px;
+  }
+
+  .gift-banner {
+    padding: 32px 20px;
+  }
+
+  .gift-banner-content {
+    padding: 24px 20px;
+    gap: 14px;
+  }
+
+  .gift-banner-text h3 {
+    font-size: 19px;
+  }
+
+  .gift-banner-text p {
+    font-size: 14px;
+  }
+
+  .btn-gift {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
   }
 
   .reviews-grid {
