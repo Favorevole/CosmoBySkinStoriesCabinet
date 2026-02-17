@@ -147,11 +147,17 @@ router.get('/:id/photos', async (req, res) => {
  */
 router.get('/:id/photos/:photoId', async (req, res) => {
   try {
+    const applicationId = parseInt(req.params.id);
     const photoId = parseInt(req.params.photoId);
     const photo = await getPhotoById(photoId);
 
     if (!photo) {
       return res.status(404).json({ error: 'Photo not found' });
+    }
+
+    // Verify photo belongs to the requested application
+    if (photo.applicationId !== applicationId) {
+      return res.status(403).json({ error: 'Photo does not belong to this application' });
     }
 
     const data = await getPhotoData(photo);

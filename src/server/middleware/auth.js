@@ -15,7 +15,7 @@ export function generateToken(admin) {
   );
 }
 
-export function authenticateToken(req, res, next) {
+export async function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1] // Bearer TOKEN
     || req.query.token; // Support token in query param for img tags
@@ -26,6 +26,18 @@ export function authenticateToken(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, config.jwt.secret);
+
+    // Verify admin still exists in database or config
+    if (decoded.telegramId) {
+      const admin = await getAdminByTelegramId(decoded.telegramId);
+      const isConfigAdmin = config.adminTelegramIds.some(
+        id => id.toString() === decoded.telegramId.toString()
+      );
+      if (!admin && !isConfigAdmin) {
+        return res.status(401).json({ error: 'Account no longer exists' });
+      }
+    }
+
     req.user = decoded;
     next();
   } catch (error) {

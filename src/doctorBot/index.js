@@ -182,7 +182,7 @@ export async function startDoctorBot() {
     // Production: используем webhook - НЕ вызываем bot.launch()!
     const webhookUrl = `${config.server.webhookUrl}/doctor-webhook`;
     try {
-      await bot.telegram.setWebhook(webhookUrl);
+      await bot.telegram.setWebhook(webhookUrl, { secret_token: config.webhookSecrets.doctor });
       console.log(`[DOCTOR_BOT] ✅ Webhook set to ${webhookUrl}`);
 
       // Проверяем статус webhook
