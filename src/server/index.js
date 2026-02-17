@@ -14,6 +14,7 @@ import settingsRoutes from './routes/settings.js';
 import reviewsRoutes from './routes/reviews.js';
 import promoCodesRoutes from './routes/promoCodes.js';
 import paymentsRoutes from './routes/payments.js';
+import analyticsRoutes from './routes/analytics.js';
 
 const app = express();
 
@@ -78,6 +79,12 @@ const webFormLimiter = rateLimit({
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
+  message: { error: 'Too many requests' }
+});
+
+const analyticsLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 60,
   message: { error: 'Too many requests' }
 });
 
@@ -188,6 +195,7 @@ app.use('/api/settings', apiLimiter, settingsRoutes);
 app.use('/api/reviews', apiLimiter, reviewsRoutes);
 app.use('/api/promo-codes', apiLimiter, promoCodesRoutes);
 app.use('/api/payments', apiLimiter, paymentsRoutes);
+app.use('/api/analytics', analyticsLimiter, analyticsRoutes);
 
 // Client bot webhook
 app.post('/client-webhook',

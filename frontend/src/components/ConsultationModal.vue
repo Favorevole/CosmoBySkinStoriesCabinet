@@ -322,7 +322,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import { submitWebApplication, payWebApplication, getWebSkinProblems, validatePromoCodeApi } from '../api/index.js';
+import { submitWebApplication, payWebApplication, getWebSkinProblems, validatePromoCodeApi, trackEvent } from '../api/index.js';
 
 const props = defineProps({
   visible: Boolean
@@ -495,7 +495,10 @@ function validateStep1() {
     errors.value.email = 'Некорректный email';
   }
   if (!form.value.consent) errors.value.consent = 'Необходимо согласие';
-  if (Object.keys(errors.value).length === 0) step.value = 2;
+  if (Object.keys(errors.value).length === 0) {
+    trackEvent('form_step', { step: 2 });
+    step.value = 2;
+  }
 }
 
 function validateStep2() {
@@ -504,12 +507,16 @@ function validateStep2() {
     errors.value.age = 'Введите возраст (12-120)';
   }
   if (!form.value.skinType) errors.value.skinType = 'Выберите тип кожи';
-  if (Object.keys(errors.value).length === 0) step.value = 3;
+  if (Object.keys(errors.value).length === 0) {
+    trackEvent('form_step', { step: 3 });
+    step.value = 3;
+  }
 }
 
 function validateStep3() {
   errors.value = {};
   // Problems are optional — user can skip
+  trackEvent('form_step', { step: 4 });
   step.value = 4;
 }
 
@@ -518,7 +525,10 @@ function validateStep4() {
   if (form.value.photos.length === 0) {
     errors.value.photos = 'Загрузите хотя бы одно фото';
   }
-  if (Object.keys(errors.value).length === 0) step.value = 5;
+  if (Object.keys(errors.value).length === 0) {
+    trackEvent('form_step', { step: 5 });
+    step.value = 5;
+  }
 }
 
 function toggleAdditionalProduct(product) {
@@ -569,6 +579,7 @@ function removePhoto(idx) {
 async function submitAndPay() {
   submitting.value = true;
   submitError.value = '';
+  trackEvent('form_submit');
 
   try {
     // Build FormData
@@ -602,6 +613,7 @@ async function submitAndPay() {
     applicationDisplayNumber.value = res.data.displayNumber || applicationId;
 
     // Create payment (with promo code if applied)
+    trackEvent('payment_start');
     const promoCode = promoResult.value ? promoInput.value.trim() : null;
     const payRes = await payWebApplication(applicationId, promoCode);
 

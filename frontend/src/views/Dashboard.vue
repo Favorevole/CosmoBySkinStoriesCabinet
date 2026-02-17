@@ -35,6 +35,12 @@
           </svg>
           Промокоды
         </router-link>
+        <router-link to="/admin/analytics" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 20V10M12 20V4M6 20v-6"/>
+          </svg>
+          Аналитика
+        </router-link>
         <router-link v-if="canSeeRevenue" to="/admin/payments" class="nav-item">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="12" y1="1" x2="12" y2="23"/>

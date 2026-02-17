@@ -13,6 +13,7 @@ import Settings from './views/Settings.vue';
 import Reviews from './views/Reviews.vue';
 import PromoCodes from './views/PromoCodes.vue';
 import Payments from './views/Payments.vue';
+import Analytics from './views/Analytics.vue';
 import Privacy from './views/Privacy.vue';
 
 const routes = [
@@ -30,6 +31,7 @@ const routes = [
       { path: 'doctors', component: Doctors },
       { path: 'reviews', component: Reviews },
       { path: 'promo-codes', component: PromoCodes },
+      { path: 'analytics', component: Analytics },
       { path: 'payments', component: Payments },
       { path: 'settings', component: Settings }
     ]

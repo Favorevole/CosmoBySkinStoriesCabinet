@@ -10,9 +10,9 @@
           <a href="#how-it-works">Как это работает</a>
           <a href="#experts">Эксперты</a>
           <a href="#about">О проекте</a>
-          <button class="nav-cta" @click="showModal = true">Начать</button>
+          <button class="nav-cta" @click="openConsultation">Начать</button>
         </nav>
-        <button class="mobile-cta" @click="showModal = true">Начать</button>
+        <button class="mobile-cta" @click="openConsultation">Начать</button>
       </div>
     </header>
 
@@ -25,16 +25,16 @@
           <p class="hero-subtitle">Получите экспертные рекомендации по уходу за кожей от наших дерматологов — пока наш AI&nbsp;учится.</p>
           <p class="hero-cta-label">Начать консультацию</p>
           <div class="hero-cta-buttons">
-            <button class="btn btn-primary" @click="showModal = true">
+            <button class="btn btn-primary" @click="openConsultation">
               <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M14 9l3 3-3 3"/></svg>
               На сайте
             </button>
-            <a :href="telegramBotLink" target="_blank" class="btn btn-primary">
+            <a :href="telegramBotLink" target="_blank" class="btn btn-primary" @click="trackTelegramClick">
               <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="m22 2-11 11"/></svg>
               В Телеграм
             </a>
           </div>
-          <a href="#" class="gift-link" @click.prevent="showGiftModal = true">Купить сертификат на консультацию</a>
+          <a href="#" class="gift-link" @click.prevent="openGiftModal">Купить сертификат на консультацию</a>
         </div>
         <div class="hero-visual">
           <img src="/hero.png" alt="Skin care" />
@@ -262,11 +262,11 @@
       <h2>Готовы получить рекомендации от дерматолога?</h2>
       <p class="cta-subtitle">Заполните анкету — ответ в течение 24 часов</p>
       <div class="cta-buttons">
-        <button class="btn btn-white" @click="showModal = true">
+        <button class="btn btn-white" @click="openConsultation">
           <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M14 9l3 3-3 3"/></svg>
           Заполнить на сайте
         </button>
-        <a :href="telegramBotLink" target="_blank" class="btn btn-white">
+        <a :href="telegramBotLink" target="_blank" class="btn btn-white" @click="trackTelegramClick">
           <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="m22 2-11 11"/></svg>
           Открыть Telegram
         </a>
@@ -373,12 +373,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { getPublicReviews, buyGiftCertificate, checkGiftStatus } from '../api/index.js';
+import { ref, computed, onMounted } from 'vue';
+import { getPublicReviews, buyGiftCertificate, checkGiftStatus, trackEvent, getOrCreateVisitorId } from '../api/index.js';
 import ConsultationModal from '../components/ConsultationModal.vue';
 
 const botUsername = import.meta.env.VITE_CLIENT_BOT_USERNAME;
-const telegramBotLink = `https://t.me/${botUsername}`;
+const telegramBotLink = computed(() => {
+  const vid = getOrCreateVisitorId();
+  return `https://t.me/${botUsername}?start=web_${vid}`;
+});
 
 const reviews = ref([]);
 const showModal = ref(false);
@@ -394,6 +397,20 @@ const showGiftBanner = ref(false);
 const giftPromoCode = ref(null);
 const giftCheckFailed = ref(false);
 const codeCopied = ref(false);
+
+function openConsultation() {
+  trackEvent('click_web_form');
+  showModal.value = true;
+}
+
+function trackTelegramClick() {
+  trackEvent('click_telegram');
+}
+
+function openGiftModal() {
+  trackEvent('click_gift');
+  showGiftModal.value = true;
+}
 
 async function handleGiftPurchase() {
   giftError.value = '';
@@ -445,8 +462,16 @@ function copyGiftCode() {
 }
 
 onMounted(async () => {
-  // Check if returning from YooKassa payment
   const params = new URLSearchParams(window.location.search);
+
+  // Track page view
+  trackEvent('page_view', {
+    utm_source: params.get('utm_source'),
+    utm_medium: params.get('utm_medium'),
+    utm_campaign: params.get('utm_campaign')
+  });
+
+  // Check if returning from YooKassa payment
   if (params.get('payment') === 'success') {
     const giftId = params.get('gift');
     if (giftId && giftId !== '1') {

@@ -2,6 +2,7 @@ import { startKeyboard, mainMenuKeyboard } from '../keyboards/index.js';
 import { getOrCreateClientByTelegramId } from '../../db/clients.js';
 import { getClientApplications } from '../../db/applications.js';
 import { formatSkinType } from '../states/index.js';
+import { createAnalyticsEvent } from '../../db/analytics.js';
 
 const WELCOME_MESSAGE = `Привет! 👋 Добро пожаловать в Skin Stories
 
@@ -25,6 +26,25 @@ export async function handleStart(ctx) {
 
   try {
     await getOrCreateClientByTelegramId(telegramId, username, fullName);
+
+    // Analytics: cross-platform tracking
+    try {
+      const ref = ctx.startPayload || '';
+      let visitorId;
+      if (ref.startsWith('web_')) {
+        visitorId = ref.slice(4);
+      } else {
+        visitorId = `tg_${telegramId}`;
+      }
+      await createAnalyticsEvent({
+        visitorId,
+        event: 'bot_start',
+        referrer: null,
+        metadata: { ref: ref || null, telegramId: String(telegramId) }
+      });
+    } catch (analyticsErr) {
+      console.error('[ANALYTICS] bot_start tracking error:', analyticsErr.message);
+    }
 
     await ctx.reply(WELCOME_MESSAGE, {
       ...startKeyboard(),

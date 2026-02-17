@@ -174,4 +174,42 @@ export const checkGiftStatus = (id) =>
 export const validatePromoCodeApi = (code) =>
   api.post('/web/validate-promo', { code });
 
+// === Analytics ===
+
+export function getOrCreateVisitorId() {
+  let id = localStorage.getItem('visitorId');
+  if (!id) {
+    id = crypto.randomUUID().replace(/-/g, '').slice(0, 10);
+    localStorage.setItem('visitorId', id);
+  }
+  return id;
+}
+
+export function trackEvent(event, metadata) {
+  try {
+    const payload = {
+      visitorId: getOrCreateVisitorId(),
+      event,
+      referrer: document.referrer || null,
+      metadata: metadata || null
+    };
+    const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+    const url = (import.meta.env.VITE_API_URL || '/api') + '/analytics/track';
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(url, blob);
+    } else {
+      fetch(url, { method: 'POST', body: blob, keepalive: true }).catch(() => {});
+    }
+  } catch {
+    // Analytics must never break UX
+  }
+}
+
+// Admin analytics API
+export const getAnalyticsSummary = () =>
+  api.get('/analytics/summary');
+
+export const getAnalyticsEvents = (params) =>
+  api.get('/analytics/events', { params });
+
 export default api;
