@@ -31,7 +31,7 @@ export function consultationGoalKeyboard() {
     [Markup.button.callback(CONSULTATION_GOALS.ADDITIONAL_PRODUCTS.label, 'goal_ADDITIONAL_PRODUCTS')],
     [
       Markup.button.callback('⬅️ Назад', 'back_to_skin_type'),
-      Markup.button.callback('Отмена', 'cancel')
+      Markup.button.callback('⏩ Пропустить', 'skip_goal')
     ]
   ]);
 }
