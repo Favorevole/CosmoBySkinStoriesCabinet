@@ -3,6 +3,7 @@ import { photoUploadKeyboard } from '../keyboards/index.js';
 import { getSession, showConfirmation, clientSessions } from './questionnaire.js';
 import { pendingPhotoRequests } from '../../services/notifications.js';
 import { addPhotoToApplication } from '../../db/photos.js';
+import { trackBotEvent } from '../../utils/botAnalytics.js';
 
 const MAX_PHOTOS = 6;
 const MAX_ADDITIONAL_PHOTOS = 10;
@@ -97,6 +98,7 @@ export async function handlePhotosDone(ctx) {
 
   await ctx.answerCbQuery();
   await ctx.editMessageText(`Получено фотографий: ${session.photos.length}`);
+  trackBotEvent(telegramId, 'bot_form_step', { step: 'photos' });
 
   await showConfirmation(ctx);
 }

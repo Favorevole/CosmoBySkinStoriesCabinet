@@ -20,6 +20,7 @@ import {
 import { getOrCreateClientByTelegramId } from '../../db/clients.js';
 import { createApplication } from '../../db/applications.js';
 import { addPhotoToApplication } from '../../db/photos.js';
+import { trackBotEvent } from '../../utils/botAnalytics.js';
 
 // In-memory session storage
 export const clientSessions = new Map();
@@ -57,6 +58,7 @@ export async function handleStartQuestionnaire(ctx) {
   clientSessions.set(telegramId, session);
 
   if (ctx.callbackQuery) await ctx.answerCbQuery();
+  trackBotEvent(telegramId, 'bot_quest_start');
   await ctx.reply(
     'Через 2 минуты ваша заявка будет у дерматолога.\nОтветьте на 6 коротких вопросов — это поможет врачу подготовить точные рекомендации.\n\n*Вопрос 1 из 6*\n\nСколько вам лет?',
     { parse_mode: 'Markdown' }
@@ -83,6 +85,7 @@ export async function handleAgeInput(ctx) {
   session.applicationData.age = age;
   session.state = CLIENT_STATES.AWAITING_SKIN_TYPE;
   clientSessions.set(telegramId, session);
+  trackBotEvent(telegramId, 'bot_form_step', { step: 'age' });
 
   await ctx.reply(
     '*Вопрос 2 из 6*\n\nВыберите тип вашей кожи:',
@@ -109,6 +112,7 @@ export async function handleSkinTypeSelection(ctx) {
   session.applicationData.skinType = skinType;
   session.state = CLIENT_STATES.AWAITING_CONSULTATION_GOAL;
   clientSessions.set(telegramId, session);
+  trackBotEvent(telegramId, 'bot_form_step', { step: 'skin_type' });
 
   await ctx.answerCbQuery();
   await ctx.editMessageText(
@@ -137,6 +141,7 @@ export async function handleConsultationGoalSelection(ctx) {
   const goal = ctx.callbackQuery.data.replace('goal_', '');
   session.applicationData.consultationGoal = goal;
   clientSessions.set(telegramId, session);
+  trackBotEvent(telegramId, 'bot_form_step', { step: 'goal' });
 
   await ctx.answerCbQuery();
   await ctx.editMessageText(`Цель: ${formatConsultationGoal(goal)}`);
@@ -265,6 +270,7 @@ export async function handlePriceRangeSelection(ctx) {
   session.state = CLIENT_STATES.AWAITING_PROBLEMS;
   session.selectedProblems = [];
   clientSessions.set(telegramId, session);
+  trackBotEvent(telegramId, 'bot_form_step', { step: 'budget' });
 
   await ctx.answerCbQuery();
   await ctx.editMessageText(
@@ -354,6 +360,7 @@ export async function handleProblemsDone(ctx) {
   session.applicationData.mainProblems = session.selectedProblems.join(', ');
   session.state = CLIENT_STATES.AWAITING_COMMENT;
   clientSessions.set(telegramId, session);
+  trackBotEvent(telegramId, 'bot_form_step', { step: 'problems' });
 
   await ctx.answerCbQuery();
   await ctx.editMessageText(`Проблемы: ${session.applicationData.mainProblems}`);
@@ -386,6 +393,7 @@ export async function handleProblemsTextInput(ctx) {
   session.applicationData.mainProblems = text;
   session.state = CLIENT_STATES.AWAITING_COMMENT;
   clientSessions.set(telegramId, session);
+  trackBotEvent(telegramId, 'bot_form_step', { step: 'problems' });
 
   await ctx.reply(
     '*Вопрос 6 из 6*\n\nЕсть ли дополнительная информация, которую вы хотите сообщить?\n\n(текущий уход, аллергии, хронические заболевания и т.д.)',
@@ -411,6 +419,7 @@ export async function handleSkipProblems(ctx) {
   session.applicationData.mainProblems = 'Не указаны';
   session.state = CLIENT_STATES.AWAITING_COMMENT;
   clientSessions.set(telegramId, session);
+  trackBotEvent(telegramId, 'bot_form_step', { step: 'problems' });
 
   await ctx.answerCbQuery();
   await ctx.editMessageText('Проблемы: пропущено');
@@ -437,6 +446,7 @@ export async function handleSkipComment(ctx) {
   session.applicationData.additionalComment = null;
   session.state = CLIENT_STATES.AWAITING_PHOTOS;
   clientSessions.set(telegramId, session);
+  trackBotEvent(telegramId, 'bot_form_step', { step: 'comment' });
 
   await ctx.answerCbQuery();
   await ctx.editMessageText('Комментарий: пропущен');
@@ -467,6 +477,7 @@ export async function handleCommentInput(ctx) {
   session.applicationData.additionalComment = text;
   session.state = CLIENT_STATES.AWAITING_PHOTOS;
   clientSessions.set(telegramId, session);
+  trackBotEvent(telegramId, 'bot_form_step', { step: 'comment' });
 
   await ctx.reply(
     '*Почти готово! Осталось самое важное — фото*\n\n' +
@@ -688,6 +699,7 @@ export async function handleConfirmSubmit(ctx) {
     // Process payment — get YooKassa URL
     const paymentResult = await processPayment(application.id);
 
+    trackBotEvent(telegramId, 'bot_quest_complete');
     clearSession(telegramId);
 
     const appNum = application.displayNumber || application.id;
@@ -740,6 +752,7 @@ export async function handleTextMessage(ctx) {
     session.selectedProblems = [];
     session.selectedAdditionalProducts = [];
     clientSessions.set(telegramId, session);
+    trackBotEvent(telegramId, 'bot_quest_start');
 
     await ctx.reply(
       'Через 2 минуты ваша заявка будет у дерматолога.\nОтветьте на 6 коротких вопросов — это поможет врачу подготовить точные рекомендации.\n\n*Вопрос 1 из 6*\n\nСколько вам лет?',
