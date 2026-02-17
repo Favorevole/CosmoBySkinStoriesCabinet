@@ -145,6 +145,15 @@ export const getSkinProblems = () =>
 export const updateSkinProblems = (problems) =>
   api.put('/settings/skin-problems', { problems });
 
+export const getAdditionalProducts = () =>
+  api.get('/settings/additional-products');
+
+export const updateAdditionalProducts = (products) =>
+  api.put('/settings/additional-products', { products });
+
+export const getWebAdditionalProducts = () =>
+  api.get('/web/additional-products');
+
 // Payment reminders
 export const sendPaymentReminder = (id) =>
   api.post(`/applications/${id}/remind-payment`);

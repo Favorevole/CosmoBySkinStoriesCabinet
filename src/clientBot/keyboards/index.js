@@ -36,8 +36,8 @@ export function consultationGoalKeyboard() {
   ]);
 }
 
-export function additionalProductsKeyboard(selected = []) {
-  const buttons = ADDITIONAL_PRODUCTS_LIST.map(product => {
+export function additionalProductsKeyboard(selected = [], productsList = ADDITIONAL_PRODUCTS_LIST) {
+  const buttons = productsList.map(product => {
     const isSelected = selected.includes(product);
     const label = isSelected ? `✓ ${product}` : product;
     return [Markup.button.callback(label, `addprod_${product}`)];

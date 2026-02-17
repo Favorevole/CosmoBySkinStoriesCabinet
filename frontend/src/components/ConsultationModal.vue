@@ -322,7 +322,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import { submitWebApplication, payWebApplication, getWebSkinProblems, validatePromoCodeApi, trackEvent } from '../api/index.js';
+import { submitWebApplication, payWebApplication, getWebSkinProblems, getWebAdditionalProducts, validatePromoCodeApi, trackEvent } from '../api/index.js';
 
 const props = defineProps({
   visible: Boolean
@@ -360,10 +360,10 @@ const consultationGoals = [
   { value: 'ADDITIONAL_PRODUCTS', label: 'Нужны дополнительные средства' }
 ];
 
-const additionalProductsList = [
+const additionalProductsList = ref([
   'Крем под глаза', 'Сыворотка', 'SPF', 'Крем для шеи',
   'Тоник', 'Маска', 'Пилинг', 'Масло для лица', 'Мицеллярная вода'
-];
+]);
 
 const form = ref({
   fullName: '',
@@ -437,6 +437,7 @@ watch(() => props.visible, (val) => {
   if (val) {
     document.body.style.overflow = 'hidden';
     loadSkinProblems();
+    loadAdditionalProducts();
   } else {
     document.body.style.overflow = '';
   }
@@ -451,6 +452,15 @@ async function loadSkinProblems() {
       'Акне / прыщи', 'Сухость и шелушение', 'Жирный блеск', 'Пигментация',
       'Морщины', 'Покраснения', 'Расширенные поры', 'Чувствительность'
     ];
+  }
+}
+
+async function loadAdditionalProducts() {
+  try {
+    const res = await getWebAdditionalProducts();
+    additionalProductsList.value = res.data.products || [];
+  } catch {
+    // keep fallback defaults
   }
 }
 

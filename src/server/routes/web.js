@@ -4,7 +4,7 @@ import { createClient } from '../../db/clients.js';
 import { createApplication } from '../../db/applications.js';
 import { addPhotoToApplication } from '../../db/photos.js';
 import { notifyAdminsNewApplication } from '../../services/notifications.js';
-import { getSkinProblems } from '../../db/settings.js';
+import { getSkinProblems, getAdditionalProducts } from '../../db/settings.js';
 import { createPayment, processPayment, createGiftPayment, checkGiftCertificateStatus } from '../../services/payment.js';
 
 const router = express.Router();
@@ -39,6 +39,20 @@ router.get('/skin-problems', async (req, res) => {
     res.json({ problems });
   } catch (error) {
     console.error('[WEB] Error getting skin problems:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * GET /api/web/additional-products
+ * Public endpoint — returns list of additional products
+ */
+router.get('/additional-products', async (req, res) => {
+  try {
+    const products = await getAdditionalProducts();
+    res.json({ products });
+  } catch (error) {
+    console.error('[WEB] Error getting additional products:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

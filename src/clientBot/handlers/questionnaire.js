@@ -4,7 +4,8 @@ import {
   createSessionData,
   formatSkinType,
   formatPriceRange,
-  formatConsultationGoal
+  formatConsultationGoal,
+  getAdditionalProductsList
 } from '../states/index.js';
 import {
   skinTypeKeyboard,
@@ -148,12 +149,14 @@ export async function handleConsultationGoalSelection(ctx) {
 
   if (goal === 'ADDITIONAL_PRODUCTS') {
     session.selectedAdditionalProducts = [];
+    const productsList = await getAdditionalProductsList();
+    session.additionalProductsList = productsList;
     session.state = CLIENT_STATES.AWAITING_ADDITIONAL_PRODUCTS;
     clientSessions.set(telegramId, session);
 
     await ctx.reply(
       'Какие средства вам нужны? Выберите из списка:',
-      additionalProductsKeyboard([])
+      additionalProductsKeyboard([], productsList)
     );
   } else {
     session.applicationData.additionalProducts = null;
@@ -197,12 +200,14 @@ export async function handleAdditionalProductSelection(ctx) {
 
   await ctx.answerCbQuery(idx === -1 ? `✓ ${product}` : `✗ ${product}`);
 
+  const productsList = session.additionalProductsList || await getAdditionalProductsList();
+
   await ctx.editMessageText(
     'Какие средства вам нужны? Выберите из списка:' +
     (session.selectedAdditionalProducts.length > 0
       ? `\n\n✓ ${session.selectedAdditionalProducts.join('\n✓ ')}`
       : ''),
-    additionalProductsKeyboard(session.selectedAdditionalProducts)
+    additionalProductsKeyboard(session.selectedAdditionalProducts, productsList)
   );
 }
 

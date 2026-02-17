@@ -44,6 +44,21 @@ export const ADDITIONAL_PRODUCTS_LIST = [
   'Мицеллярная вода'
 ];
 
+// Function to reload additional products from database
+export async function getAdditionalProductsList() {
+  try {
+    const { getAdditionalProducts } = await import('../../db/settings.js');
+    const products = await getAdditionalProducts();
+    if (Array.isArray(products) && products.length > 0) {
+      return products;
+    }
+    return ADDITIONAL_PRODUCTS_LIST;
+  } catch (error) {
+    console.error('[CLIENT_BOT] Error loading additional products:', error.message);
+    return ADDITIONAL_PRODUCTS_LIST;
+  }
+}
+
 // Default skin problems (fallback)
 export const DEFAULT_SKIN_PROBLEMS = [
   'Акне / прыщи',

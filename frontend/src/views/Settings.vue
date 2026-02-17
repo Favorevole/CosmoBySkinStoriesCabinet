@@ -1,7 +1,8 @@
 <template>
   <div class="settings">
     <header class="page-header">
-      <h1>Настройки</h1>
+      <h1>Справочники</h1>
+      <p class="page-subtitle">Управление справочниками системы</p>
     </header>
 
     <div class="settings-content">
@@ -10,7 +11,7 @@
         <h2>Проблемы кожи</h2>
         <p class="section-description">Список проблем кожи, которые пользователи могут выбрать при заполнении анкеты</p>
 
-        <div class="problems-list" v-if="!loading">
+        <div class="problems-list" v-if="!loadingProblems">
           <div
             v-for="(problem, index) in skinProblems"
             :key="index"
@@ -19,7 +20,7 @@
             <input
               type="text"
               v-model="skinProblems[index]"
-              @input="markDirty"
+              @input="problemsDirty = true"
               class="problem-input"
               placeholder="Название проблемы"
             />
@@ -46,12 +47,12 @@
           <button
             @click="saveProblems"
             class="save-btn"
-            :disabled="!isDirty || saving"
+            :disabled="!problemsDirty || savingProblems"
           >
-            {{ saving ? 'Сохранение...' : 'Сохранить изменения' }}
+            {{ savingProblems ? 'Сохранение...' : 'Сохранить изменения' }}
           </button>
           <button
-            v-if="isDirty"
+            v-if="problemsDirty"
             @click="resetProblems"
             class="reset-btn"
           >
@@ -59,8 +60,67 @@
           </button>
         </div>
 
-        <div v-if="message" :class="['message', messageType]">
-          {{ message }}
+        <div v-if="problemsMessage" :class="['message', problemsMessageType]">
+          {{ problemsMessage }}
+        </div>
+      </section>
+
+      <!-- Additional Products Section -->
+      <section class="settings-section">
+        <h2>Дополнительные средства</h2>
+        <p class="section-description">Список дополнительных средств, доступных для выбора в боте и на сайте</p>
+
+        <div class="problems-list" v-if="!loadingProducts">
+          <div
+            v-for="(product, index) in additionalProducts"
+            :key="index"
+            class="problem-item"
+          >
+            <input
+              type="text"
+              v-model="additionalProducts[index]"
+              @input="productsDirty = true"
+              class="problem-input"
+              placeholder="Название средства"
+            />
+            <button @click="removeProduct(index)" class="remove-btn" title="Удалить">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          <button @click="addProduct" class="add-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            Добавить средство
+          </button>
+        </div>
+
+        <div v-else class="loading">
+          Загрузка...
+        </div>
+
+        <div class="actions">
+          <button
+            @click="saveProducts"
+            class="save-btn"
+            :disabled="!productsDirty || savingProducts"
+          >
+            {{ savingProducts ? 'Сохранение...' : 'Сохранить изменения' }}
+          </button>
+          <button
+            v-if="productsDirty"
+            @click="resetProducts"
+            class="reset-btn"
+          >
+            Отменить
+          </button>
+        </div>
+
+        <div v-if="productsMessage" :class="['message', productsMessageType]">
+          {{ productsMessage }}
         </div>
       </section>
     </div>
@@ -69,86 +129,151 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { getSkinProblems, updateSkinProblems } from '../api/index.js';
+import { getSkinProblems, updateSkinProblems, getAdditionalProducts, updateAdditionalProducts } from '../api/index.js';
 
+// Skin problems state
 const skinProblems = ref([]);
 const originalProblems = ref([]);
-const loading = ref(true);
-const saving = ref(false);
-const isDirty = ref(false);
-const message = ref('');
-const messageType = ref('success');
+const loadingProblems = ref(true);
+const savingProblems = ref(false);
+const problemsDirty = ref(false);
+const problemsMessage = ref('');
+const problemsMessageType = ref('success');
+
+// Additional products state
+const additionalProducts = ref([]);
+const originalProducts = ref([]);
+const loadingProducts = ref(true);
+const savingProducts = ref(false);
+const productsDirty = ref(false);
+const productsMessage = ref('');
+const productsMessageType = ref('success');
 
 onMounted(async () => {
-  await loadProblems();
+  await Promise.all([loadProblems(), loadProducts()]);
 });
 
+// --- Skin Problems ---
 async function loadProblems() {
-  loading.value = true;
+  loadingProblems.value = true;
   try {
     const response = await getSkinProblems();
     skinProblems.value = [...response.data];
     originalProblems.value = [...response.data];
-    isDirty.value = false;
+    problemsDirty.value = false;
   } catch (error) {
     console.error('Failed to load skin problems:', error);
-    showMessage('Ошибка загрузки данных', 'error');
+    showProblemsMessage('Ошибка загрузки данных', 'error');
   } finally {
-    loading.value = false;
+    loadingProblems.value = false;
   }
-}
-
-function markDirty() {
-  isDirty.value = true;
 }
 
 function addProblem() {
   skinProblems.value.push('');
-  isDirty.value = true;
+  problemsDirty.value = true;
 }
 
 function removeProblem(index) {
   skinProblems.value.splice(index, 1);
-  isDirty.value = true;
+  problemsDirty.value = true;
 }
 
 function resetProblems() {
   skinProblems.value = [...originalProblems.value];
-  isDirty.value = false;
-  message.value = '';
+  problemsDirty.value = false;
+  problemsMessage.value = '';
 }
 
 async function saveProblems() {
-  // Filter out empty strings
-  const filteredProblems = skinProblems.value.filter(p => p.trim() !== '');
-
-  if (filteredProblems.length === 0) {
-    showMessage('Добавьте хотя бы одну проблему', 'error');
+  const filtered = skinProblems.value.filter(p => p.trim() !== '');
+  if (filtered.length === 0) {
+    showProblemsMessage('Добавьте хотя бы одну проблему', 'error');
     return;
   }
 
-  saving.value = true;
+  savingProblems.value = true;
   try {
-    await updateSkinProblems(filteredProblems);
-    skinProblems.value = [...filteredProblems];
-    originalProblems.value = [...filteredProblems];
-    isDirty.value = false;
-    showMessage('Изменения сохранены', 'success');
+    await updateSkinProblems(filtered);
+    skinProblems.value = [...filtered];
+    originalProblems.value = [...filtered];
+    problemsDirty.value = false;
+    showProblemsMessage('Изменения сохранены', 'success');
   } catch (error) {
     console.error('Failed to save skin problems:', error);
-    showMessage('Ошибка сохранения', 'error');
+    showProblemsMessage('Ошибка сохранения', 'error');
   } finally {
-    saving.value = false;
+    savingProblems.value = false;
   }
 }
 
-function showMessage(text, type) {
-  message.value = text;
-  messageType.value = type;
+function showProblemsMessage(text, type) {
+  problemsMessage.value = text;
+  problemsMessageType.value = type;
   if (type === 'success') {
-    setTimeout(() => {
-      message.value = '';
-    }, 3000);
+    setTimeout(() => { problemsMessage.value = ''; }, 3000);
+  }
+}
+
+// --- Additional Products ---
+async function loadProducts() {
+  loadingProducts.value = true;
+  try {
+    const response = await getAdditionalProducts();
+    additionalProducts.value = [...response.data];
+    originalProducts.value = [...response.data];
+    productsDirty.value = false;
+  } catch (error) {
+    console.error('Failed to load additional products:', error);
+    showProductsMessage('Ошибка загрузки данных', 'error');
+  } finally {
+    loadingProducts.value = false;
+  }
+}
+
+function addProduct() {
+  additionalProducts.value.push('');
+  productsDirty.value = true;
+}
+
+function removeProduct(index) {
+  additionalProducts.value.splice(index, 1);
+  productsDirty.value = true;
+}
+
+function resetProducts() {
+  additionalProducts.value = [...originalProducts.value];
+  productsDirty.value = false;
+  productsMessage.value = '';
+}
+
+async function saveProducts() {
+  const filtered = additionalProducts.value.filter(p => p.trim() !== '');
+  if (filtered.length === 0) {
+    showProductsMessage('Добавьте хотя бы одно средство', 'error');
+    return;
+  }
+
+  savingProducts.value = true;
+  try {
+    await updateAdditionalProducts(filtered);
+    additionalProducts.value = [...filtered];
+    originalProducts.value = [...filtered];
+    productsDirty.value = false;
+    showProductsMessage('Изменения сохранены', 'success');
+  } catch (error) {
+    console.error('Failed to save additional products:', error);
+    showProductsMessage('Ошибка сохранения', 'error');
+  } finally {
+    savingProducts.value = false;
+  }
+}
+
+function showProductsMessage(text, type) {
+  productsMessage.value = text;
+  productsMessageType.value = type;
+  if (type === 'success') {
+    setTimeout(() => { productsMessage.value = ''; }, 3000);
   }
 }
 </script>
@@ -169,6 +294,18 @@ function showMessage(text, type) {
   font-weight: 600;
   color: #FFFFFF;
   margin: 0;
+}
+
+.page-subtitle {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  margin: 4px 0 0 0;
+}
+
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .settings-section {
@@ -495,18 +632,12 @@ function showMessage(text, type) {
     background: rgba(201, 169, 98, 0.1);
   }
 
-  /* Fixed action bar */
+  /* Actions inside sections on mobile */
   .actions {
-    position: fixed;
-    bottom: calc(56px + env(safe-area-inset-bottom, 0px));
-    left: 0;
-    right: 0;
     padding: 12px 16px;
-    background: linear-gradient(180deg, transparent 0%, #1A1A1C 30%);
-    border-top: none;
+    border-top: 1px solid rgba(201, 169, 98, 0.08);
     display: flex;
     gap: 10px;
-    z-index: 90;
   }
 
   .save-btn,
@@ -528,25 +659,9 @@ function showMessage(text, type) {
 
   /* Toast-style message */
   .message {
-    position: fixed;
-    bottom: calc(120px + env(safe-area-inset-bottom, 0px));
-    left: 16px;
-    right: 16px;
+    margin: 12px 16px 16px;
     padding: 14px 16px;
     border-radius: 12px;
-    z-index: 100;
-    animation: slideUp 0.3s ease;
-  }
-
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
   }
 }
 </style>
