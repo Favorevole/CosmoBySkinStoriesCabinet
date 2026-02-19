@@ -20,100 +20,39 @@
       </div>
     </header>
 
-    <!-- System Overview -->
-    <div class="system-overview" v-if="systemStats">
-      <div class="overview-card">
-        <div class="overview-icon clients">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
-          </svg>
+    <!-- Stats Bar -->
+    <div class="stats-bar" v-if="systemStats && stats">
+      <div class="stats-group">
+        <div class="stat-chip">
+          <span class="chip-value">{{ systemStats.clients?.total || 0 }}</span>
+          <span class="chip-label">клиентов</span>
         </div>
-        <div class="overview-content">
-          <div class="overview-value">{{ systemStats.clients?.total || 0 }}</div>
-          <div class="overview-label">Клиентов</div>
+        <div class="stat-chip">
+          <span class="chip-value">{{ systemStats.doctors?.active || 0 }}</span>
+          <span class="chip-label">врачей</span>
         </div>
-      </div>
-      <div class="overview-card">
-        <div class="overview-icon doctors">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-            <circle cx="8.5" cy="7" r="4"/>
-            <line x1="20" y1="8" x2="20" y2="14"/>
-            <line x1="23" y1="11" x2="17" y2="11"/>
-          </svg>
+        <div class="stat-chip">
+          <span class="chip-value">{{ stats.total || 0 }}</span>
+          <span class="chip-label">заявок</span>
         </div>
-        <div class="overview-content">
-          <div class="overview-value">{{ systemStats.doctors?.active || 0 }}</div>
-          <div class="overview-label">Активных врачей</div>
+        <div class="stat-chip chip-success">
+          <span class="chip-value">{{ systemStats.applications?.byStatus?.SENT_TO_CLIENT || 0 }}</span>
+          <span class="chip-label">выполнено</span>
         </div>
       </div>
-      <div class="overview-card">
-        <div class="overview-icon applications">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
-            <line x1="16" y1="13" x2="8" y2="13"/>
-            <line x1="16" y1="17" x2="8" y2="17"/>
-          </svg>
+      <div class="stats-divider"></div>
+      <div class="stats-group">
+        <div class="stat-chip chip-accent">
+          <span class="chip-value">{{ stats.byStatus?.NEW || 0 }}</span>
+          <span class="chip-label">новых</span>
         </div>
-        <div class="overview-content">
-          <div class="overview-value">{{ systemStats.applications?.total || 0 }}</div>
-          <div class="overview-label">Всего заявок</div>
+        <div class="stat-chip">
+          <span class="chip-value">{{ stats.byStatus?.RESPONSE_GIVEN || 0 }}</span>
+          <span class="chip-label">на проверке</span>
         </div>
-      </div>
-      <div class="overview-card highlight">
-        <div class="overview-icon completed">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-            <polyline points="22 4 12 14.01 9 11.01"/>
-          </svg>
-        </div>
-        <div class="overview-content">
-          <div class="overview-value">{{ (systemStats.applications?.byStatus?.SENT_TO_CLIENT || 0) }}</div>
-          <div class="overview-label">Выполнено</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Applications Stats -->
-    <div class="section-title">Статус заявок</div>
-    <div class="stats-row" v-if="stats">
-      <div class="stat-card">
-        <div class="stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-          </svg>
-        </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ stats.total }}</div>
-          <div class="stat-label">Всего</div>
-        </div>
-      </div>
-      <div class="stat-card highlight">
-        <div class="stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="8" x2="12" y2="12"/>
-            <line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-        </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ stats.byStatus?.NEW || 0 }}</div>
-          <div class="stat-label">Новых</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-            <circle cx="12" cy="12" r="3"/>
-          </svg>
-        </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ stats.byStatus?.RESPONSE_GIVEN || 0 }}</div>
-          <div class="stat-label">На проверке</div>
+        <div class="stat-chip chip-overdue" @click="filterOverdue">
+          <span class="chip-value">{{ stats.overdueCount || 0 }}</span>
+          <span class="chip-label">просрочено</span>
         </div>
       </div>
     </div>
@@ -325,100 +264,63 @@ function formatDate(date) {
   font-size: 15px;
 }
 
-/* System Overview */
-.system-overview {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 32px;
-}
-
-.overview-card {
-  background: linear-gradient(135deg, rgba(201, 169, 98, 0.08) 0%, rgba(201, 169, 98, 0.03) 100%);
-  border: 1px solid rgba(201, 169, 98, 0.15);
-  border-radius: 16px;
-  padding: 20px;
+/* Stats Bar */
+.stats-bar {
   display: flex;
   align-items: center;
-  gap: 16px;
-  transition: all 0.3s ease;
-}
-
-.overview-card:hover {
-  border-color: rgba(201, 169, 98, 0.3);
-  transform: translateY(-2px);
-}
-
-.overview-card.highlight {
-  background: linear-gradient(135deg, rgba(74, 222, 128, 0.1) 0%, rgba(74, 222, 128, 0.03) 100%);
-  border-color: rgba(74, 222, 128, 0.2);
-}
-
-.overview-icon {
-  width: 52px;
-  height: 52px;
+  gap: 8px;
+  margin-bottom: 28px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #222224 0%, #1E1E20 100%);
+  border: 1px solid rgba(201, 169, 98, 0.1);
   border-radius: 14px;
+  flex-wrap: wrap;
+}
+
+.stats-group {
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  gap: 4px;
 }
 
-.overview-icon svg {
-  width: 26px;
-  height: 26px;
+.stats-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(201, 169, 98, 0.2);
+  margin: 0 8px;
 }
 
-.overview-icon.clients {
-  background: rgba(139, 92, 246, 0.15);
-}
-.overview-icon.clients svg {
-  color: #A78BFA;
-}
-
-.overview-icon.doctors {
-  background: rgba(59, 130, 246, 0.15);
-}
-.overview-icon.doctors svg {
-  color: #60A5FA;
+.stat-chip {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background 0.2s;
 }
 
-.overview-icon.applications {
-  background: rgba(201, 169, 98, 0.15);
-}
-.overview-icon.applications svg {
-  color: #C9A962;
-}
-
-.overview-icon.completed {
-  background: rgba(74, 222, 128, 0.15);
-}
-.overview-icon.completed svg {
-  color: #4ADE80;
-}
-
-.overview-value {
+.chip-value {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 32px;
+  font-size: 22px;
   font-weight: 700;
   color: #FFFFFF;
   line-height: 1;
 }
 
-.overview-label {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
-  margin-top: 4px;
+.chip-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 400;
 }
 
-.section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.5);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 16px;
+.chip-success .chip-value { color: #4ADE80; }
+.chip-accent .chip-value  { color: #C9A962; }
+
+.chip-overdue {
+  cursor: pointer;
 }
+.chip-overdue .chip-value { color: #F87171; }
+.chip-overdue:hover { background: rgba(248, 113, 113, 0.1); }
 
 .filters select {
   padding: 12px 40px 12px 16px;
@@ -443,75 +345,6 @@ function formatDate(date) {
   color: #FFFFFF;
 }
 
-.stats-row {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 32px;
-}
-
-.stat-card {
-  background: linear-gradient(135deg, #222224 0%, #1E1E20 100%);
-  padding: 24px;
-  border-radius: 16px;
-  border: 1px solid rgba(201, 169, 98, 0.1);
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  flex: 1;
-  transition: all 0.3s ease;
-}
-
-.stat-card:hover {
-  border-color: rgba(201, 169, 98, 0.2);
-  transform: translateY(-2px);
-}
-
-.stat-card.highlight {
-  background: linear-gradient(135deg, #5D1A2D 0%, #7A2339 100%);
-  border-color: rgba(201, 169, 98, 0.2);
-}
-
-.stat-icon {
-  width: 48px;
-  height: 48px;
-  background: rgba(201, 169, 98, 0.1);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.stat-icon svg {
-  width: 24px;
-  height: 24px;
-  color: #C9A962;
-}
-
-.stat-card.highlight .stat-icon {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.stat-card.highlight .stat-icon svg {
-  color: #FFFFFF;
-}
-
-.stat-value {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 36px;
-  font-weight: 700;
-  color: #FFFFFF;
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
-  margin-top: 4px;
-}
-
-.stat-card.highlight .stat-label {
-  color: rgba(255, 255, 255, 0.7);
-}
 
 .applications-list {
   display: flex;
@@ -778,12 +611,6 @@ function formatDate(date) {
   font-size: 14px;
 }
 
-@media (max-width: 1200px) {
-  .system-overview {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 @media (max-width: 900px) {
   .applications-page {
     padding: 24px;
@@ -792,14 +619,6 @@ function formatDate(date) {
   .page-header {
     flex-direction: column;
     gap: 20px;
-  }
-
-  .system-overview {
-    grid-template-columns: 1fr;
-  }
-
-  .stats-row {
-    flex-direction: column;
   }
 
   .application-card {
@@ -862,52 +681,27 @@ function formatDate(date) {
     background-position: right 10px center;
   }
 
-  /* Hide system overview on mobile - too much space */
-  .system-overview {
+  /* Compact stats bar on mobile */
+  .stats-bar {
+    padding: 10px 14px;
+    gap: 6px;
+  }
+
+  .stats-divider {
     display: none;
   }
 
-  .section-title {
-    font-size: 12px;
-    margin-bottom: 12px;
-    letter-spacing: 0.08em;
+  .stats-group {
+    flex-wrap: wrap;
+    gap: 2px;
   }
 
-  /* Compact inline stats */
-  .stats-row {
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
-    margin-bottom: 20px;
+  .stat-chip {
+    padding: 5px 9px;
   }
 
-  .stat-card {
-    flex: 1;
-    min-width: 0;
-    padding: 14px 12px;
-    border-radius: 12px;
-    gap: 8px;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .stat-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-  }
-
-  .stat-icon svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  .stat-value {
-    font-size: 24px;
-  }
-
-  .stat-label {
-    font-size: 11px;
+  .chip-value {
+    font-size: 18px;
   }
 
   /* Redesigned application cards */
