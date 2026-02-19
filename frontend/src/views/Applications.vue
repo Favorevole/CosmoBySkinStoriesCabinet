@@ -25,18 +25,22 @@
     <div class="stats-bar" v-if="systemStats && stats">
       <div class="stats-group">
         <div class="stat-chip">
+          <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
           <span class="chip-value">{{ systemStats.clients?.total || 0 }}</span>
           <span class="chip-label">клиентов</span>
         </div>
         <div class="stat-chip">
+          <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
           <span class="chip-value">{{ systemStats.doctors?.active || 0 }}</span>
           <span class="chip-label">врачей</span>
         </div>
         <div class="stat-chip">
+          <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           <span class="chip-value">{{ stats.total || 0 }}</span>
           <span class="chip-label">заявок</span>
         </div>
         <div class="stat-chip chip-success">
+          <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
           <span class="chip-value">{{ systemStats.applications?.byStatus?.SENT_TO_CLIENT || 0 }}</span>
           <span class="chip-label">выполнено</span>
         </div>
@@ -44,14 +48,17 @@
       <div class="stats-divider"></div>
       <div class="stats-group">
         <div class="stat-chip chip-accent">
+          <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <span class="chip-value">{{ stats.byStatus?.NEW || 0 }}</span>
           <span class="chip-label">новых</span>
         </div>
         <div class="stat-chip">
+          <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           <span class="chip-value">{{ stats.byStatus?.RESPONSE_GIVEN || 0 }}</span>
           <span class="chip-label">на проверке</span>
         </div>
         <div class="stat-chip chip-overdue" @click="filterOverdue">
+          <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           <span class="chip-value">{{ stats.overdueCount || 0 }}</span>
           <span class="chip-label">просрочено</span>
         </div>
@@ -309,6 +316,13 @@ function formatDate(date) {
   padding: 6px 12px;
   border-radius: 8px;
   transition: background 0.2s;
+}
+
+.chip-icon {
+  width: 13px;
+  height: 13px;
+  color: rgba(255, 255, 255, 0.35);
+  flex-shrink: 0;
 }
 
 .chip-value {
