@@ -15,6 +15,8 @@ import reviewsRoutes from './routes/reviews.js';
 import promoCodesRoutes from './routes/promoCodes.js';
 import paymentsRoutes from './routes/payments.js';
 import analyticsRoutes from './routes/analytics.js';
+import doctorAuthRoutes from './routes/doctorAuth.js';
+import doctorCabinetRoutes from './routes/doctorCabinet.js';
 
 const app = express();
 
@@ -228,6 +230,8 @@ app.use('/api/reviews', apiLimiter, reviewsRoutes);
 app.use('/api/promo-codes', apiLimiter, promoCodesRoutes);
 app.use('/api/payments', apiLimiter, paymentsRoutes);
 app.use('/api/analytics', analyticsLimiter, analyticsRoutes);
+app.use('/api/doctor-auth', authLimiter, doctorAuthRoutes);
+app.use('/api/doctor-cabinet', apiLimiter, doctorCabinetRoutes);
 
 // Client bot webhook
 app.post('/client-webhook',

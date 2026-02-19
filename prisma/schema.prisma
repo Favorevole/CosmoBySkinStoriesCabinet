@@ -83,10 +83,14 @@ model Client {
 
 model Doctor {
   id               Int              @id @default(autoincrement())
-  telegramId       BigInt           @unique @map("telegram_id")
+  telegramId       BigInt?          @unique @map("telegram_id")
   telegramUsername String?          @map("telegram_username")
   fullName         String           @map("full_name")
+  email            String?
+  passwordHash     String?          @map("password_hash")
+  emailVerified    Boolean          @default(false) @map("email_verified")
   specialization   String?
+  bio              String?          @db.Text
   status           UserStatus       @default(PENDING)
   isAvailable      Boolean          @default(true) @map("is_available")
   createdAt        DateTime         @default(now()) @map("created_at")
@@ -94,10 +98,14 @@ model Doctor {
 
   applications     Application[]
   recommendations  Recommendation[]
+  careTemplates    CareTemplate[]
+  carePrograms     CareProgram[]
+  products         DoctorProduct[]
 
   @@index([telegramId])
   @@index([status])
   @@index([isAvailable])
+  @@index([email])
   @@map("doctors")
 }
 
@@ -337,4 +345,52 @@ model AnalyticsEvent {
   @@index([event])
   @@index([createdAt])
   @@map("analytics_events")
+}
+
+model CareTemplate {
+  id        Int      @id @default(autoincrement())
+  doctorId  Int      @map("doctor_id")
+  title     String
+  text      String   @db.Text
+  category  String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@index([doctorId])
+  @@map("care_templates")
+}
+
+model CareProgram {
+  id          Int      @id @default(autoincrement())
+  doctorId    Int      @map("doctor_id")
+  title       String
+  description String?  @db.Text
+  steps       Json
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  doctor      Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@index([doctorId])
+  @@map("care_programs")
+}
+
+model DoctorProduct {
+  id        Int      @id @default(autoincrement())
+  doctorId  Int      @map("doctor_id")
+  name      String
+  brand     String?
+  category  String?
+  url       String?
+  notes     String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@index([doctorId])
+  @@index([category])
+  @@map("doctor_products")
 }

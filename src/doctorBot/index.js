@@ -43,6 +43,22 @@ import { DOCTOR_STATES } from './states/index.js';
 
 let bot = null;
 
+async function handleCabinetLink(ctx) {
+  try {
+    const dashboardUrl = config.server.dashboardUrl || config.server.webhookUrl || 'https://bot.skinstories.ru';
+    const cabinetUrl = `${dashboardUrl}/doctor/login`;
+
+    await ctx.reply(
+      `Кабинет врача доступен по ссылке:\n\n${cabinetUrl}\n\n` +
+      'Вы можете войти с помощью Telegram ID или email+пароль.',
+      { disable_web_page_preview: true }
+    );
+  } catch (error) {
+    console.error('[DOCTOR_BOT] Cabinet link error:', error);
+    await ctx.reply('Ошибка. Попробуйте позже.');
+  }
+}
+
 export function createDoctorBot() {
   const httpsAgent = new https.Agent({
     keepAlive: true,
@@ -74,6 +90,7 @@ export function createDoctorBot() {
   // Commands
   bot.command('start', handleStart);
   bot.command('help', handleHelp);
+  bot.command('cabinet', handleCabinetLink);
 
   // Callback queries - application viewing
   bot.action(/^view_app_(\d+)$/, handleViewApplication);

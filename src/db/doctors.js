@@ -6,6 +6,12 @@ export async function getDoctorByTelegramId(telegramId) {
   });
 }
 
+export async function getDoctorById(id) {
+  return prisma.doctor.findUnique({
+    where: { id }
+  });
+}
+
 export async function createDoctor(data) {
   return prisma.doctor.create({
     data: {

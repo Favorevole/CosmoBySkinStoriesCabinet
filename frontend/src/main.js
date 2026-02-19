@@ -16,6 +16,19 @@ import Payments from './views/Payments.vue';
 import Analytics from './views/Analytics.vue';
 import Privacy from './views/Privacy.vue';
 
+// Doctor views
+import DoctorLogin from './views/doctor/DoctorLogin.vue';
+import DoctorRegister from './views/doctor/DoctorRegister.vue';
+import DoctorLayout from './views/doctor/DoctorLayout.vue';
+import DoctorDashboard from './views/doctor/DoctorDashboard.vue';
+import DoctorApplications from './views/doctor/DoctorApplications.vue';
+import DoctorApplicationDetail from './views/doctor/DoctorApplicationDetail.vue';
+import DoctorPatients from './views/doctor/DoctorPatients.vue';
+import DoctorTemplates from './views/doctor/DoctorTemplates.vue';
+import DoctorPrograms from './views/doctor/DoctorPrograms.vue';
+import DoctorProducts from './views/doctor/DoctorProducts.vue';
+import DoctorProfile from './views/doctor/DoctorProfile.vue';
+
 const routes = [
   { path: '/', component: Landing },
   { path: '/privacy', component: Privacy },
@@ -35,6 +48,25 @@ const routes = [
       { path: 'payments', component: Payments },
       { path: 'settings', component: Settings }
     ]
+  },
+  // Doctor cabinet
+  { path: '/doctor/login', component: DoctorLogin },
+  { path: '/doctor/register', component: DoctorRegister },
+  {
+    path: '/doctor',
+    component: DoctorLayout,
+    meta: { requiresDoctorAuth: true },
+    children: [
+      { path: '', redirect: '/doctor/dashboard' },
+      { path: 'dashboard', component: DoctorDashboard },
+      { path: 'applications', component: DoctorApplications },
+      { path: 'applications/:id', component: DoctorApplicationDetail },
+      { path: 'patients', component: DoctorPatients },
+      { path: 'templates', component: DoctorTemplates },
+      { path: 'programs', component: DoctorPrograms },
+      { path: 'products', component: DoctorProducts },
+      { path: 'profile', component: DoctorProfile }
+    ]
   }
 ];
 
@@ -46,9 +78,12 @@ const router = createRouter({
 // Auth guard
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token');
+  const doctorToken = localStorage.getItem('doctorToken');
 
   if (to.meta.requiresAuth && !token) {
     next('/login');
+  } else if (to.meta.requiresDoctorAuth && !doctorToken) {
+    next('/doctor/login');
   } else {
     next();
   }
