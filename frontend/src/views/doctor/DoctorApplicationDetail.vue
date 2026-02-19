@@ -85,6 +85,21 @@
           <button @click="generateAi" :disabled="aiLoading" class="tool-btn tool-ai">
             {{ aiLoading ? 'AI генерирует...' : 'AI-помощник' }}
           </button>
+          <button v-if="aiHistory.length > 0" @click="showRefineInput = !showRefineInput" :disabled="aiLoading" class="tool-btn tool-ai">
+            Уточнить AI
+          </button>
+        </div>
+
+        <div v-if="showRefineInput" class="refine-box">
+          <input
+            v-model="refineInstruction"
+            @keydown.enter="refineAi"
+            placeholder="Что изменить? (напр. 'добавь бюджетные аналоги', 'сделай короче')"
+            class="refine-input"
+          >
+          <button @click="refineAi" :disabled="aiLoading || !refineInstruction.trim()" class="btn btn-sm btn-primary">
+            {{ aiLoading ? 'Уточняю...' : 'Отправить' }}
+          </button>
         </div>
 
         <textarea
@@ -206,7 +221,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import {
   getDoctorApplication, getDoctorPhotoUrl, submitRecommendation,
-  declineApplication, requestPhotos, aiGenerate,
+  declineApplication, requestPhotos, aiGenerate, aiRefine,
   getTemplates, getProductsList, getPrograms
 } from '../../api/doctorCabinet.js';
 
@@ -235,6 +250,11 @@ const showProgramModal = ref(false);
 const templates = ref([]);
 const products = ref([]);
 const programs = ref([]);
+
+// AI refine
+const aiHistory = ref([]);
+const showRefineInput = ref(false);
+const refineInstruction = ref('');
 
 // Photo lightbox
 const lightboxPhoto = ref(null);
@@ -304,8 +324,29 @@ async function generateAi() {
   try {
     const res = await aiGenerate(app.value.id);
     recText.value = res.data.text;
+    aiHistory.value = [{ role: 'assistant', content: res.data.text }];
+    showRefineInput.value = false;
+    refineInstruction.value = '';
   } catch (e) {
     error.value = e.response?.data?.error || 'Ошибка AI-генерации';
+  } finally {
+    aiLoading.value = false;
+  }
+}
+
+async function refineAi() {
+  if (!refineInstruction.value.trim() || aiLoading.value) return;
+  aiLoading.value = true;
+  error.value = null;
+  try {
+    const instruction = refineInstruction.value.trim();
+    const res = await aiRefine(app.value.id, aiHistory.value, instruction);
+    recText.value = res.data.text;
+    aiHistory.value.push({ role: 'user', content: instruction });
+    aiHistory.value.push({ role: 'assistant', content: res.data.text });
+    refineInstruction.value = '';
+  } catch (e) {
+    error.value = e.response?.data?.error || 'Ошибка AI-уточнения';
   } finally {
     aiLoading.value = false;
   }
@@ -486,6 +527,24 @@ h3 { font-size: 16px; color: #1a1a1c; margin-bottom: 12px; }
 .tool-btn:disabled { opacity: 0.5; }
 .tool-ai { border-color: #d4b978; color: #8b7355; background: #faf6ed; }
 .tool-ai:hover { background: #f5edd8; }
+
+.refine-box {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+.refine-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #d4b978;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  background: #faf6ed;
+  color: #1a1a1c;
+}
+.refine-input:focus { outline: none; border-color: #8b7355; }
 
 .rec-textarea {
   width: 100%;

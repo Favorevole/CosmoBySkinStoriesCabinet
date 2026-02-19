@@ -46,7 +46,7 @@ router.post('/', async (req, res) => {
       success: true,
       doctor: {
         ...doctor,
-        telegramId: doctor.telegramId.toString()
+        telegramId: doctor.telegramId?.toString() || null
       },
       message: `Врач @${doctor.telegramUsername} добавлен. Когда он запустит бота, его аккаунт будет автоматически активирован.`
     });
@@ -67,7 +67,7 @@ router.get('/', async (req, res) => {
 
     const result = doctors.map(d => ({
       ...d,
-      telegramId: d.telegramId.toString()
+      telegramId: d.telegramId?.toString() || null
     }));
 
     res.json(result);
@@ -90,7 +90,7 @@ router.get('/available', async (req, res) => {
       id: d.id,
       fullName: d.fullName,
       specialization: d.specialization,
-      telegramId: d.telegramId.toString()
+      telegramId: d.telegramId?.toString() || null
     }));
 
     res.json(result);
@@ -136,7 +136,7 @@ router.get('/:id', async (req, res) => {
 
     res.json({
       ...doctor,
-      telegramId: doctor.telegramId.toString(),
+      telegramId: doctor.telegramId?.toString() || null,
       stats: {
         totalApplications: doctor._count.applications,
         totalRecommendations: doctor._count.recommendations
@@ -187,7 +187,7 @@ router.patch('/:id', async (req, res) => {
       success: true,
       doctor: {
         ...doctor,
-        telegramId: doctor.telegramId.toString()
+        telegramId: doctor.telegramId?.toString() || null
       }
     });
 
@@ -214,7 +214,7 @@ router.post('/:id/approve', async (req, res) => {
       success: true,
       doctor: {
         ...doctor,
-        telegramId: doctor.telegramId.toString()
+        telegramId: doctor.telegramId?.toString() || null
       }
     });
 
@@ -238,7 +238,7 @@ router.post('/:id/block', async (req, res) => {
       success: true,
       doctor: {
         ...doctor,
-        telegramId: doctor.telegramId.toString()
+        telegramId: doctor.telegramId?.toString() || null
       }
     });
 

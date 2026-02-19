@@ -101,6 +101,11 @@ ${application.additionalComment ? `💬 *Комментарий:* ${application.
 
 Ознакомьтесь с заявкой и подготовьте рекомендации.`;
 
+    if (!doctor.telegramId) {
+      console.log(`[NOTIFICATIONS] Doctor ${doctor.id} has no telegramId, skipping notification`);
+      return;
+    }
+
     await doctorBot.telegram.sendMessage(Number(doctor.telegramId), message, {
       parse_mode: 'Markdown',
       ...Markup.inlineKeyboard([
@@ -429,6 +434,11 @@ export async function notifyDoctorNewPhotos(applicationId, doctorId, photoCount)
 Нажмите кнопку для просмотра:
 `;
 
+    if (!doctor.telegramId) {
+      console.log(`[NOTIFICATIONS] Doctor ${doctorId} has no telegramId, skipping photo notification`);
+      return;
+    }
+
     await doctorBot.telegram.sendMessage(Number(doctor.telegramId), message, {
       parse_mode: 'Markdown',
       ...Markup.inlineKeyboard([
@@ -446,6 +456,11 @@ export async function notifyDoctorNewPhotos(applicationId, doctorId, photoCount)
 export async function notifyDoctorStatusApproved(doctor) {
   if (!doctorBot) {
     console.log('[NOTIFICATIONS] Doctor bot not initialized');
+    return;
+  }
+
+  if (!doctor.telegramId) {
+    console.log(`[NOTIFICATIONS] Doctor ${doctor.id} has no telegramId, skipping approval notification`);
     return;
   }
 
