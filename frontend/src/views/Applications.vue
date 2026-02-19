@@ -8,6 +8,7 @@
       <div class="filters">
         <select v-model="filters.status" @change="loadApplications">
           <option value="">Все статусы</option>
+          <option value="overdue">🔴 Просрочены (&gt;24ч)</option>
           <option value="PENDING_PAYMENT">Ожидают оплаты</option>
           <option value="NEW">Новые</option>
           <option value="ASSIGNED">Назначены</option>
@@ -199,11 +200,13 @@ onMounted(async () => {
 async function loadApplications() {
   loading.value = true;
   try {
-    const response = await getApplications({
-      status: filters.value.status || undefined,
-      page: pagination.value.page,
-      limit: 20
-    });
+    const params = { page: pagination.value.page, limit: 20 };
+    if (filters.value.status === 'overdue') {
+      params.overdue = true;
+    } else if (filters.value.status) {
+      params.status = filters.value.status;
+    }
+    const response = await getApplications(params);
     applications.value = response.data.applications;
     pagination.value = response.data.pagination;
   } catch (error) {
@@ -213,10 +216,19 @@ async function loadApplications() {
   }
 }
 
+function filterOverdue() {
+  filters.value.status = 'overdue';
+  pagination.value.page = 1;
+  loadApplications();
+}
+
 async function loadStats() {
   try {
     const response = await getDashboardStats();
-    stats.value = response.data.applications;
+    stats.value = {
+      ...response.data.applications,
+      overdueCount: response.data.applications?.overdueCount || 0
+    };
     systemStats.value = response.data;
   } catch (error) {
     console.error('Failed to load stats:', error);
