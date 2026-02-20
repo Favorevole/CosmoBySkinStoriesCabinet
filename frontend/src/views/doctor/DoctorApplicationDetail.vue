@@ -232,6 +232,11 @@ const app = ref(null);
 const loading = ref(true);
 const error = ref(null);
 const successMsg = ref(null);
+
+function showSuccess(msg) {
+  successMsg.value = msg;
+  setTimeout(() => { successMsg.value = null; }, 5000);
+}
 const submitting = ref(false);
 const aiLoading = ref(false);
 
@@ -358,7 +363,7 @@ async function submitRec() {
   error.value = null;
   try {
     await submitRecommendation(app.value.id, recText.value);
-    successMsg.value = 'Рекомендация отправлена!';
+    showSuccess('Рекомендация отправлена!');
     // Reload application
     const res = await getDoctorApplication(app.value.id);
     app.value = res.data;
@@ -375,7 +380,7 @@ async function submitDecline() {
   try {
     await declineApplication(app.value.id, declineReason.value);
     showDeclineModal.value = false;
-    successMsg.value = 'Заявка отклонена';
+    showSuccess('Заявка отклонена');
     const res = await getDoctorApplication(app.value.id);
     app.value = res.data;
   } catch (e) {
@@ -390,7 +395,7 @@ async function submitRequestPhotos() {
   try {
     await requestPhotos(app.value.id, photoRequestMessage.value);
     showRequestPhotos.value = false;
-    successMsg.value = 'Запрос на фото отправлен клиенту';
+    showSuccess('Запрос на фото отправлен клиенту');
   } catch (e) {
     error.value = e.response?.data?.error || 'Ошибка';
   } finally {

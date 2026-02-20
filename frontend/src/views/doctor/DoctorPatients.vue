@@ -2,10 +2,15 @@
   <div class="page">
     <h1>Мои пациенты</h1>
 
+    <div v-if="!loading && patients.length > 0" class="search-box">
+      <input type="text" v-model="search" placeholder="Поиск по имени..." class="search-input">
+    </div>
+
     <div v-if="loading" class="loading">Загрузка...</div>
     <div v-else-if="patients.length === 0" class="empty">Нет пациентов</div>
+    <div v-else-if="filteredPatients.length === 0" class="empty">Ничего не найдено</div>
     <div v-else class="patient-list">
-      <div v-for="p in patients" :key="p.id" class="patient-card" @click="togglePatient(p.id)">
+      <div v-for="p in filteredPatients" :key="p.id" class="patient-card" @click="togglePatient(p.id)">
         <div class="patient-header">
           <div class="patient-info">
             <span class="patient-name">{{ p.fullName || 'Клиент' }}</span>
@@ -31,12 +36,21 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { getDoctorPatients } from '../../api/doctorCabinet.js';
 
 const patients = ref([]);
 const loading = ref(true);
 const expandedPatient = ref(null);
+const search = ref('');
+
+const filteredPatients = computed(() => {
+  if (!search.value.trim()) return patients.value;
+  const q = search.value.trim().toLowerCase();
+  return patients.value.filter(p =>
+    (p.fullName || '').toLowerCase().includes(q)
+  );
+});
 
 onMounted(async () => {
   try {
@@ -68,6 +82,12 @@ function formatDate(d) {
 .page { padding: 32px; max-width: 800px; }
 h1 { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: #1a1a1c; margin-bottom: 24px; }
 .loading, .empty { text-align: center; padding: 48px; color: #999; font-size: 14px; }
+.search-box { margin-bottom: 16px; }
+.search-input {
+  width: 100%; padding: 12px 16px; border: 1px solid #e8e4db; border-radius: 10px;
+  font-size: 14px; font-family: 'Inter', sans-serif; color: #1a1a1c; background: #fff; box-sizing: border-box;
+}
+.search-input:focus { outline: none; border-color: #8b7355; }
 
 .patient-list { display: flex; flex-direction: column; gap: 12px; }
 .patient-card {

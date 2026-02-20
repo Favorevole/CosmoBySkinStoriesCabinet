@@ -7,7 +7,7 @@
         v-for="f in filters"
         :key="f.value"
         :class="['filter-btn', { active: filter === f.value }]"
-        @click="filter = f.value; loadApplications()"
+        @click="filter = f.value; pagination.page = 1; loadApplications()"
       >
         {{ f.label }}
       </button>

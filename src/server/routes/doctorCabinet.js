@@ -90,9 +90,8 @@ router.get('/applications', async (req, res) => {
           client: {
             select: { id: true, fullName: true, telegramUsername: true }
           },
-          photos: {
-            select: { id: true },
-            take: 1
+          _count: {
+            select: { photos: true }
           },
           recommendation: {
             select: { id: true }
@@ -107,7 +106,7 @@ router.get('/applications', async (req, res) => {
     res.json({
       applications: applications.map(app => ({
         ...app,
-        photoCount: app.photos?.length || 0,
+        photoCount: app._count?.photos || 0,
         hasRecommendation: !!app.recommendation
       })),
       pagination: {

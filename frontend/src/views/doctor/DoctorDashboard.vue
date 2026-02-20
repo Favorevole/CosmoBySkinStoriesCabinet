@@ -2,6 +2,8 @@
   <div class="page">
     <h1>Дашборд</h1>
 
+    <div v-if="loading" class="loading">Загрузка...</div>
+    <template v-else>
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-value">{{ stats.assigned }}</div>
@@ -35,6 +37,7 @@
         </router-link>
       </div>
     </div>
+    </template>
   </div>
 </template>
 
@@ -44,6 +47,7 @@ import { getDoctorDashboard } from '../../api/doctorCabinet.js';
 
 const stats = ref({ assigned: 0, completed: 0, total: 0 });
 const recentApplications = ref([]);
+const loading = ref(true);
 
 onMounted(async () => {
   try {
@@ -52,6 +56,8 @@ onMounted(async () => {
     recentApplications.value = res.data.recentApplications || [];
   } catch (e) {
     console.error('Dashboard error:', e);
+  } finally {
+    loading.value = false;
   }
 });
 
@@ -76,6 +82,7 @@ function statusLabel(s) {
 .page { padding: 32px; max-width: 900px; }
 h1 { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: #1a1a1c; margin-bottom: 24px; }
 h2 { font-size: 18px; color: #1a1a1c; margin-bottom: 16px; }
+.loading { text-align: center; padding: 48px; color: #999; font-size: 14px; }
 
 .stats-grid {
   display: grid;
