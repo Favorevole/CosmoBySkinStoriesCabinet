@@ -19,8 +19,14 @@ export async function getPrograms(doctorId) {
 }
 
 export async function updateProgram(id, doctorId, data) {
+  const existing = await prisma.careProgram.findFirst({
+    where: { id, doctorId }
+  });
+  if (!existing) {
+    throw new Error('Program not found');
+  }
   return prisma.careProgram.update({
-    where: { id, doctorId },
+    where: { id },
     data: {
       title: data.title,
       description: data.description,
@@ -30,7 +36,13 @@ export async function updateProgram(id, doctorId, data) {
 }
 
 export async function deleteProgram(id, doctorId) {
-  return prisma.careProgram.delete({
+  const existing = await prisma.careProgram.findFirst({
     where: { id, doctorId }
+  });
+  if (!existing) {
+    throw new Error('Program not found');
+  }
+  return prisma.careProgram.delete({
+    where: { id }
   });
 }

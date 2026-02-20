@@ -24,8 +24,14 @@ export async function getProducts(doctorId, category) {
 }
 
 export async function updateProduct(id, doctorId, data) {
+  const existing = await prisma.doctorProduct.findFirst({
+    where: { id, doctorId }
+  });
+  if (!existing) {
+    throw new Error('Product not found');
+  }
   return prisma.doctorProduct.update({
-    where: { id, doctorId },
+    where: { id },
     data: {
       name: data.name,
       brand: data.brand,
@@ -37,7 +43,13 @@ export async function updateProduct(id, doctorId, data) {
 }
 
 export async function deleteProduct(id, doctorId) {
-  return prisma.doctorProduct.delete({
+  const existing = await prisma.doctorProduct.findFirst({
     where: { id, doctorId }
+  });
+  if (!existing) {
+    throw new Error('Product not found');
+  }
+  return prisma.doctorProduct.delete({
+    where: { id }
   });
 }

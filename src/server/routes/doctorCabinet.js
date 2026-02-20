@@ -473,6 +473,9 @@ router.patch('/templates/:id', async (req, res) => {
     const template = await updateTemplate(id, req.doctor.id, req.body);
     res.json({ success: true, template });
   } catch (error) {
+    if (error.message === 'Template not found') {
+      return res.status(404).json({ error: 'Шаблон не найден' });
+    }
     console.error('[DOCTOR_CABINET] Template update error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -484,6 +487,9 @@ router.delete('/templates/:id', async (req, res) => {
     await deleteTemplate(id, req.doctor.id);
     res.json({ success: true });
   } catch (error) {
+    if (error.message === 'Template not found') {
+      return res.status(404).json({ error: 'Шаблон не найден' });
+    }
     console.error('[DOCTOR_CABINET] Template delete error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -524,6 +530,9 @@ router.patch('/programs/:id', async (req, res) => {
     const program = await updateProgram(id, req.doctor.id, req.body);
     res.json({ success: true, program });
   } catch (error) {
+    if (error.message === 'Program not found') {
+      return res.status(404).json({ error: 'Программа не найдена' });
+    }
     console.error('[DOCTOR_CABINET] Program update error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -535,6 +544,9 @@ router.delete('/programs/:id', async (req, res) => {
     await deleteProgram(id, req.doctor.id);
     res.json({ success: true });
   } catch (error) {
+    if (error.message === 'Program not found') {
+      return res.status(404).json({ error: 'Программа не найдена' });
+    }
     console.error('[DOCTOR_CABINET] Program delete error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -576,6 +588,9 @@ router.patch('/products/:id', async (req, res) => {
     const product = await updateProduct(id, req.doctor.id, req.body);
     res.json({ success: true, product });
   } catch (error) {
+    if (error.message === 'Product not found') {
+      return res.status(404).json({ error: 'Продукт не найден' });
+    }
     console.error('[DOCTOR_CABINET] Product update error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -587,6 +602,9 @@ router.delete('/products/:id', async (req, res) => {
     await deleteProduct(id, req.doctor.id);
     res.json({ success: true });
   } catch (error) {
+    if (error.message === 'Product not found') {
+      return res.status(404).json({ error: 'Продукт не найден' });
+    }
     console.error('[DOCTOR_CABINET] Product delete error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }

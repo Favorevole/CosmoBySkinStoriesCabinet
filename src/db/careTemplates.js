@@ -19,8 +19,14 @@ export async function getTemplates(doctorId) {
 }
 
 export async function updateTemplate(id, doctorId, data) {
+  const existing = await prisma.careTemplate.findFirst({
+    where: { id, doctorId }
+  });
+  if (!existing) {
+    throw new Error('Template not found');
+  }
   return prisma.careTemplate.update({
-    where: { id, doctorId },
+    where: { id },
     data: {
       title: data.title,
       text: data.text,
@@ -30,7 +36,13 @@ export async function updateTemplate(id, doctorId, data) {
 }
 
 export async function deleteTemplate(id, doctorId) {
-  return prisma.careTemplate.delete({
+  const existing = await prisma.careTemplate.findFirst({
     where: { id, doctorId }
+  });
+  if (!existing) {
+    throw new Error('Template not found');
+  }
+  return prisma.careTemplate.delete({
+    where: { id }
   });
 }
