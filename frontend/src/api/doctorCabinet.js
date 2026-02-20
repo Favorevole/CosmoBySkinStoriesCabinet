@@ -42,6 +42,9 @@ export const doctorTelegramLogin = (telegramId, code) =>
 export const getDoctorMe = () =>
   api.get('/doctor-auth/me');
 
+export const linkTelegramRequestCode = (telegramId) =>
+  api.post('/doctor-auth/link-telegram-request-code', { telegramId });
+
 export const linkTelegram = (telegramId, code) =>
   api.post('/doctor-auth/link-telegram', { telegramId, code });
 

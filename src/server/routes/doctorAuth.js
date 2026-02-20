@@ -262,6 +262,67 @@ router.get('/me', authenticateDoctor, async (req, res) => {
 });
 
 /**
+ * POST /api/doctor-auth/link-telegram-request-code
+ * Send OTP to a Telegram ID for linking (not login)
+ */
+router.post('/link-telegram-request-code', authenticateDoctor, async (req, res) => {
+  try {
+    const { telegramId } = req.body;
+
+    if (!telegramId) {
+      return res.status(400).json({ error: 'telegramId обязателен' });
+    }
+
+    // Check if this telegramId is already linked to another doctor
+    const existing = await getDoctorByTelegramId(telegramId);
+    if (existing && existing.id !== req.doctor.id) {
+      return res.status(409).json({ error: 'Этот Telegram уже привязан к другому врачу' });
+    }
+
+    const code = await createAuthCode(telegramId);
+
+    // Send code via bot
+    let codeSent = false;
+    try {
+      const { getDoctorBot } = await import('../../doctorBot/index.js');
+      const bot = getDoctorBot();
+      if (bot) {
+        await bot.telegram.sendMessage(
+          Number(telegramId),
+          `Код для привязки Telegram к кабинету врача: *${code}*\n\nКод действителен 5 минут.`,
+          { parse_mode: 'Markdown' }
+        );
+        codeSent = true;
+      }
+    } catch (e) {
+      console.error('[DOCTOR_AUTH] Failed to send link code via doctor bot:', e.message);
+    }
+
+    if (!codeSent) {
+      try {
+        const { getClientBot } = await import('../../clientBot/index.js');
+        const bot = getClientBot();
+        if (bot) {
+          await bot.telegram.sendMessage(
+            Number(telegramId),
+            `Код для привязки Telegram к кабинету врача: *${code}*\n\nКод действителен 5 минут.`,
+            { parse_mode: 'Markdown' }
+          );
+          codeSent = true;
+        }
+      } catch (e) {
+        console.error('[DOCTOR_AUTH] Failed to send link code via client bot:', e.message);
+      }
+    }
+
+    res.json({ success: true, message: 'Код отправлен в Telegram' });
+  } catch (error) {
+    console.error('[DOCTOR_AUTH] Link telegram request code error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
  * POST /api/doctor-auth/link-telegram
  * Link Telegram account to doctor
  */

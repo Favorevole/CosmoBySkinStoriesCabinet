@@ -95,7 +95,7 @@
 import { ref, onMounted } from 'vue';
 import {
   getDoctorMe, updateDoctorProfile, changeDoctorPassword,
-  linkEmail, linkTelegram, doctorTelegramRequestCode
+  linkEmail, linkTelegram, linkTelegramRequestCode
 } from '../../api/doctorCabinet.js';
 
 const doctor = ref({});
@@ -177,7 +177,7 @@ async function requestTgCode() {
   linking.value = true;
   error.value = null;
   try {
-    await doctorTelegramRequestCode(linkTgData.value.telegramId);
+    await linkTelegramRequestCode(linkTgData.value.telegramId);
     telegramStep.value = 2;
   } catch (e) {
     error.value = e.response?.data?.error || 'Ошибка';
