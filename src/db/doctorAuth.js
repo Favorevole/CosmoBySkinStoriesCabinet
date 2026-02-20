@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 const SALT_ROUNDS = 10;
 
 export async function getDoctorByEmail(email) {
-  return prisma.doctor.findFirst({
+  return prisma.doctor.findUnique({
     where: { email: email.toLowerCase() }
   });
 }

@@ -1,4 +1,5 @@
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import { authenticateDoctor } from '../middleware/doctorAuth.js';
 import {
   getApplicationById,
@@ -311,7 +312,13 @@ router.post('/applications/:id/request-photos', async (req, res) => {
 
 // ==================== AI HELPER ====================
 
-router.post('/applications/:id/ai-generate', async (req, res) => {
+const aiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: 'Слишком много запросов к AI. Попробуйте через 15 минут.' }
+});
+
+router.post('/applications/:id/ai-generate', aiLimiter, async (req, res) => {
   try {
     const applicationId = parseInt(req.params.id);
 
@@ -336,7 +343,7 @@ router.post('/applications/:id/ai-generate', async (req, res) => {
   }
 });
 
-router.post('/applications/:id/ai-refine', async (req, res) => {
+router.post('/applications/:id/ai-refine', aiLimiter, async (req, res) => {
   try {
     const applicationId = parseInt(req.params.id);
     const { history, instruction } = req.body;
@@ -447,6 +454,12 @@ router.post('/templates', async (req, res) => {
     if (!title || !text) {
       return res.status(400).json({ error: 'title и text обязательны' });
     }
+    if (title.length > 200) {
+      return res.status(400).json({ error: 'Название не более 200 символов' });
+    }
+    if (text.length > 10000) {
+      return res.status(400).json({ error: 'Текст не более 10000 символов' });
+    }
     const template = await createTemplate(req.doctor.id, { title, text, category });
     res.json({ success: true, template });
   } catch (error) {
@@ -494,6 +507,9 @@ router.post('/programs', async (req, res) => {
     const { title, description, steps } = req.body;
     if (!title) {
       return res.status(400).json({ error: 'title обязателен' });
+    }
+    if (title.length > 200) {
+      return res.status(400).json({ error: 'Название не более 200 символов' });
     }
     const program = await createProgram(req.doctor.id, { title, description, steps });
     res.json({ success: true, program });
@@ -543,6 +559,9 @@ router.post('/products', async (req, res) => {
     const { name, brand, category, url, notes } = req.body;
     if (!name) {
       return res.status(400).json({ error: 'name обязателен' });
+    }
+    if (name.length > 200) {
+      return res.status(400).json({ error: 'Название не более 200 символов' });
     }
     const product = await createProduct(req.doctor.id, { name, brand, category, url, notes });
     res.json({ success: true, product });

@@ -86,7 +86,7 @@ model Doctor {
   telegramId       BigInt?          @unique @map("telegram_id")
   telegramUsername String?          @map("telegram_username")
   fullName         String           @map("full_name")
-  email            String?
+  email            String?          @unique
   passwordHash     String?          @map("password_hash")
   emailVerified    Boolean          @default(false) @map("email_verified")
   specialization   String?
@@ -105,7 +105,6 @@ model Doctor {
   @@index([telegramId])
   @@index([status])
   @@index([isAvailable])
-  @@index([email])
   @@map("doctors")
 }
 
