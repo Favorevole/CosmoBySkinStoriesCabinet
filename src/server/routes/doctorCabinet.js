@@ -360,6 +360,22 @@ router.post('/applications/:id/ai-refine', aiLimiter, async (req, res) => {
       return res.status(400).json({ error: 'history и instruction обязательны' });
     }
 
+    if (!Array.isArray(history) || history.length === 0 || history.length > 20) {
+      return res.status(400).json({ error: 'history должен быть массивом (1-20 сообщений)' });
+    }
+
+    const validRoles = new Set(['system', 'user', 'assistant']);
+    const isValidHistory = history.every(m =>
+      m && typeof m.role === 'string' && validRoles.has(m.role) && typeof m.content === 'string'
+    );
+    if (!isValidHistory) {
+      return res.status(400).json({ error: 'Неверный формат history' });
+    }
+
+    if (instruction.length > 500) {
+      return res.status(400).json({ error: 'Инструкция не более 500 символов' });
+    }
+
     const result = await refineRecommendation(history, instruction);
 
     if (result.error) {

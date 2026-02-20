@@ -29,7 +29,7 @@
             </div>
             <div class="info-item" v-if="app.consultationGoal">
               <span class="info-label">Цель консультации</span>
-              <span class="info-value">{{ app.consultationGoal }}</span>
+              <span class="info-value">{{ goalLabel(app.consultationGoal) }}</span>
             </div>
             <div class="info-item" v-if="app.priceRange">
               <span class="info-label">Бюджет</span>
@@ -414,6 +414,10 @@ function skinTypeLabel(t) {
 function priceLabel(p) {
   const map = { UP_TO_5000: 'до 5 000 руб.', UP_TO_10000: 'до 10 000 руб.', UP_TO_20000: 'до 20 000 руб.', OVER_20000: 'более 20 000 руб.' };
   return map[p] || p;
+}
+function goalLabel(g) {
+  const map = { FULL_CARE: 'Подбор ухода', REVIEW_CARE: 'Разбор текущего ухода', ADDITIONAL_PRODUCTS: 'Нужны дополнительные средства' };
+  return map[g] || g;
 }
 function truncate(s, len) {
   if (!s) return '';
