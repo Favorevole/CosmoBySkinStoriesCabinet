@@ -5,6 +5,8 @@
       <button @click="openCreate" class="btn btn-primary">+ Создать</button>
     </div>
 
+    <div v-if="successMsg" class="toast">{{ successMsg }}</div>
+
     <div v-if="loading" class="loading">Загрузка...</div>
     <div v-else-if="items.length === 0" class="empty">Нет программ. Создайте первую!</div>
     <div v-else class="list">
@@ -71,6 +73,12 @@ const showModal = ref(false);
 const editing = ref(null);
 const saving = ref(false);
 const form = ref({ title: '', description: '', steps: [] });
+const successMsg = ref(null);
+
+function showSuccess(msg) {
+  successMsg.value = msg;
+  setTimeout(() => { successMsg.value = null; }, 3000);
+}
 
 onMounted(loadItems);
 
@@ -126,6 +134,7 @@ async function save() {
     }
     showModal.value = false;
     await loadItems();
+    showSuccess(editing.value ? 'Программа обновлена' : 'Программа создана');
   } catch (e) {
     alert(e.response?.data?.error || 'Ошибка');
   } finally {
@@ -138,6 +147,7 @@ async function remove(id) {
   try {
     await deleteProgram(id);
     await loadItems();
+    showSuccess('Программа удалена');
   } catch (e) {
     alert(e.response?.data?.error || 'Ошибка');
   }
@@ -189,6 +199,11 @@ h4 { font-size: 14px; color: #1a1a1c; margin: 16px 0 8px; }
 .btn-icon { width: 28px; height: 28px; border: 1px solid #e8e4db; border-radius: 6px; background: #fff; cursor: pointer; font-size: 18px; color: #999; display: flex; align-items: center; justify-content: center; }
 
 .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; }
+
+.toast {
+  padding: 12px 16px; background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a;
+  border-radius: 10px; font-size: 14px; margin-bottom: 16px;
+}
 
 @media (max-width: 640px) { .page { padding: 20px 16px; } }
 </style>

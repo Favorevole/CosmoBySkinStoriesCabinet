@@ -250,6 +250,7 @@ router.get('/me', authenticateDoctor, async (req, res) => {
       bio: doctor.bio || null,
       telegramId: doctor.telegramId?.toString() || null,
       telegramUsername: doctor.telegramUsername || null,
+      hasPassword: !!doctor.passwordHash,
       status: doctor.status,
       isAvailable: doctor.isAvailable,
       createdAt: doctor.createdAt

@@ -82,6 +82,9 @@
       </div>
     </aside>
     <main class="main">
+      <div v-if="loadError" class="load-error">
+        Не удалось загрузить данные. <a href="#" @click.prevent="location.reload()">Обновить страницу</a>
+      </div>
       <router-view :key="$route.fullPath" />
     </main>
   </div>
@@ -95,6 +98,7 @@ import { getDoctorMe, getDoctorDashboard } from '../../api/doctorCabinet.js';
 const router = useRouter();
 const doctorName = ref('');
 const assignedCount = ref(0);
+const loadError = ref(false);
 
 const initials = computed(() => {
   if (!doctorName.value) return '?';
@@ -103,14 +107,18 @@ const initials = computed(() => {
 
 onMounted(async () => {
   try {
-    const [meRes, dashRes] = await Promise.all([
-      getDoctorMe(),
-      getDoctorDashboard()
-    ]);
+    const meRes = await getDoctorMe();
     doctorName.value = meRes.data.fullName || 'Врач';
+  } catch (e) {
+    console.error('Failed to load doctor profile:', e);
+    if (e.response?.status === 401) return; // interceptor will redirect
+    loadError.value = true;
+  }
+  try {
+    const dashRes = await getDoctorDashboard();
     assignedCount.value = dashRes.data.stats?.assigned || 0;
   } catch (e) {
-    console.error('Failed to load doctor data:', e);
+    // Dashboard stats are non-critical
   }
 });
 
@@ -265,6 +273,16 @@ nav {
   margin-left: 260px;
   min-height: 100vh;
 }
+.load-error {
+  margin: 16px 32px;
+  padding: 12px 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  border-radius: 10px;
+  font-size: 14px;
+}
+.load-error a { color: #8b7355; }
 
 @media (max-width: 768px) {
   .sidebar {

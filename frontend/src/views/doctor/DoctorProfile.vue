@@ -71,17 +71,17 @@
 
       <!-- Change password -->
       <div class="card" style="margin-top:20px;">
-        <h2>Сменить пароль</h2>
-        <div class="field" v-if="doctor.email">
+        <h2>{{ doctor.hasPassword ? 'Сменить пароль' : 'Установить пароль' }}</h2>
+        <div class="field" v-if="doctor.hasPassword">
           <label>Текущий пароль</label>
           <input type="password" v-model="pw.current">
         </div>
         <div class="field">
-          <label>Новый пароль</label>
+          <label>{{ doctor.hasPassword ? 'Новый пароль' : 'Пароль' }}</label>
           <input type="password" v-model="pw.newPw" placeholder="Мин. 6 символов">
         </div>
         <button @click="changePassword" :disabled="saving || pw.newPw.length < 6" class="btn btn-primary">
-          Сменить пароль
+          {{ doctor.hasPassword ? 'Сменить пароль' : 'Установить пароль' }}
         </button>
         <div v-if="pwMsg" class="success-msg">{{ pwMsg }}</div>
       </div>

@@ -5,6 +5,8 @@
       <button @click="openCreate" class="btn btn-primary">+ Создать</button>
     </div>
 
+    <div v-if="successMsg" class="toast">{{ successMsg }}</div>
+
     <div v-if="loading" class="loading">Загрузка...</div>
     <div v-else-if="items.length === 0" class="empty">Нет шаблонов. Создайте первый!</div>
     <div v-else class="list">
@@ -58,6 +60,12 @@ const showModal = ref(false);
 const editing = ref(null);
 const saving = ref(false);
 const form = ref({ title: '', text: '', category: '' });
+const successMsg = ref(null);
+
+function showSuccess(msg) {
+  successMsg.value = msg;
+  setTimeout(() => { successMsg.value = null; }, 3000);
+}
 
 onMounted(loadItems);
 
@@ -93,6 +101,7 @@ async function save() {
     }
     showModal.value = false;
     await loadItems();
+    showSuccess(editing.value ? 'Шаблон обновлён' : 'Шаблон создан');
   } catch (e) {
     alert(e.response?.data?.error || 'Ошибка');
   } finally {
@@ -105,6 +114,7 @@ async function remove(id) {
   try {
     await deleteTemplate(id);
     await loadItems();
+    showSuccess('Шаблон удалён');
   } catch (e) {
     alert(e.response?.data?.error || 'Ошибка');
   }
@@ -164,6 +174,11 @@ h3 { font-size: 18px; color: #1a1a1c; margin-bottom: 20px; }
 .field textarea { resize: vertical; line-height: 1.6; }
 .field input:focus, .field textarea:focus { outline: none; border-color: #8b7355; }
 .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; }
+
+.toast {
+  padding: 12px 16px; background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a;
+  border-radius: 10px; font-size: 14px; margin-bottom: 16px;
+}
 
 @media (max-width: 640px) { .page { padding: 20px 16px; } }
 </style>
