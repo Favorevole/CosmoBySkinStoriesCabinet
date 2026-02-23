@@ -174,6 +174,10 @@ router.post('/telegram-request-code', async (req, res) => {
       }
     }
 
+    if (!codeSent) {
+      return res.status(500).json({ error: 'Не удалось отправить код. Убедитесь, что вы начали диалог с ботом в Telegram.' });
+    }
+
     res.json({
       success: true,
       message: 'Код отправлен в Telegram',
@@ -313,6 +317,10 @@ router.post('/link-telegram-request-code', authenticateDoctor, async (req, res) 
       } catch (e) {
         console.error('[DOCTOR_AUTH] Failed to send link code via client bot:', e.message);
       }
+    }
+
+    if (!codeSent) {
+      return res.status(500).json({ error: 'Не удалось отправить код. Убедитесь, что вы начали диалог с ботом в Telegram.' });
     }
 
     res.json({ success: true, message: 'Код отправлен в Telegram' });

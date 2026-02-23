@@ -3,6 +3,7 @@
     <h1>Дашборд</h1>
 
     <div v-if="loading" class="loading">Загрузка...</div>
+    <div v-else-if="error" class="error">{{ error }}</div>
     <template v-else>
     <div class="stats-grid">
       <div class="stat-card">
@@ -48,6 +49,7 @@ import { getDoctorDashboard } from '../../api/doctorCabinet.js';
 const stats = ref({ assigned: 0, completed: 0, total: 0 });
 const recentApplications = ref([]);
 const loading = ref(true);
+const error = ref(null);
 
 onMounted(async () => {
   try {
@@ -55,7 +57,7 @@ onMounted(async () => {
     stats.value = res.data.stats;
     recentApplications.value = res.data.recentApplications || [];
   } catch (e) {
-    console.error('Dashboard error:', e);
+    error.value = e.response?.data?.error || 'Ошибка загрузки данных';
   } finally {
     loading.value = false;
   }
@@ -151,6 +153,16 @@ h2 { font-size: 18px; color: #1a1a1c; margin-bottom: 16px; }
   border-radius: 6px;
   background: #f0e6d3;
   color: #8b7355;
+}
+
+.error {
+  padding: 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  border-radius: 10px;
+  font-size: 14px;
+  text-align: center;
 }
 
 @media (max-width: 640px) {

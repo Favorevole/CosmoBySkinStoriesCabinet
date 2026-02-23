@@ -365,11 +365,13 @@ router.post('/applications/:id/ai-refine', aiLimiter, async (req, res) => {
     }
 
     const validRoles = new Set(['system', 'user', 'assistant']);
+    const MAX_MESSAGE_LENGTH = 5000;
     const isValidHistory = history.every(m =>
-      m && typeof m.role === 'string' && validRoles.has(m.role) && typeof m.content === 'string'
+      m && typeof m.role === 'string' && validRoles.has(m.role) &&
+      typeof m.content === 'string' && m.content.length <= MAX_MESSAGE_LENGTH
     );
     if (!isValidHistory) {
-      return res.status(400).json({ error: 'Неверный формат history' });
+      return res.status(400).json({ error: 'Неверный формат history или сообщение слишком длинное' });
     }
 
     if (instruction.length > 500) {

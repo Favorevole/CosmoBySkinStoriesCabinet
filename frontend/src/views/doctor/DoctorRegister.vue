@@ -11,19 +11,19 @@
         <div v-if="!registered" class="step">
           <div class="field">
             <label>ФИО *</label>
-            <input type="text" v-model="fullName" placeholder="Иванова Мария Петровна">
+            <input type="text" v-model="fullName" placeholder="Иванова Мария Петровна" @keyup.enter="register">
           </div>
           <div class="field">
             <label>Email *</label>
-            <input type="email" v-model="email" placeholder="doctor@example.com">
+            <input type="email" v-model="email" placeholder="doctor@example.com" @keyup.enter="register">
           </div>
           <div class="field">
             <label>Пароль *</label>
-            <input type="password" v-model="password" placeholder="Минимум 6 символов">
+            <input type="password" v-model="password" placeholder="Минимум 6 символов" @keyup.enter="register">
           </div>
           <div class="field">
             <label>Специализация</label>
-            <input type="text" v-model="specialization" placeholder="Дерматолог, косметолог">
+            <input type="text" v-model="specialization" placeholder="Дерматолог, косметолог" @keyup.enter="register">
           </div>
           <button @click="register" :disabled="!canSubmit || loading" class="btn btn-primary">
             <span v-if="loading" class="spinner"></span>
