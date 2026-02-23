@@ -56,13 +56,13 @@
           <h3>Привязать Telegram</h3>
           <div v-if="telegramStep === 1">
             <div class="field">
-              <input type="text" v-model="linkTgData.telegramId" placeholder="Ваш Telegram ID">
+              <input type="text" inputmode="numeric" v-model="linkTgData.telegramId" placeholder="Ваш Telegram ID" @input="linkTgData.telegramId = linkTgData.telegramId.replace(/\D/g, '')">
             </div>
             <button @click="requestTgCode" :disabled="linking" class="btn btn-sm btn-primary">Получить код</button>
           </div>
           <div v-else>
             <div class="field">
-              <input type="text" v-model="linkTgData.code" placeholder="Код из Telegram" maxlength="6">
+              <input type="text" inputmode="numeric" v-model="linkTgData.code" placeholder="Код из Telegram" maxlength="6" @input="linkTgData.code = linkTgData.code.replace(/\D/g, '')">
             </div>
             <button @click="doLinkTelegram" :disabled="linking" class="btn btn-sm btn-primary">Привязать</button>
           </div>

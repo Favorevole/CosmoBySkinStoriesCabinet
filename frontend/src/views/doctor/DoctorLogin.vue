@@ -37,7 +37,7 @@
             <p class="instruction">Введите ваш Telegram ID</p>
             <p class="hint">Узнать ID можно у @userinfobot</p>
             <div class="field">
-              <input type="text" v-model="telegramId" placeholder="Telegram ID" @keyup.enter="requestTelegramCode">
+              <input type="text" inputmode="numeric" v-model="telegramId" placeholder="Telegram ID" @keyup.enter="requestTelegramCode" @input="telegramId = telegramId.replace(/\D/g, '')">
             </div>
             <button @click="requestTelegramCode" :disabled="!telegramId || loading" class="btn btn-primary">
               <span v-if="loading" class="spinner"></span>
@@ -50,11 +50,13 @@
             <div class="field">
               <input
                 type="text"
+                inputmode="numeric"
                 v-model="code"
                 placeholder="000000"
                 maxlength="6"
                 class="code-input"
                 @keyup.enter="verifyTelegramCode"
+                @input="code = code.replace(/\D/g, '')"
               >
             </div>
             <button @click="verifyTelegramCode" :disabled="code.length !== 6 || loading" class="btn btn-primary">

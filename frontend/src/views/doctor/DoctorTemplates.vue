@@ -29,7 +29,7 @@
         <h3>{{ editing ? 'Редактировать шаблон' : 'Новый шаблон' }}</h3>
         <div class="field">
           <label>Название *</label>
-          <input type="text" v-model="form.title" placeholder="Название шаблона">
+          <input type="text" v-model="form.title" placeholder="Название шаблона" maxlength="200">
         </div>
         <div class="field">
           <label>Категория</label>
@@ -37,7 +37,7 @@
         </div>
         <div class="field">
           <label>Текст *</label>
-          <textarea v-model="form.text" rows="10" placeholder="Текст рекомендации..."></textarea>
+          <textarea v-model="form.text" rows="10" placeholder="Текст рекомендации..." maxlength="10000"></textarea>
         </div>
         <div class="modal-actions">
           <button @click="showModal = false" class="btn btn-secondary">Отмена</button>

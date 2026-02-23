@@ -68,6 +68,19 @@
       <!-- Existing recommendation -->
       <div v-if="app.recommendation" class="card" style="margin-top:20px;">
         <h2>Ваша рекомендация</h2>
+        <div v-if="app.recommendation.editedByAdminAt" class="admin-edit-notice">
+          <span class="notice-icon">i</span>
+          <div>
+            <span>Администратор отредактировал рекомендацию {{ formatDate(app.recommendation.editedByAdminAt) }}</span>
+            <button v-if="app.recommendation.originalText" @click="showOriginalText = !showOriginalText" class="notice-toggle">
+              {{ showOriginalText ? 'Скрыть оригинал' : 'Показать оригинал' }}
+            </button>
+          </div>
+        </div>
+        <div v-if="showOriginalText && app.recommendation.originalText" class="original-text-box">
+          <span class="info-label">Ваш оригинальный текст:</span>
+          <pre class="rec-text original">{{ app.recommendation.originalText }}</pre>
+        </div>
         <pre class="rec-text">{{ app.recommendation.text }}</pre>
         <div v-if="app.recommendation.links?.length" class="rec-links">
           <a v-for="link in app.recommendation.links" :key="link.url" :href="link.url" target="_blank">{{ link.title || link.url }}</a>
@@ -77,6 +90,7 @@
       <!-- Recommendation editor (only for ASSIGNED) -->
       <div v-if="app.status === 'ASSIGNED'" class="card editor-card" style="margin-top:20px;">
         <h2>Написать рекомендацию</h2>
+        <div v-if="draftRestoredMsg" class="draft-notice">{{ draftRestoredMsg }}</div>
 
         <div class="editor-toolbar">
           <button @click="showTemplateModal = true" class="tool-btn">Вставить шаблон</button>
@@ -217,7 +231,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import {
   getDoctorApplication, getDoctorPhotoUrl, submitRecommendation,
@@ -264,11 +278,54 @@ const refineInstruction = ref('');
 // Photo lightbox
 const lightboxPhoto = ref(null);
 
+// Admin edit notice
+const showOriginalText = ref(false);
+
+// Draft auto-save
+const draftRestoredMsg = ref(null);
+let draftSaveTimer = null;
+
+function getDraftKey(appId) {
+  return `doctor_rec_draft_${appId}`;
+}
+
+function saveDraft() {
+  if (!app.value || !recText.value) return;
+  localStorage.setItem(getDraftKey(app.value.id), recText.value);
+}
+
+function clearDraft() {
+  if (!app.value) return;
+  localStorage.removeItem(getDraftKey(app.value.id));
+}
+
+watch(recText, (val) => {
+  clearTimeout(draftSaveTimer);
+  if (val && app.value?.status === 'ASSIGNED') {
+    draftSaveTimer = setTimeout(saveDraft, 1000);
+  } else if (!val) {
+    clearDraft();
+  }
+});
+
 onMounted(async () => {
   try {
     const id = parseInt(route.params.id);
     const res = await getDoctorApplication(id);
     app.value = res.data;
+
+    // Restore draft if application is still ASSIGNED and no recommendation yet
+    if (res.data.status === 'ASSIGNED' && !res.data.recommendation) {
+      const draft = localStorage.getItem(getDraftKey(id));
+      if (draft) {
+        recText.value = draft;
+        draftRestoredMsg.value = 'Черновик восстановлен';
+        setTimeout(() => { draftRestoredMsg.value = null; }, 4000);
+      }
+    } else {
+      // Clean up stale draft
+      localStorage.removeItem(getDraftKey(id));
+    }
   } catch (e) {
     error.value = e.response?.data?.error || 'Ошибка загрузки';
   } finally {
@@ -363,6 +420,7 @@ async function submitRec() {
   error.value = null;
   try {
     await submitRecommendation(app.value.id, recText.value);
+    clearDraft();
     showSuccess('Рекомендация отправлена!');
     // Reload application
     const res = await getDoctorApplication(app.value.id);
@@ -418,6 +476,11 @@ function priceLabel(p) {
 function goalLabel(g) {
   const map = { FULL_CARE: 'Подбор ухода', REVIEW_CARE: 'Разбор текущего ухода', ADDITIONAL_PRODUCTS: 'Нужны дополнительные средства' };
   return map[g] || g;
+}
+function formatDate(d) {
+  if (!d) return '';
+  const date = new Date(d);
+  return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
 }
 function truncate(s, len) {
   if (!s) return '';
@@ -676,6 +739,61 @@ h3 { font-size: 16px; color: #1a1a1c; margin-bottom: 12px; }
   color: #16a34a;
   border-radius: 10px;
   font-size: 14px;
+}
+
+.admin-edit-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: #92400e;
+}
+.notice-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fde68a;
+  color: #92400e;
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.notice-toggle {
+  background: none;
+  border: none;
+  color: #8b7355;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  margin-left: 8px;
+  font-family: 'Inter', sans-serif;
+}
+.original-text-box {
+  margin-bottom: 12px;
+}
+.rec-text.original {
+  background: #fefce8;
+  border: 1px dashed #fde68a;
+}
+
+.draft-notice {
+  padding: 8px 12px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 12px;
 }
 
 @media (max-width: 768px) {

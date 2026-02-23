@@ -34,7 +34,7 @@
         <h3>{{ editing ? 'Редактировать программу' : 'Новая программа' }}</h3>
         <div class="field">
           <label>Название *</label>
-          <input type="text" v-model="form.title" placeholder="Название программы">
+          <input type="text" v-model="form.title" placeholder="Название программы" maxlength="200">
         </div>
         <div class="field">
           <label>Описание</label>

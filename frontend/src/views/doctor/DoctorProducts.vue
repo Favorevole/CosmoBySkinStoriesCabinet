@@ -41,7 +41,7 @@
         <h3>{{ editing ? 'Редактировать продукт' : 'Новый продукт' }}</h3>
         <div class="field">
           <label>Название *</label>
-          <input type="text" v-model="form.name" placeholder="Название продукта">
+          <input type="text" v-model="form.name" placeholder="Название продукта" maxlength="200">
         </div>
         <div class="field">
           <label>Бренд</label>
@@ -142,6 +142,7 @@ async function remove(id) {
   if (!confirm('Удалить продукт?')) return;
   try {
     await deleteProduct(id);
+    filterCategory.value = '';
     await loadItems();
     showSuccess('Продукт удалён');
   } catch (e) {
