@@ -69,6 +69,9 @@ async function main() {
     }, 24 * 60 * 60 * 1000);
 
     // Run cleanup once on startup
+    cleanupExpiredCodes().catch(err => {
+      console.error('[AUTH] Initial cleanup error:', err.message);
+    });
     cleanupAnalytics().catch(err => {
       console.error('[ANALYTICS] Initial cleanup error:', err.message);
     });

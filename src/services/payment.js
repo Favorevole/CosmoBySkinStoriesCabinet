@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { createPaymentRecord, completePayment, failPayment, getPaymentByApplicationId, getPaymentByExternalId, updatePaymentExternalId, updatePaymentWithPromo } from '../db/payments.js';
 import { createGiftCertificate, getGiftCertificateById, getGiftCertificateByExternalId, updateGiftCertificateExternalId, completeGiftCertificate, failGiftCertificate } from '../db/giftCertificates.js';
 import { updateApplicationStatus, getApplicationById } from '../db/applications.js';
@@ -336,6 +337,13 @@ export async function handleYooKassaWebhook(body) {
       return;
     }
 
+    // Verify payment amount matches expected
+    const paidAmount = parseFloat(paymentData.amount?.value);
+    if (paidAmount && localPayment.amount && paidAmount < localPayment.amount) {
+      console.error(`[PAYMENT] Webhook: amount mismatch for app ${applicationId}. Expected ${localPayment.amount}, got ${paidAmount}`);
+      return;
+    }
+
     await completeSucceededPayment(localPayment, applicationId, yookassaPaymentId);
 
   } else if (event === 'payment.canceled' || status === 'canceled') {
@@ -392,6 +400,13 @@ export async function checkYooKassaPaymentStatus(applicationId) {
   };
 
   if (data.status === 'succeeded') {
+    // Verify payment amount matches expected
+    const paidAmount = parseFloat(data.amount?.value);
+    if (paidAmount && payment.amount && paidAmount < payment.amount) {
+      console.error(`[PAYMENT] Status check: amount mismatch for app ${applicationId}. Expected ${payment.amount}, got ${paidAmount}`);
+      result.amountMismatch = true;
+      return result;
+    }
     await completeSucceededPayment(payment, applicationId, payment.externalId);
     result.completed = true;
   } else if (data.status === 'canceled') {
@@ -416,7 +431,7 @@ function generateGiftCode() {
   let code = 'GIFT-';
   for (let i = 0; i < 8; i++) {
     if (i === 4) code += '-';
-    code += GIFT_CHARS[Math.floor(Math.random() * GIFT_CHARS.length)];
+    code += GIFT_CHARS[crypto.randomInt(GIFT_CHARS.length)];
   }
   return code;
 }
