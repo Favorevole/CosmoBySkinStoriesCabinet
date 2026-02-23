@@ -482,3 +482,39 @@ export async function notifyDoctorStatusApproved(doctor) {
     console.error('[NOTIFICATIONS] Error notifying doctor about approval:', error);
   }
 }
+
+/**
+ * Notify admins about new doctor registration (email or bot)
+ */
+export async function notifyAdminsNewDoctor(doctor) {
+  if (!clientBot) {
+    console.log('[NOTIFICATIONS] Client bot not initialized, skipping new doctor notification');
+    return;
+  }
+
+  try {
+    const admins = await getAllAdmins();
+    const adminIds = new Set([
+      ...admins.map(a => a.telegramId),
+      ...config.adminTelegramIds
+    ]);
+
+    const contactInfo = doctor.email
+      ? `Email: ${doctor.email}`
+      : `Username: @${doctor.telegramUsername || 'не указан'}`;
+
+    const message = `*Новая заявка на регистрацию врача*\n\nФИО: ${doctor.fullName}\n${contactInfo}\n\nОткройте админ-панель для подтверждения.`;
+
+    for (const adminId of adminIds) {
+      try {
+        await clientBot.telegram.sendMessage(Number(adminId), message, {
+          parse_mode: 'Markdown'
+        });
+      } catch (e) {
+        console.error(`[NOTIFICATIONS] Failed to notify admin ${adminId}:`, e.message);
+      }
+    }
+  } catch (error) {
+    console.error('[NOTIFICATIONS] Error notifying admins about new doctor:', error);
+  }
+}

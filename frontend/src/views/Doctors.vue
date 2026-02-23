@@ -80,6 +80,13 @@
             </svg>
             <span>@{{ doctor.telegramUsername }}</span>
           </div>
+          <div class="info-row" v-if="doctor.email">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="info-icon">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <span>{{ doctor.email }}</span>
+          </div>
           <div class="info-row">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="info-icon">
               <circle cx="12" cy="12" r="10"/>
