@@ -323,8 +323,9 @@ router.post('/applications/:id/request-photos', async (req, res) => {
       const { getClientBot } = await import('../../clientBot/index.js');
       const bot = getClientBot();
       if (bot && application.client?.telegramId) {
-        const text = message
-          ? `Врач просит прислать дополнительные фото:\n\n${message}`
+        const trimmedMessage = message?.trim();
+        const text = trimmedMessage
+          ? `Врач просит прислать дополнительные фото:\n\n${trimmedMessage}`
           : 'Врач просит прислать дополнительные фото для более точной рекомендации.';
         await bot.telegram.sendMessage(Number(application.client.telegramId), text);
       }

@@ -246,7 +246,11 @@ router.post('/applications/:id/pay', async (req, res) => {
     });
   } catch (error) {
     console.error('[WEB] Error processing payment:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    // Promo validation errors are user-facing; mask internal errors
+    const isPromoError = error.message && !error.message.includes('Payment not found');
+    res.status(isPromoError ? 400 : 500).json({
+      error: isPromoError ? error.message : 'Ошибка обработки платежа'
+    });
   }
 });
 
@@ -375,7 +379,7 @@ router.get('/gift/:id/check', async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error('[WEB] Error checking gift status:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
