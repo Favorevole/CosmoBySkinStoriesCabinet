@@ -92,6 +92,7 @@ export async function reloadSkinProblems() {
 export function createSessionData() {
   return {
     state: CLIENT_STATES.IDLE,
+    lastActivity: Date.now(),
     applicationData: {
       age: null,
       skinType: null,

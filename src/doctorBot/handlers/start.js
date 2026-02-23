@@ -9,7 +9,9 @@ export function getSession(telegramId) {
   if (!doctorSessions.has(telegramId)) {
     doctorSessions.set(telegramId, createDoctorSession());
   }
-  return doctorSessions.get(telegramId);
+  const session = doctorSessions.get(telegramId);
+  session.lastActivity = Date.now();
+  return session;
 }
 
 export function clearSession(telegramId) {

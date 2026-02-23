@@ -10,6 +10,7 @@ export const DOCTOR_STATES = {
 export function createDoctorSession() {
   return {
     state: DOCTOR_STATES.IDLE,
+    lastActivity: Date.now(),
     registrationData: {
       fullName: null,
       specialization: null

@@ -6,6 +6,8 @@ import { createDoctorBot, startDoctorBot, stopDoctorBot, getDoctorBot } from './
 import { setClientBot, setDoctorBot } from './services/notifications.js';
 import { cleanupExpiredCodes } from './db/auth.js';
 import { cleanupAnalytics } from './db/analytics.js';
+import { clientSessions } from './clientBot/handlers/questionnaire.js';
+import { doctorSessions } from './doctorBot/handlers/start.js';
 
 console.log(`
 ╔═══════════════════════════════════════════╗
@@ -67,6 +69,28 @@ async function main() {
         console.error('[ANALYTICS] Cleanup error:', error.message);
       }
     }, 24 * 60 * 60 * 1000);
+
+    // 8. Bot session cleanup — every hour (TTL 24 hours for idle sessions)
+    const SESSION_TTL = 24 * 60 * 60 * 1000;
+    setInterval(() => {
+      const now = Date.now();
+      let cleaned = 0;
+      for (const [id, session] of clientSessions) {
+        if (now - (session.lastActivity || 0) > SESSION_TTL) {
+          clientSessions.delete(id);
+          cleaned++;
+        }
+      }
+      for (const [id, session] of doctorSessions) {
+        if (now - (session.lastActivity || 0) > SESSION_TTL) {
+          doctorSessions.delete(id);
+          cleaned++;
+        }
+      }
+      if (cleaned > 0) {
+        console.log(`[SESSIONS] Cleaned ${cleaned} stale sessions (client: ${clientSessions.size}, doctor: ${doctorSessions.size})`);
+      }
+    }, 60 * 60 * 1000);
 
     // Run cleanup once on startup
     cleanupExpiredCodes().catch(err => {

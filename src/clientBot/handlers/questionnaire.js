@@ -30,7 +30,9 @@ export function getSession(telegramId) {
   if (!clientSessions.has(telegramId)) {
     clientSessions.set(telegramId, createSessionData());
   }
-  return clientSessions.get(telegramId);
+  const session = clientSessions.get(telegramId);
+  session.lastActivity = Date.now();
+  return session;
 }
 
 export function clearSession(telegramId) {

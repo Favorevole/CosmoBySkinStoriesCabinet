@@ -10,6 +10,11 @@ export async function handleReviewRating(ctx) {
     const rating = parseInt(ctx.match[1]);
     const applicationId = parseInt(ctx.match[2]);
 
+    if (!rating || rating < 1 || rating > 5) {
+      await ctx.editMessageText('Ошибка. Попробуйте ещё раз.');
+      return;
+    }
+
     const telegramId = ctx.from.id;
     const client = await getClientByTelegramId(telegramId);
 

@@ -531,7 +531,11 @@ router.patch('/templates/:id', async (req, res) => {
     if (category !== undefined && category && category.length > 100) {
       return res.status(400).json({ error: 'Категория не более 100 символов' });
     }
-    const template = await updateTemplate(id, req.doctor.id, req.body);
+    const cleanData = {};
+    if (title !== undefined) cleanData.title = title.trim();
+    if (text !== undefined) cleanData.text = text.trim();
+    if (category !== undefined) cleanData.category = category?.trim() || null;
+    const template = await updateTemplate(id, req.doctor.id, cleanData);
     res.json({ success: true, template });
   } catch (error) {
     if (error.message === 'Template not found') {
@@ -604,7 +608,11 @@ router.patch('/programs/:id', async (req, res) => {
     if (steps !== undefined && JSON.stringify(steps).length > 50000) {
       return res.status(400).json({ error: 'Данные шагов слишком большие' });
     }
-    const program = await updateProgram(id, req.doctor.id, req.body);
+    const cleanData = {};
+    if (title !== undefined) cleanData.title = title.trim();
+    if (description !== undefined) cleanData.description = description?.trim() || null;
+    if (steps !== undefined) cleanData.steps = steps;
+    const program = await updateProgram(id, req.doctor.id, cleanData);
     res.json({ success: true, program });
   } catch (error) {
     if (error.message === 'Program not found') {
@@ -690,7 +698,13 @@ router.patch('/products/:id', async (req, res) => {
     if (notes !== undefined && notes && notes.length > 5000) {
       return res.status(400).json({ error: 'Заметки не более 5000 символов' });
     }
-    const product = await updateProduct(id, req.doctor.id, req.body);
+    const cleanData = {};
+    if (name !== undefined) cleanData.name = name.trim();
+    if (brand !== undefined) cleanData.brand = brand?.trim() || null;
+    if (category !== undefined) cleanData.category = category?.trim() || null;
+    if (url !== undefined) cleanData.url = url?.trim() || null;
+    if (notes !== undefined) cleanData.notes = notes?.trim() || null;
+    const product = await updateProduct(id, req.doctor.id, cleanData);
     res.json({ success: true, product });
   } catch (error) {
     if (error.message === 'Product not found') {
