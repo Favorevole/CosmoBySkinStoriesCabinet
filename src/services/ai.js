@@ -142,7 +142,7 @@ export async function generateRecommendation(application) {
     };
   } catch (error) {
     console.error('[AI] Error generating recommendation:', error.message);
-    return { error: `Ошибка AI: ${error.message}` };
+    return { error: 'Ошибка AI. Попробуйте ещё раз или напишите рекомендацию вручную.' };
   }
 }
 
@@ -177,6 +177,6 @@ export async function refineRecommendation(history, instruction) {
     };
   } catch (error) {
     console.error('[AI] Error refining recommendation:', error.message);
-    return { error: `Ошибка AI: ${error.message}` };
+    return { error: 'Ошибка AI. Попробуйте ещё раз.' };
   }
 }

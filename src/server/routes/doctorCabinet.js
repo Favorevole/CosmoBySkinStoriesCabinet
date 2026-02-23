@@ -201,7 +201,7 @@ router.get('/applications/:id/photos/:photoId', async (req, res) => {
 
     res.set('Content-Type', photo.mimeType);
     res.set('Content-Disposition', `inline; filename="${photo.fileName}"`);
-    res.set('Cache-Control', 'private, max-age=86400');
+    res.set('Cache-Control', 'no-store');
     res.send(data);
   } catch (error) {
     console.error('[DOCTOR_CABINET] Photo error:', error);
@@ -498,7 +498,7 @@ router.get('/templates', async (req, res) => {
 router.post('/templates', async (req, res) => {
   try {
     const { title, text, category } = req.body;
-    if (!title || !text) {
+    if (!title?.trim() || !text?.trim()) {
       return res.status(400).json({ error: 'title и text обязательны' });
     }
     if (title.length > 200) {
@@ -507,7 +507,10 @@ router.post('/templates', async (req, res) => {
     if (text.length > 10000) {
       return res.status(400).json({ error: 'Текст не более 10000 символов' });
     }
-    const template = await createTemplate(req.doctor.id, { title, text, category });
+    if (category && category.length > 100) {
+      return res.status(400).json({ error: 'Категория не более 100 символов' });
+    }
+    const template = await createTemplate(req.doctor.id, { title: title.trim(), text: text.trim(), category: category?.trim() || null });
     res.json({ success: true, template });
   } catch (error) {
     console.error('[DOCTOR_CABINET] Template create error:', error);
@@ -518,6 +521,16 @@ router.post('/templates', async (req, res) => {
 router.patch('/templates/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id);
+    const { title, text, category } = req.body;
+    if (title !== undefined && (!title.trim() || title.length > 200)) {
+      return res.status(400).json({ error: 'Название: от 1 до 200 символов' });
+    }
+    if (text !== undefined && (!text.trim() || text.length > 10000)) {
+      return res.status(400).json({ error: 'Текст: от 1 до 10000 символов' });
+    }
+    if (category !== undefined && category && category.length > 100) {
+      return res.status(400).json({ error: 'Категория не более 100 символов' });
+    }
     const template = await updateTemplate(id, req.doctor.id, req.body);
     res.json({ success: true, template });
   } catch (error) {
@@ -558,13 +571,19 @@ router.get('/programs', async (req, res) => {
 router.post('/programs', async (req, res) => {
   try {
     const { title, description, steps } = req.body;
-    if (!title) {
+    if (!title?.trim()) {
       return res.status(400).json({ error: 'title обязателен' });
     }
     if (title.length > 200) {
       return res.status(400).json({ error: 'Название не более 200 символов' });
     }
-    const program = await createProgram(req.doctor.id, { title, description, steps });
+    if (description && description.length > 5000) {
+      return res.status(400).json({ error: 'Описание не более 5000 символов' });
+    }
+    if (steps && JSON.stringify(steps).length > 50000) {
+      return res.status(400).json({ error: 'Данные шагов слишком большие' });
+    }
+    const program = await createProgram(req.doctor.id, { title: title.trim(), description, steps });
     res.json({ success: true, program });
   } catch (error) {
     console.error('[DOCTOR_CABINET] Program create error:', error);
@@ -575,6 +594,16 @@ router.post('/programs', async (req, res) => {
 router.patch('/programs/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id);
+    const { title, description, steps } = req.body;
+    if (title !== undefined && (!title.trim() || title.length > 200)) {
+      return res.status(400).json({ error: 'Название: от 1 до 200 символов' });
+    }
+    if (description !== undefined && description && description.length > 5000) {
+      return res.status(400).json({ error: 'Описание не более 5000 символов' });
+    }
+    if (steps !== undefined && JSON.stringify(steps).length > 50000) {
+      return res.status(400).json({ error: 'Данные шагов слишком большие' });
+    }
     const program = await updateProgram(id, req.doctor.id, req.body);
     res.json({ success: true, program });
   } catch (error) {
@@ -625,6 +654,12 @@ router.post('/products', async (req, res) => {
     if (url && url.length > 2048) {
       return res.status(400).json({ error: 'URL не более 2048 символов' });
     }
+    if (brand && brand.length > 200) {
+      return res.status(400).json({ error: 'Бренд не более 200 символов' });
+    }
+    if (category && category.length > 100) {
+      return res.status(400).json({ error: 'Категория не более 100 символов' });
+    }
     if (notes && notes.length > 5000) {
       return res.status(400).json({ error: 'Заметки не более 5000 символов' });
     }
@@ -639,6 +674,22 @@ router.post('/products', async (req, res) => {
 router.patch('/products/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id);
+    const { name, brand, category, url, notes } = req.body;
+    if (name !== undefined && (!name.trim() || name.length > 200)) {
+      return res.status(400).json({ error: 'Название: от 1 до 200 символов' });
+    }
+    if (brand !== undefined && brand && brand.length > 200) {
+      return res.status(400).json({ error: 'Бренд не более 200 символов' });
+    }
+    if (category !== undefined && category && category.length > 100) {
+      return res.status(400).json({ error: 'Категория не более 100 символов' });
+    }
+    if (url !== undefined && url && url.length > 2048) {
+      return res.status(400).json({ error: 'URL не более 2048 символов' });
+    }
+    if (notes !== undefined && notes && notes.length > 5000) {
+      return res.status(400).json({ error: 'Заметки не более 5000 символов' });
+    }
     const product = await updateProduct(id, req.doctor.id, req.body);
     res.json({ success: true, product });
   } catch (error) {
