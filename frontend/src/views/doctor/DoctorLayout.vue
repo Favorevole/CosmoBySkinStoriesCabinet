@@ -312,6 +312,7 @@ nav {
     overflow-x: auto;
   }
   .nav-item {
+    position: relative;
     flex-direction: column;
     min-height: 52px;
     padding: 6px 4px 4px;

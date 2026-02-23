@@ -164,6 +164,7 @@ async function doLinkEmail() {
   error.value = null;
   try {
     await linkEmail(linkEmailData.value.email, linkEmailData.value.password);
+    linkEmailData.value = { email: '', password: '' };
     const res = await getDoctorMe();
     doctor.value = res.data;
   } catch (e) {
@@ -191,6 +192,7 @@ async function doLinkTelegram() {
   error.value = null;
   try {
     await linkTelegram(linkTgData.value.telegramId, linkTgData.value.code);
+    linkTgData.value = { telegramId: '', code: '' };
     const res = await getDoctorMe();
     doctor.value = res.data;
     telegramStep.value = 1;

@@ -291,12 +291,12 @@ function getDraftKey(appId) {
 
 function saveDraft() {
   if (!app.value || !recText.value) return;
-  localStorage.setItem(getDraftKey(app.value.id), recText.value);
+  sessionStorage.setItem(getDraftKey(app.value.id), recText.value);
 }
 
 function clearDraft() {
   if (!app.value) return;
-  localStorage.removeItem(getDraftKey(app.value.id));
+  sessionStorage.removeItem(getDraftKey(app.value.id));
 }
 
 watch(recText, (val) => {
@@ -316,7 +316,7 @@ onMounted(async () => {
 
     // Restore draft if application is still ASSIGNED and no recommendation yet
     if (res.data.status === 'ASSIGNED' && !res.data.recommendation) {
-      const draft = localStorage.getItem(getDraftKey(id));
+      const draft = sessionStorage.getItem(getDraftKey(id));
       if (draft) {
         recText.value = draft;
         draftRestoredMsg.value = 'Черновик восстановлен';
@@ -324,7 +324,7 @@ onMounted(async () => {
       }
     } else {
       // Clean up stale draft
-      localStorage.removeItem(getDraftKey(id));
+      sessionStorage.removeItem(getDraftKey(id));
     }
   } catch (e) {
     error.value = e.response?.data?.error || 'Ошибка загрузки';
@@ -453,6 +453,7 @@ async function submitRequestPhotos() {
   try {
     await requestPhotos(app.value.id, photoRequestMessage.value);
     showRequestPhotos.value = false;
+    photoRequestMessage.value = '';
     showSuccess('Запрос на фото отправлен клиенту');
   } catch (e) {
     error.value = e.response?.data?.error || 'Ошибка';

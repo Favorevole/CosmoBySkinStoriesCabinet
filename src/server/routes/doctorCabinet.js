@@ -293,6 +293,10 @@ router.post('/applications/:id/request-photos', async (req, res) => {
     const applicationId = parseInt(req.params.id);
     const { message } = req.body;
 
+    if (message && message.length > 500) {
+      return res.status(400).json({ error: 'Сообщение не более 500 символов' });
+    }
+
     const application = await getApplicationById(applicationId);
     if (!application || application.doctorId !== req.doctor.id) {
       return res.status(403).json({ error: 'Access denied' });
