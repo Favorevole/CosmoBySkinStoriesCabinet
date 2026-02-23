@@ -27,6 +27,15 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'email, password и fullName обязательны' });
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email) || email.length > 254) {
+      return res.status(400).json({ error: 'Некорректный формат email' });
+    }
+
+    if (fullName.length > 200) {
+      return res.status(400).json({ error: 'ФИО не более 200 символов' });
+    }
+
     if (password.length < 6) {
       return res.status(400).json({ error: 'Пароль должен быть не менее 6 символов' });
     }
@@ -371,6 +380,11 @@ router.post('/link-email', authenticateDoctor, async (req, res) => {
       return res.status(400).json({ error: 'email и password обязательны' });
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email) || email.length > 254) {
+      return res.status(400).json({ error: 'Некорректный формат email' });
+    }
+
     if (password.length < 6) {
       return res.status(400).json({ error: 'Пароль должен быть не менее 6 символов' });
     }
@@ -396,9 +410,24 @@ router.patch('/profile', authenticateDoctor, async (req, res) => {
     const { fullName, specialization, bio } = req.body;
     const updateData = {};
 
-    if (fullName !== undefined) updateData.fullName = fullName;
-    if (specialization !== undefined) updateData.specialization = specialization;
-    if (bio !== undefined) updateData.bio = bio;
+    if (fullName !== undefined) {
+      if (!fullName.trim() || fullName.length > 200) {
+        return res.status(400).json({ error: 'ФИО: от 1 до 200 символов' });
+      }
+      updateData.fullName = fullName.trim();
+    }
+    if (specialization !== undefined) {
+      if (specialization.length > 200) {
+        return res.status(400).json({ error: 'Специализация не более 200 символов' });
+      }
+      updateData.specialization = specialization.trim() || null;
+    }
+    if (bio !== undefined) {
+      if (bio.length > 5000) {
+        return res.status(400).json({ error: 'Био не более 5000 символов' });
+      }
+      updateData.bio = bio.trim() || null;
+    }
 
     if (Object.keys(updateData).length === 0) {
       return res.status(400).json({ error: 'Нет данных для обновления' });

@@ -198,7 +198,7 @@
       <div v-if="showDeclineModal" class="modal-overlay" @click.self="showDeclineModal = false">
         <div class="modal">
           <h3>Отклонить заявку</h3>
-          <textarea v-model="declineReason" placeholder="Причина отклонения..." rows="4" class="rec-textarea"></textarea>
+          <textarea v-model="declineReason" placeholder="Причина отклонения..." rows="4" maxlength="1000" class="rec-textarea"></textarea>
           <div class="editor-actions" style="margin-top:12px;">
             <button @click="showDeclineModal = false" class="btn btn-secondary">Отмена</button>
             <button @click="submitDecline" :disabled="submitting" class="btn btn-danger">Отклонить</button>
@@ -210,7 +210,7 @@
       <div v-if="showRequestPhotos" class="modal-overlay" @click.self="showRequestPhotos = false">
         <div class="modal">
           <h3>Запросить фото</h3>
-          <textarea v-model="photoRequestMessage" placeholder="Сообщение клиенту (необязательно)..." rows="3" class="rec-textarea"></textarea>
+          <textarea v-model="photoRequestMessage" placeholder="Сообщение клиенту (необязательно)..." rows="3" maxlength="500" class="rec-textarea"></textarea>
           <div class="editor-actions" style="margin-top:12px;">
             <button @click="showRequestPhotos = false" class="btn btn-secondary">Отмена</button>
             <button @click="submitRequestPhotos" :disabled="submitting" class="btn btn-primary">Отправить</button>

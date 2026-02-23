@@ -68,11 +68,19 @@ router.get('/dashboard', async (req, res) => {
 
 router.get('/applications', async (req, res) => {
   try {
-    const { status, page = 1, limit = 20 } = req.query;
     const doctorId = req.doctor.id;
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.max(1, Math.min(parseInt(req.query.limit) || 20, 100));
+    const { status } = req.query;
 
+    const validStatuses = ['ASSIGNED', 'RESPONSE_GIVEN', 'APPROVED', 'SENT_TO_CLIENT', 'DECLINED'];
     const where = { doctorId };
-    if (status) where.status = status;
+    if (status) {
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ error: 'Некорректный статус' });
+      }
+      where.status = status;
+    }
 
     const [total, applications] = await Promise.all([
       prisma.application.count({ where }),
@@ -98,8 +106,8 @@ router.get('/applications', async (req, res) => {
           }
         },
         orderBy: { assignedAt: 'desc' },
-        skip: (parseInt(page) - 1) * parseInt(limit),
-        take: parseInt(limit)
+        skip: (page - 1) * limit,
+        take: limit
       })
     ]);
 
@@ -111,8 +119,8 @@ router.get('/applications', async (req, res) => {
       })),
       pagination: {
         total,
-        page: parseInt(page),
-        limit: parseInt(limit),
+        page,
+        limit,
         totalPages: Math.ceil(total / parseInt(limit))
       }
     });
@@ -210,6 +218,10 @@ router.post('/applications/:id/recommendation', async (req, res) => {
       return res.status(400).json({ error: 'Рекомендация должна быть не менее 50 символов' });
     }
 
+    if (links && (!Array.isArray(links) || links.some(l => !l || typeof l.url !== 'string'))) {
+      return res.status(400).json({ error: 'Неверный формат ссылок' });
+    }
+
     const application = await prisma.application.findUnique({
       where: { id: applicationId },
       select: { doctorId: true, status: true }
@@ -255,6 +267,10 @@ router.post('/applications/:id/decline', async (req, res) => {
   try {
     const applicationId = parseInt(req.params.id);
     const { reason } = req.body;
+
+    if (reason && reason.length > 1000) {
+      return res.status(400).json({ error: 'Причина отклонения не более 1000 символов' });
+    }
 
     const application = await prisma.application.findUnique({
       where: { id: applicationId },
@@ -382,7 +398,7 @@ router.post('/applications/:id/ai-refine', aiLimiter, async (req, res) => {
     const MAX_MESSAGE_LENGTH = 5000;
     const isValidHistory = history.every(m =>
       m && typeof m.role === 'string' && validRoles.has(m.role) &&
-      typeof m.content === 'string' && m.content.length <= MAX_MESSAGE_LENGTH
+      typeof m.content === 'string' && m.content.length > 0 && m.content.length <= MAX_MESSAGE_LENGTH
     );
     if (!isValidHistory) {
       return res.status(400).json({ error: 'Неверный формат history или сообщение слишком длинное' });
@@ -600,13 +616,19 @@ router.get('/products', async (req, res) => {
 router.post('/products', async (req, res) => {
   try {
     const { name, brand, category, url, notes } = req.body;
-    if (!name) {
+    if (!name || !name.trim()) {
       return res.status(400).json({ error: 'name обязателен' });
     }
     if (name.length > 200) {
       return res.status(400).json({ error: 'Название не более 200 символов' });
     }
-    const product = await createProduct(req.doctor.id, { name, brand, category, url, notes });
+    if (url && url.length > 2048) {
+      return res.status(400).json({ error: 'URL не более 2048 символов' });
+    }
+    if (notes && notes.length > 5000) {
+      return res.status(400).json({ error: 'Заметки не более 5000 символов' });
+    }
+    const product = await createProduct(req.doctor.id, { name: name.trim(), brand, category, url, notes });
     res.json({ success: true, product });
   } catch (error) {
     console.error('[DOCTOR_CABINET] Product create error:', error);
