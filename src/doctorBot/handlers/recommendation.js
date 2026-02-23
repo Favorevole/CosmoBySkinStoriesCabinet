@@ -142,6 +142,12 @@ export async function handleConfirmRecommendation(ctx) {
       return;
     }
 
+    if (application.status !== 'ASSIGNED') {
+      await ctx.answerCbQuery('По этой заявке уже дан ответ');
+      clearSession(telegramId);
+      return;
+    }
+
     // Extract links
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const urls = session.recommendationText.match(urlRegex) || [];

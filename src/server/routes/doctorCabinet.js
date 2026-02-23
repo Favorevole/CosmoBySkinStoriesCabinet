@@ -269,7 +269,17 @@ router.post('/applications/:id/decline', async (req, res) => {
       return res.status(400).json({ error: 'Нельзя отклонить эту заявку' });
     }
 
-    await declineApplication(applicationId, req.doctor.id, reason || 'Отклонено врачом');
+    const declineReason = reason || 'Отклонено врачом';
+    await declineApplication(applicationId, req.doctor.id, declineReason);
+
+    // Notify admins about decline (matching bot behavior)
+    try {
+      const { notifyAdminsDecline } = await import('../../services/notifications.js');
+      const fullApp = await getApplicationById(applicationId);
+      await notifyAdminsDecline(fullApp, declineReason);
+    } catch (e) {
+      console.error('[DOCTOR_CABINET] Failed to notify admins about decline:', e.message);
+    }
 
     res.json({ success: true });
   } catch (error) {
