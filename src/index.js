@@ -6,8 +6,10 @@ import { createDoctorBot, startDoctorBot, stopDoctorBot, getDoctorBot } from './
 import { setClientBot, setDoctorBot } from './services/notifications.js';
 import { cleanupExpiredCodes } from './db/auth.js';
 import { cleanupAnalytics } from './db/analytics.js';
+import { cleanupOldNotifications } from './db/notifications.js';
 import { clientSessions } from './clientBot/handlers/questionnaire.js';
 import { doctorSessions } from './doctorBot/handlers/start.js';
+import { cleanupChatSessions } from './clientBot/handlers/chat.js';
 
 console.log(`
 ╔═══════════════════════════════════════════╗
@@ -70,7 +72,19 @@ async function main() {
       }
     }, 24 * 60 * 60 * 1000);
 
-    // 8. Bot session cleanup — every hour (TTL 24 hours for idle sessions)
+    // 8. Notification cleanup — every 24 hours (TTL 30 days for read notifications)
+    setInterval(async () => {
+      try {
+        const cleaned = await cleanupOldNotifications(30);
+        if (cleaned > 0) {
+          console.log(`[NOTIFICATIONS] Cleaned ${cleaned} old read notifications`);
+        }
+      } catch (error) {
+        console.error('[NOTIFICATIONS] Cleanup error:', error.message);
+      }
+    }, 24 * 60 * 60 * 1000);
+
+    // 9. Bot session cleanup — every hour (TTL 24 hours for idle sessions)
     const SESSION_TTL = 24 * 60 * 60 * 1000;
     setInterval(() => {
       const now = Date.now();
@@ -87,6 +101,9 @@ async function main() {
           cleaned++;
         }
       }
+      // Cleanup expired chat sessions
+      const chatCleaned = cleanupChatSessions();
+      cleaned += chatCleaned;
       if (cleaned > 0) {
         console.log(`[SESSIONS] Cleaned ${cleaned} stale sessions (client: ${clientSessions.size}, doctor: ${doctorSessions.size})`);
       }

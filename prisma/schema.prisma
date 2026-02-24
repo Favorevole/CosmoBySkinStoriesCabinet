@@ -101,6 +101,8 @@ model Doctor {
   careTemplates    CareTemplate[]
   carePrograms     CareProgram[]
   products         DoctorProduct[]
+  notifications    Notification[]
+  algorithms       CareAlgorithm[]
 
   @@index([telegramId])
   @@index([status])
@@ -165,6 +167,8 @@ model Application {
   statusHistory     StatusHistory[]
   review            Review?
   payment           Payment?
+  notifications     Notification[]
+  messages          Message[]
 
   @@index([clientId])
   @@index([doctorId])
@@ -355,7 +359,8 @@ model CareTemplate {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  doctor     Doctor          @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  algorithms CareAlgorithm[]
 
   @@index([doctorId])
   @@map("care_templates")
@@ -370,7 +375,8 @@ model CareProgram {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  doctor      Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  doctor      Doctor          @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  algorithms  CareAlgorithm[]
 
   @@index([doctorId])
   @@map("care_programs")
@@ -392,4 +398,82 @@ model DoctorProduct {
   @@index([doctorId])
   @@index([category])
   @@map("doctor_products")
+}
+
+// ==================== NOTIFICATIONS ====================
+
+enum NotificationType {
+  NEW_APPLICATION
+  STATUS_CHANGE
+  NEW_PHOTOS
+  RECOMMENDATION_APPROVED
+  RECOMMENDATION_DECLINED
+  CHAT_MESSAGE
+}
+
+model Notification {
+  id            Int              @id @default(autoincrement())
+  doctorId      Int              @map("doctor_id")
+  applicationId Int?             @map("application_id")
+  type          NotificationType
+  title         String
+  message       String           @db.Text
+  isRead        Boolean          @default(false) @map("is_read")
+  createdAt     DateTime         @default(now()) @map("created_at")
+
+  doctor        Doctor           @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  application   Application?     @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([doctorId, isRead])
+  @@index([doctorId, createdAt])
+  @@map("notifications")
+}
+
+// ==================== CHAT ====================
+
+enum MessageSender {
+  DOCTOR
+  CLIENT
+}
+
+model Message {
+  id            Int           @id @default(autoincrement())
+  applicationId Int           @map("application_id")
+  senderId      Int?          @map("sender_id")
+  senderType    MessageSender @map("sender_type")
+  text          String        @db.Text
+  isRead        Boolean       @default(false) @map("is_read")
+  createdAt     DateTime      @default(now()) @map("created_at")
+
+  application   Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId, createdAt])
+  @@index([applicationId, isRead])
+  @@map("messages")
+}
+
+// ==================== CARE ALGORITHMS ====================
+
+model CareAlgorithm {
+  id          Int      @id @default(autoincrement())
+  doctorId    Int      @map("doctor_id")
+  name        String
+  description String?  @db.Text
+  rules       Json     // array of conditions
+  matchMode   String   @default("ALL") // "ALL" = all conditions, "ANY" = any
+  outputType  String   // "template" | "program" | "text"
+  templateId  Int?     @map("template_id")
+  programId   Int?     @map("program_id")
+  customText  String?  @map("custom_text") @db.Text
+  priority    Int      @default(0)
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  doctor      Doctor        @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  template    CareTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  program     CareProgram?  @relation(fields: [programId], references: [id], onDelete: SetNull)
+
+  @@index([doctorId, isActive])
+  @@map("care_algorithms")
 }

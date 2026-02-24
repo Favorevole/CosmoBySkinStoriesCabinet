@@ -28,6 +28,9 @@ import DoctorTemplates from './views/doctor/DoctorTemplates.vue';
 import DoctorPrograms from './views/doctor/DoctorPrograms.vue';
 import DoctorProducts from './views/doctor/DoctorProducts.vue';
 import DoctorProfile from './views/doctor/DoctorProfile.vue';
+import DoctorNotifications from './views/doctor/DoctorNotifications.vue';
+import DoctorStatistics from './views/doctor/DoctorStatistics.vue';
+import DoctorAlgorithms from './views/doctor/DoctorAlgorithms.vue';
 
 const routes = [
   { path: '/', component: Landing },
@@ -65,6 +68,9 @@ const routes = [
       { path: 'templates', component: DoctorTemplates },
       { path: 'programs', component: DoctorPrograms },
       { path: 'products', component: DoctorProducts },
+      { path: 'notifications', component: DoctorNotifications },
+      { path: 'statistics', component: DoctorStatistics },
+      { path: 'algorithms', component: DoctorAlgorithms },
       { path: 'profile', component: DoctorProfile }
     ]
   }

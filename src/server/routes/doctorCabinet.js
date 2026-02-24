@@ -13,12 +13,85 @@ import { createTemplate, getTemplates, updateTemplate, deleteTemplate } from '..
 import { createProgram, getPrograms, updateProgram, deleteProgram } from '../../db/carePrograms.js';
 import { createProduct, getProducts, updateProduct, deleteProduct } from '../../db/doctorProducts.js';
 import { generateRecommendation, refineRecommendation } from '../../services/ai.js';
+import {
+  getDoctorNotifications,
+  getUnreadCount,
+  markAsRead,
+  markAllAsRead
+} from '../../db/notifications.js';
+import { getDoctorExtendedStats } from '../../db/doctorStats.js';
+import {
+  createMessage,
+  getMessagesByApplication,
+  markMessagesAsRead,
+  getDoctorUnreadChatCount
+} from '../../db/messages.js';
 import prisma from '../../db/prisma.js';
 
 const router = express.Router();
 
 // All routes require doctor auth
 router.use(authenticateDoctor);
+
+// ==================== NOTIFICATIONS ====================
+
+router.get('/notifications', async (req, res) => {
+  try {
+    const limit = Math.max(1, Math.min(parseInt(req.query.limit) || 20, 50));
+    const offset = Math.max(0, parseInt(req.query.offset) || 0);
+    const unreadOnly = req.query.unreadOnly === 'true';
+
+    const result = await getDoctorNotifications(req.doctor.id, { limit, offset, unreadOnly });
+    res.json(result);
+  } catch (error) {
+    console.error('[DOCTOR_CABINET] Notifications error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.get('/notifications/unread-count', async (req, res) => {
+  try {
+    const count = await getUnreadCount(req.doctor.id);
+    res.json({ count });
+  } catch (error) {
+    console.error('[DOCTOR_CABINET] Unread count error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.post('/notifications/:id/read', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    await markAsRead(id, req.doctor.id);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('[DOCTOR_CABINET] Mark read error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.post('/notifications/read-all', async (req, res) => {
+  try {
+    await markAllAsRead(req.doctor.id);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('[DOCTOR_CABINET] Mark all read error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ==================== STATISTICS ====================
+
+router.get('/stats', async (req, res) => {
+  try {
+    const period = ['week', 'month', 'all'].includes(req.query.period) ? req.query.period : 'month';
+    const stats = await getDoctorExtendedStats(req.doctor.id, period);
+    res.json(stats);
+  } catch (error) {
+    console.error('[DOCTOR_CABINET] Stats error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 // ==================== DASHBOARD ====================
 
@@ -726,6 +799,318 @@ router.delete('/products/:id', async (req, res) => {
       return res.status(404).json({ error: 'Продукт не найден' });
     }
     console.error('[DOCTOR_CABINET] Product delete error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ==================== ALGORITHMS ====================
+
+router.get('/algorithms', async (req, res) => {
+  try {
+    const algorithms = await prisma.careAlgorithm.findMany({
+      where: { doctorId: req.doctor.id },
+      include: {
+        template: { select: { id: true, title: true } },
+        program: { select: { id: true, title: true } }
+      },
+      orderBy: [{ priority: 'desc' }, { createdAt: 'desc' }]
+    });
+    res.json({ algorithms });
+  } catch (error) {
+    console.error('[DOCTOR_CABINET] Algorithms list error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.post('/algorithms', async (req, res) => {
+  try {
+    const { name, description, rules, matchMode, outputType, templateId, programId, customText, priority } = req.body;
+
+    if (!name?.trim() || name.length > 200) {
+      return res.status(400).json({ error: 'Название: от 1 до 200 символов' });
+    }
+    if (!Array.isArray(rules) || rules.length === 0) {
+      return res.status(400).json({ error: 'Необходимо хотя бы одно правило' });
+    }
+    if (rules.length > 20) {
+      return res.status(400).json({ error: 'Максимум 20 правил' });
+    }
+    if (!['ALL', 'ANY'].includes(matchMode)) {
+      return res.status(400).json({ error: 'matchMode должен быть ALL или ANY' });
+    }
+    if (!['template', 'program', 'text'].includes(outputType)) {
+      return res.status(400).json({ error: 'outputType должен быть template, program или text' });
+    }
+
+    const algorithm = await prisma.careAlgorithm.create({
+      data: {
+        doctorId: req.doctor.id,
+        name: name.trim(),
+        description: description?.trim() || null,
+        rules,
+        matchMode,
+        outputType,
+        templateId: templateId || null,
+        programId: programId || null,
+        customText: customText?.trim() || null,
+        priority: parseInt(priority) || 0
+      },
+      include: {
+        template: { select: { id: true, title: true } },
+        program: { select: { id: true, title: true } }
+      }
+    });
+    res.json({ success: true, algorithm });
+  } catch (error) {
+    console.error('[DOCTOR_CABINET] Algorithm create error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.patch('/algorithms/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const existing = await prisma.careAlgorithm.findFirst({
+      where: { id, doctorId: req.doctor.id }
+    });
+    if (!existing) {
+      return res.status(404).json({ error: 'Алгоритм не найден' });
+    }
+
+    const { name, description, rules, matchMode, outputType, templateId, programId, customText, priority, isActive } = req.body;
+    const data = {};
+
+    if (name !== undefined) {
+      if (!name.trim() || name.length > 200) return res.status(400).json({ error: 'Название: от 1 до 200 символов' });
+      data.name = name.trim();
+    }
+    if (description !== undefined) data.description = description?.trim() || null;
+    if (rules !== undefined) {
+      if (!Array.isArray(rules) || rules.length === 0) return res.status(400).json({ error: 'Необходимо хотя бы одно правило' });
+      data.rules = rules;
+    }
+    if (matchMode !== undefined) {
+      if (!['ALL', 'ANY'].includes(matchMode)) return res.status(400).json({ error: 'matchMode: ALL или ANY' });
+      data.matchMode = matchMode;
+    }
+    if (outputType !== undefined) {
+      if (!['template', 'program', 'text'].includes(outputType)) return res.status(400).json({ error: 'outputType: template, program или text' });
+      data.outputType = outputType;
+    }
+    if (templateId !== undefined) data.templateId = templateId || null;
+    if (programId !== undefined) data.programId = programId || null;
+    if (customText !== undefined) data.customText = customText?.trim() || null;
+    if (priority !== undefined) data.priority = parseInt(priority) || 0;
+    if (isActive !== undefined) data.isActive = !!isActive;
+
+    const algorithm = await prisma.careAlgorithm.update({
+      where: { id },
+      data,
+      include: {
+        template: { select: { id: true, title: true } },
+        program: { select: { id: true, title: true } }
+      }
+    });
+    res.json({ success: true, algorithm });
+  } catch (error) {
+    console.error('[DOCTOR_CABINET] Algorithm update error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.delete('/algorithms/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const existing = await prisma.careAlgorithm.findFirst({
+      where: { id, doctorId: req.doctor.id }
+    });
+    if (!existing) {
+      return res.status(404).json({ error: 'Алгоритм не найден' });
+    }
+    await prisma.careAlgorithm.delete({ where: { id } });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('[DOCTOR_CABINET] Algorithm delete error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.post('/applications/:id/match-algorithms', async (req, res) => {
+  try {
+    const applicationId = parseInt(req.params.id);
+
+    const application = await prisma.application.findUnique({
+      where: { id: applicationId },
+      select: {
+        doctorId: true,
+        skinType: true,
+        age: true,
+        consultationGoal: true,
+        priceRange: true,
+        mainProblems: true,
+        additionalComment: true,
+        source: true
+      }
+    });
+
+    if (!application || application.doctorId !== req.doctor.id) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    const algorithms = await prisma.careAlgorithm.findMany({
+      where: { doctorId: req.doctor.id, isActive: true },
+      include: {
+        template: { select: { id: true, title: true, text: true } },
+        program: { select: { id: true, title: true, description: true, steps: true } }
+      },
+      orderBy: { priority: 'desc' }
+    });
+
+    const matched = algorithms.filter(algo => {
+      const rules = algo.rules;
+      if (!Array.isArray(rules) || rules.length === 0) return false;
+
+      const results = rules.map(rule => evaluateRule(rule, application));
+
+      return algo.matchMode === 'ALL'
+        ? results.every(r => r)
+        : results.some(r => r);
+    });
+
+    res.json({ algorithms: matched });
+  } catch (error) {
+    console.error('[DOCTOR_CABINET] Match algorithms error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+function evaluateRule(rule, app) {
+  const { field, operator, value } = rule;
+  const appValue = app[field];
+
+  if (appValue === null || appValue === undefined) return false;
+
+  switch (operator) {
+    case 'equals':
+      return String(appValue).toLowerCase() === String(value).toLowerCase();
+    case 'not_equals':
+      return String(appValue).toLowerCase() !== String(value).toLowerCase();
+    case 'in':
+      if (!Array.isArray(value)) return false;
+      return value.map(v => String(v).toLowerCase()).includes(String(appValue).toLowerCase());
+    case 'gte':
+      return Number(appValue) >= Number(value);
+    case 'lte':
+      return Number(appValue) <= Number(value);
+    case 'between':
+      if (!Array.isArray(value) || value.length !== 2) return false;
+      return Number(appValue) >= Number(value[0]) && Number(appValue) <= Number(value[1]);
+    case 'contains':
+      return String(appValue).toLowerCase().includes(String(value).toLowerCase());
+    default:
+      return false;
+  }
+}
+
+// ==================== CHAT ====================
+
+router.get('/applications/:id/messages', async (req, res) => {
+  try {
+    const applicationId = parseInt(req.params.id);
+    const { limit, before } = req.query;
+
+    const application = await prisma.application.findUnique({
+      where: { id: applicationId },
+      select: { doctorId: true }
+    });
+    if (!application || application.doctorId !== req.doctor.id) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    const messages = await getMessagesByApplication(applicationId, {
+      limit: Math.min(parseInt(limit) || 30, 50),
+      before: before || null
+    });
+    res.json({ messages });
+  } catch (error) {
+    console.error('[DOCTOR_CABINET] Messages error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.post('/applications/:id/messages', async (req, res) => {
+  try {
+    const applicationId = parseInt(req.params.id);
+    const { text } = req.body;
+
+    if (!text?.trim() || text.length > 2000) {
+      return res.status(400).json({ error: 'Сообщение от 1 до 2000 символов' });
+    }
+
+    const application = await getApplicationById(applicationId);
+    if (!application || application.doctorId !== req.doctor.id) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    const message = await createMessage(applicationId, 'DOCTOR', text.trim(), req.doctor.id);
+
+    // Send to client via Telegram
+    if (application.client?.telegramId) {
+      try {
+        const { getClientBot } = await import('../../clientBot/index.js');
+        const { Markup } = await import('telegraf');
+        const bot = getClientBot();
+        if (bot) {
+          const appNum = application.displayNumber || application.id;
+          const doctorName = application.doctor?.fullName || 'Врач';
+          await bot.telegram.sendMessage(
+            Number(application.client.telegramId),
+            `Сообщение от врача по заявке #${appNum}:\n\n${text.trim()}`,
+            {
+              ...Markup.inlineKeyboard([
+                [Markup.button.callback('Ответить', `chat_reply_${applicationId}`)]
+              ])
+            }
+          );
+        }
+      } catch (e) {
+        console.error('[DOCTOR_CABINET] Failed to send chat to client:', e.message);
+      }
+    }
+
+    res.json({ success: true, message });
+  } catch (error) {
+    console.error('[DOCTOR_CABINET] Send message error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.post('/applications/:id/messages/read', async (req, res) => {
+  try {
+    const applicationId = parseInt(req.params.id);
+
+    const application = await prisma.application.findUnique({
+      where: { id: applicationId },
+      select: { doctorId: true }
+    });
+    if (!application || application.doctorId !== req.doctor.id) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    await markMessagesAsRead(applicationId, 'DOCTOR');
+    res.json({ success: true });
+  } catch (error) {
+    console.error('[DOCTOR_CABINET] Mark messages read error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.get('/chat/unread-count', async (req, res) => {
+  try {
+    const count = await getDoctorUnreadChatCount(req.doctor.id);
+    res.json({ count });
+  } catch (error) {
+    console.error('[DOCTOR_CABINET] Chat unread count error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

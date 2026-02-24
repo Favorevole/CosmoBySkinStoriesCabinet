@@ -20,6 +20,10 @@
       </div>
     </div>
 
+    <div class="stats-link-row">
+      <router-link to="/doctor/statistics" class="stats-link">Подробная статистика &rarr;</router-link>
+    </div>
+
     <div class="section">
       <h2>Активные заявки</h2>
       <div v-if="recentApplications.length === 0" class="empty">Нет активных заявок</div>
@@ -154,6 +158,17 @@ h2 { font-size: 18px; color: #1a1a1c; margin-bottom: 16px; }
   background: #f0e6d3;
   color: #8b7355;
 }
+
+.stats-link-row {
+  text-align: right;
+  margin-bottom: 24px;
+}
+.stats-link {
+  font-size: 13px;
+  color: #8b7355;
+  text-decoration: none;
+}
+.stats-link:hover { text-decoration: underline; }
 
 .error {
   padding: 16px;

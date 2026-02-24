@@ -87,6 +87,22 @@
         </div>
       </div>
 
+      <!-- Matched algorithms -->
+      <div v-if="matchedAlgorithms.length > 0 && app.status === 'ASSIGNED'" class="card" style="margin-top:20px;">
+        <h2>Подходящие алгоритмы</h2>
+        <div class="algo-matches">
+          <div v-for="algo in matchedAlgorithms" :key="algo.id" class="algo-match-item">
+            <div class="algo-match-info">
+              <span class="algo-match-name">{{ algo.name }}</span>
+              <span class="algo-match-output" v-if="algo.outputType === 'template' && algo.template">Шаблон: {{ algo.template.title }}</span>
+              <span class="algo-match-output" v-else-if="algo.outputType === 'program' && algo.program">Программа: {{ algo.program.title }}</span>
+              <span class="algo-match-output" v-else-if="algo.outputType === 'text'">Свой текст</span>
+            </div>
+            <button @click="applyAlgorithm(algo)" class="btn btn-sm btn-primary">Применить</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Recommendation editor (only for ASSIGNED) -->
       <div v-if="app.status === 'ASSIGNED'" class="card editor-card" style="margin-top:20px;">
         <h2>Написать рекомендацию</h2>
@@ -218,6 +234,14 @@
         </div>
       </div>
 
+      <!-- Chat -->
+      <ChatPanel
+        v-if="showChat"
+        :applicationId="app.id"
+        :clientTelegramId="app.client?.telegramId"
+        style="margin-top:20px;"
+      />
+
       <!-- Photo lightbox -->
       <div v-if="lightboxPhoto" class="modal-overlay lightbox" @click.self="lightboxPhoto = null">
         <img :src="getPhotoUrl(lightboxPhoto.id)" :alt="lightboxPhoto.fileName">
@@ -231,13 +255,14 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import {
   getDoctorApplication, getDoctorPhotoUrl, submitRecommendation,
   declineApplication, requestPhotos, aiGenerate, aiRefine,
-  getTemplates, getProductsList, getPrograms
+  getTemplates, getProductsList, getPrograms, matchAlgorithms
 } from '../../api/doctorCabinet.js';
+import ChatPanel from './components/ChatPanel.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -280,6 +305,15 @@ const lightboxPhoto = ref(null);
 
 // Admin edit notice
 const showOriginalText = ref(false);
+
+// Chat visibility
+const chatExcludedStatuses = ['CANCELLED', 'PENDING_PAYMENT', 'NEW'];
+const showChat = computed(() => {
+  return app.value && !chatExcludedStatuses.includes(app.value.status);
+});
+
+// Matched algorithms
+const matchedAlgorithms = ref([]);
 
 // Draft auto-save
 const draftRestoredMsg = ref(null);
@@ -332,16 +366,19 @@ onMounted(async () => {
     loading.value = false;
   }
 
-  // Load tools data
+  // Load tools data and match algorithms
   try {
-    const [tRes, pRes, prRes] = await Promise.all([
-      getTemplates(),
-      getProductsList(),
-      getPrograms()
-    ]);
-    templates.value = tRes.data.templates || [];
-    products.value = pRes.data.products || [];
-    programs.value = prRes.data.programs || [];
+    const promises = [getTemplates(), getProductsList(), getPrograms()];
+    if (app.value?.status === 'ASSIGNED') {
+      promises.push(matchAlgorithms(parseInt(route.params.id)));
+    }
+    const results = await Promise.all(promises);
+    templates.value = results[0].data.templates || [];
+    products.value = results[1].data.products || [];
+    programs.value = results[2].data.programs || [];
+    if (results[3]) {
+      matchedAlgorithms.value = results[3].data.algorithms || [];
+    }
   } catch (e) {
     // Non-critical
   }
@@ -364,6 +401,16 @@ function insertProduct(p) {
   const text = p.url ? `${p.brand ? p.brand + ' ' : ''}${p.name} [${p.url}]` : `${p.brand ? p.brand + ' ' : ''}${p.name}`;
   recText.value += (recText.value ? '\n' : '') + text;
   showProductModal.value = false;
+}
+
+function applyAlgorithm(algo) {
+  if (algo.outputType === 'template' && algo.template) {
+    insertTemplate(algo.template);
+  } else if (algo.outputType === 'program' && algo.program) {
+    insertProgram(algo.program);
+  } else if (algo.outputType === 'text' && algo.customText) {
+    recText.value += (recText.value ? '\n\n' : '') + algo.customText;
+  }
 }
 
 function insertProgram(pr) {
@@ -786,6 +833,16 @@ h3 { font-size: 16px; color: #1a1a1c; margin-bottom: 12px; }
   background: #fefce8;
   border: 1px dashed #fde68a;
 }
+
+.algo-matches { display: flex; flex-direction: column; gap: 8px; }
+.algo-match-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px; border: 1px solid #e8e4db; border-radius: 10px;
+  background: #faf9f7;
+}
+.algo-match-info { display: flex; flex-direction: column; gap: 2px; }
+.algo-match-name { font-weight: 600; font-size: 14px; color: #1a1a1c; }
+.algo-match-output { font-size: 12px; color: #8b7355; }
 
 .draft-notice {
   padding: 8px 12px;

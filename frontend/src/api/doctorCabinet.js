@@ -57,6 +57,23 @@ export const updateDoctorProfile = (data) =>
 export const changeDoctorPassword = (currentPassword, newPassword) =>
   api.post('/doctor-auth/change-password', { currentPassword, newPassword });
 
+// Notifications
+export const getDoctorNotifications = (params) =>
+  api.get('/doctor-cabinet/notifications', { params });
+
+export const getNotificationUnreadCount = () =>
+  api.get('/doctor-cabinet/notifications/unread-count');
+
+export const markNotificationRead = (id) =>
+  api.post(`/doctor-cabinet/notifications/${id}/read`);
+
+export const markAllNotificationsRead = () =>
+  api.post('/doctor-cabinet/notifications/read-all');
+
+// Statistics
+export const getDoctorStats = (period) =>
+  api.get('/doctor-cabinet/stats', { params: { period } });
+
 // Dashboard
 export const getDoctorDashboard = () =>
   api.get('/doctor-cabinet/dashboard');
@@ -132,5 +149,34 @@ export const updateProduct = (id, data) =>
 
 export const deleteProduct = (id) =>
   api.delete(`/doctor-cabinet/products/${id}`);
+
+// Algorithms
+export const getAlgorithms = () =>
+  api.get('/doctor-cabinet/algorithms');
+
+export const createAlgorithm = (data) =>
+  api.post('/doctor-cabinet/algorithms', data);
+
+export const updateAlgorithm = (id, data) =>
+  api.patch(`/doctor-cabinet/algorithms/${id}`, data);
+
+export const deleteAlgorithm = (id) =>
+  api.delete(`/doctor-cabinet/algorithms/${id}`);
+
+export const matchAlgorithms = (applicationId) =>
+  api.post(`/doctor-cabinet/applications/${applicationId}/match-algorithms`);
+
+// Chat
+export const getMessages = (applicationId, params) =>
+  api.get(`/doctor-cabinet/applications/${applicationId}/messages`, { params });
+
+export const sendMessage = (applicationId, text) =>
+  api.post(`/doctor-cabinet/applications/${applicationId}/messages`, { text });
+
+export const markChatRead = (applicationId) =>
+  api.post(`/doctor-cabinet/applications/${applicationId}/messages/read`);
+
+export const getChatUnreadCount = () =>
+  api.get('/doctor-cabinet/chat/unread-count');
 
 export default api;

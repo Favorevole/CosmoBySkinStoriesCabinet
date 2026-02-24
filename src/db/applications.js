@@ -244,6 +244,47 @@ export async function updateApplicationStatus(applicationId, status, changedById
     }
   });
 
+  // Cabinet notification for doctor on status changes
+  if (application.doctorId) {
+    try {
+      const { createCabinetNotification } = await import('../services/notifications-cabinet.js');
+      const appNum = application.displayNumber || applicationId;
+      const statusLabels = {
+        APPROVED: 'Рекомендация одобрена',
+        DECLINED: 'Рекомендация отклонена',
+        SENT_TO_CLIENT: 'Отправлена клиенту'
+      };
+
+      if (status === 'APPROVED') {
+        await createCabinetNotification(
+          application.doctorId,
+          'RECOMMENDATION_APPROVED',
+          `Заявка #${appNum} одобрена`,
+          `Ваша рекомендация по заявке #${appNum} была одобрена администратором.`,
+          applicationId
+        );
+      } else if (status === 'DECLINED' && changedByRole === 'ADMIN') {
+        await createCabinetNotification(
+          application.doctorId,
+          'RECOMMENDATION_DECLINED',
+          `Заявка #${appNum} отклонена`,
+          `Администратор отклонил рекомендацию по заявке #${appNum}.${comment ? ' Причина: ' + comment : ''}`,
+          applicationId
+        );
+      } else if (statusLabels[status]) {
+        await createCabinetNotification(
+          application.doctorId,
+          'STATUS_CHANGE',
+          `${statusLabels[status]} — #${appNum}`,
+          `Статус заявки #${appNum} изменён на "${statusLabels[status]}".`,
+          applicationId
+        );
+      }
+    } catch (e) {
+      console.error('[APPLICATIONS] Cabinet notification error:', e.message);
+    }
+  }
+
   return application;
 }
 

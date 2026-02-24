@@ -41,6 +41,7 @@ import {
 } from './handlers/review.js';
 import { handlePayment, handlePaymentPromo, handlePaymentPromoInput, handleCancelApplication } from './handlers/payment.js';
 import { handleGift, handleBuyGift } from './handlers/gift.js';
+import { handleStartChatReply, handleChatMessage } from './handlers/chat.js';
 
 let bot = null;
 let botInfo = null;
@@ -121,6 +122,9 @@ export function createClientBot() {
   bot.action(/^pay_(\d+)$/, handlePayment);
   bot.action(/^cancel_app_(\d+)$/, handleCancelApplication);
 
+  // Callback queries - chat reply
+  bot.action(/^chat_reply_(\d+)$/, handleStartChatReply);
+
   // Callback queries - reviews
   bot.action(/^review_(\d+)_(\d+)$/, handleReviewRating);
   bot.action(/^skip_review_text_(\d+)$/, handleSkipReviewText);
@@ -130,6 +134,10 @@ export function createClientBot() {
 
   // Text handler
   bot.on('text', async (ctx) => {
+    // Check if user is in chat reply mode
+    const chatHandled = await handleChatMessage(ctx);
+    if (chatHandled) return;
+
     // Check if user is writing a review
     const reviewHandled = await handleReviewText(ctx);
     if (reviewHandled) return;

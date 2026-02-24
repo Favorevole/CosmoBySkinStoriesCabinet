@@ -32,6 +32,14 @@
           </svg>
           Пациенты
         </router-link>
+        <router-link to="/doctor/statistics" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          Статистика
+        </router-link>
         <router-link to="/doctor/templates" class="nav-item">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
@@ -51,6 +59,13 @@
             <line x1="3" y1="18" x2="3.01" y2="18"/>
           </svg>
           Программы
+        </router-link>
+        <router-link to="/doctor/algorithms" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+          </svg>
+          Алгоритмы
         </router-link>
         <router-link to="/doctor/products" class="nav-item">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -82,6 +97,11 @@
       </div>
     </aside>
     <main class="main">
+      <div class="main-header">
+        <div class="main-header-right">
+          <NotificationBell />
+        </div>
+      </div>
       <div v-if="loadError" class="load-error">
         Не удалось загрузить данные. <a href="#" @click.prevent="location.reload()">Обновить страницу</a>
       </div>
@@ -94,6 +114,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getDoctorMe, getDoctorDashboard } from '../../api/doctorCabinet.js';
+import NotificationBell from './components/NotificationBell.vue';
 
 const router = useRouter();
 const doctorName = ref('');
@@ -273,6 +294,17 @@ nav {
   margin-left: 260px;
   min-height: 100vh;
 }
+.main-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 12px 32px 0;
+}
+.main-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .load-error {
   margin: 16px 32px;
   padding: 12px 16px;
@@ -338,6 +370,9 @@ nav {
     height: 16px;
     padding: 0 4px;
     font-size: 9px;
+  }
+  .main-header {
+    padding: 8px 16px 0;
   }
   .main {
     margin-left: 0;

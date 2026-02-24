@@ -117,6 +117,21 @@ ${application.additionalComment ? `💬 *Комментарий:* ${application.
   } catch (error) {
     console.error('[NOTIFICATIONS] Error notifying doctor:', error);
   }
+
+  // Cabinet notification
+  try {
+    const { createCabinetNotification } = await import('./notifications-cabinet.js');
+    const appNum = application.displayNumber || application.id;
+    await createCabinetNotification(
+      doctor.id,
+      'NEW_APPLICATION',
+      `Новая заявка #${appNum}`,
+      `Вам назначена заявка #${appNum}. Возраст: ${application.age}, тип кожи: ${formatSkinType(application.skinType)}.`,
+      application.id
+    );
+  } catch (e) {
+    console.error('[NOTIFICATIONS] Cabinet notification error:', e.message);
+  }
 }
 
 // Escape Telegram Markdown v1 special characters
@@ -449,6 +464,22 @@ export async function notifyDoctorNewPhotos(applicationId, doctorId, photoCount)
     console.log(`[NOTIFICATIONS] Notified doctor ${doctorId} about ${photoCount} new photos for application #${applicationId}`);
   } catch (error) {
     console.error('[NOTIFICATIONS] Error notifying doctor about new photos:', error);
+  }
+
+  // Cabinet notification
+  try {
+    const { createCabinetNotification } = await import('./notifications-cabinet.js');
+    const appForNotif = await prisma.application.findUnique({ where: { id: applicationId }, select: { displayNumber: true } });
+    const num = appForNotif?.displayNumber || applicationId;
+    await createCabinetNotification(
+      doctorId,
+      'NEW_PHOTOS',
+      `Новые фото к заявке #${num}`,
+      `Клиент добавил ${photoCount} фото к заявке #${num}.`,
+      applicationId
+    );
+  } catch (e) {
+    console.error('[NOTIFICATIONS] Cabinet photo notification error:', e.message);
   }
 }
 
