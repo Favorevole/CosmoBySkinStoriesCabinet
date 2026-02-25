@@ -129,6 +129,13 @@ function getSkinTypeText(skinType) {
   padding: 0 20px;
 }
 
+@media (min-width: 1024px) {
+  .modern-page {
+    max-width: 900px;
+    padding: 40px 32px;
+  }
+}
+
 .page-header {
   margin-bottom: 32px;
 }

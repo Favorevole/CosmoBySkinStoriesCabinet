@@ -246,6 +246,13 @@ function getStatusText(status) {
   padding: 0 20px;
 }
 
+@media (min-width: 1024px) {
+  .modern-page {
+    max-width: 900px;
+    padding: 40px 32px;
+  }
+}
+
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -529,6 +536,12 @@ h3 {
   max-width: 500px;
   max-height: 85vh;
   overflow-y: auto;
+}
+
+@media (min-width: 1024px) {
+  .modal {
+    max-width: 900px;
+  }
 }
 
 .field {

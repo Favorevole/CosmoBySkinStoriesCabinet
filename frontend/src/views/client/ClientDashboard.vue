@@ -205,6 +205,13 @@ function getStatusText(status) {
   padding: 32px 20px 100px;
 }
 
+@media (min-width: 1024px) {
+  .dashboard-content {
+    max-width: 900px;
+    padding: 40px 32px;
+  }
+}
+
 /* Hero Section with Greeting */
 .hero-section {
   position: relative;
