@@ -2,7 +2,10 @@ import prisma from './prisma.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+if (!process.env.JWT_SECRET) {
+  throw new Error('CRITICAL SECURITY ERROR: JWT_SECRET environment variable is required but not set');
+}
+const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '30d';
 
 /**

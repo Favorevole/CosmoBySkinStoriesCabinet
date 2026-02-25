@@ -97,6 +97,23 @@ router.post('/applications', upload.array('photos', 6), async (req, res) => {
       });
     }
 
+    // Input length validation
+    if (fullName && fullName.length > 200) {
+      return res.status(400).json({ error: 'Имя не должно превышать 200 символов' });
+    }
+
+    if (mainProblems && JSON.stringify(mainProblems).length > 5000) {
+      return res.status(400).json({ error: 'Описание проблем не должно превышать 5000 символов' });
+    }
+
+    if (additionalComment && additionalComment.length > 5000) {
+      return res.status(400).json({ error: 'Комментарий не должен превышать 5000 символов' });
+    }
+
+    if (additionalProducts && additionalProducts.length > 2000) {
+      return res.status(400).json({ error: 'Описание продуктов не должно превышать 2000 символов' });
+    }
+
     if (files.length > 6) {
       return res.status(400).json({
         error: 'Maximum 6 photos allowed'
@@ -211,10 +228,13 @@ router.post('/validate-promo', async (req, res) => {
 /**
  * POST /api/web/applications/:id/pay
  * Process payment for web application (optionally with promo code)
+ *
+ * SECURITY NOTE: This endpoint should verify that the request comes from
+ * the application owner. Consider adding a one-time token or session check.
  */
 router.post('/applications/:id/pay', async (req, res) => {
   try {
-    const applicationId = parseInt(req.params.id);
+    const applicationId = parseInt(req.params.id, 10);
     if (isNaN(applicationId)) {
       return res.status(400).json({ error: 'Invalid application ID' });
     }
@@ -224,6 +244,12 @@ router.post('/applications/:id/pay', async (req, res) => {
 
     if (!application) {
       return res.status(404).json({ error: 'Application not found' });
+    }
+
+    // SECURITY: Check if application belongs to current session/IP
+    // For now, only check application source to prevent cross-source attacks
+    if (application.source !== 'WEB') {
+      return res.status(403).json({ error: 'Invalid application source' });
     }
 
     if (application.status !== 'PENDING_PAYMENT') {
@@ -258,13 +284,26 @@ router.post('/applications/:id/pay', async (req, res) => {
 /**
  * GET /api/web/application/:id/status
  * Check application status (public, but limited info)
+ *
+ * SECURITY NOTE: This endpoint is rate-limited and returns minimal information.
+ * Consider requiring authentication or a one-time access token for production.
  */
 router.get('/application/:id/status', async (req, res) => {
   try {
+    const applicationId = parseInt(req.params.id, 10);
+    if (isNaN(applicationId)) {
+      return res.status(400).json({ error: 'Invalid application ID' });
+    }
+
     const { getApplicationById } = await import('../../db/applications.js');
-    const application = await getApplicationById(parseInt(req.params.id));
+    const application = await getApplicationById(applicationId);
 
     if (!application) {
+      return res.status(404).json({ error: 'Application not found' });
+    }
+
+    // Only allow status check for WEB applications to prevent enumeration
+    if (application.source !== 'WEB') {
       return res.status(404).json({ error: 'Application not found' });
     }
 
@@ -278,13 +317,12 @@ router.get('/application/:id/status', async (req, res) => {
       DECLINED: 'Заявка отклонена'
     };
 
+    // Return minimal information only
     res.json({
-      id: application.id,
       displayNumber: application.displayNumber || application.id,
       status: application.status,
       statusMessage: statusMessages[application.status] || application.status,
-      createdAt: application.createdAt,
-      hasDoctor: !!application.doctorId
+      // Don't return createdAt, hasDoctor to prevent information leakage
     });
 
   } catch (error) {

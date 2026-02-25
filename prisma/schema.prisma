@@ -322,6 +322,8 @@ model Review {
   client        Client?      @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
   @@index([isApproved])
+  @@index([clientId])
+  @@index([isApproved, createdAt])
   @@map("reviews")
 }
 
@@ -381,6 +383,7 @@ model AnalyticsEvent {
   @@index([visitorId])
   @@index([event])
   @@index([createdAt])
+  @@index([visitorId, event])
   @@map("analytics_events")
 }
 
@@ -473,6 +476,7 @@ model Notification {
 
   @@index([doctorId, isRead])
   @@index([doctorId, createdAt])
+  @@index([createdAt])
   @@map("notifications")
 }
 
@@ -511,6 +515,7 @@ model Message {
 
   @@index([applicationId, createdAt])
   @@index([applicationId, isRead])
+  @@index([applicationId, senderType, isRead])
   @@map("messages")
 }
 

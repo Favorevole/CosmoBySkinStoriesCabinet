@@ -504,6 +504,16 @@ router.get('/patients', async (req, res) => {
   try {
     const doctorId = req.doctor.id;
 
+    // Pagination
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 50));
+    const skip = (page - 1) * limit;
+
+    // Get total count for pagination
+    const totalApplications = await prisma.application.count({
+      where: { doctorId }
+    });
+
     const applications = await prisma.application.findMany({
       where: { doctorId },
       select: {
@@ -519,7 +529,9 @@ router.get('/patients', async (req, res) => {
           }
         }
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit
     });
 
     // Group by client
@@ -550,7 +562,15 @@ router.get('/patients', async (req, res) => {
     const patients = Array.from(clientMap.values())
       .sort((a, b) => new Date(b.lastApplicationDate) - new Date(a.lastApplicationDate));
 
-    res.json({ patients });
+    res.json({
+      patients,
+      pagination: {
+        page,
+        limit,
+        totalApplications,
+        totalPages: Math.ceil(totalApplications / limit)
+      }
+    });
   } catch (error) {
     console.error('[DOCTOR_CABINET] Patients error:', error);
     res.status(500).json({ error: 'Internal server error' });

@@ -81,8 +81,8 @@ const webFormLimiter = rateLimit({
 });
 
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 200,
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Reduced from 200 for better security
   message: { error: 'Too many requests' }
 });
 
