@@ -1,59 +1,50 @@
 <template>
-  <div class="layout">
-    <nav class="sidebar">
-      <div class="sidebar-header">
-        <h2>Личный кабинет</h2>
-        <p v-if="client">{{ client.fullName }}</p>
-      </div>
-
-      <div class="nav-links">
-        <router-link to="/client/dashboard" class="nav-link">
-          <span class="icon">📊</span>
-          <span>Dashboard</span>
-        </router-link>
-
-        <router-link to="/client/consultations" class="nav-link">
-          <span class="icon">📋</span>
-          <span>Мои консультации</span>
-        </router-link>
-
-        <router-link to="/client/care-scheme" class="nav-link">
-          <span class="icon">🧴</span>
-          <span>Схема ухода</span>
-        </router-link>
-
-        <router-link to="/client/procedures" class="nav-link">
-          <span class="icon">💆</span>
-          <span>Процедуры</span>
-        </router-link>
-
-        <router-link to="/client/timeline" class="nav-link">
-          <span class="icon">📸</span>
-          <span>Таймлайн кожи</span>
-        </router-link>
-
-        <router-link to="/client/subscription" class="nav-link">
-          <span class="icon">💳</span>
-          <span>Подписка</span>
-        </router-link>
-
-        <router-link to="/client/profile" class="nav-link">
-          <span class="icon">👤</span>
-          <span>Профиль</span>
+  <div class="modern-layout">
+    <!-- Top Header (Mobile) -->
+    <header class="top-header">
+      <div class="header-content">
+        <div class="brand">
+          <div class="brand-square">SKIN</div>
+          <span class="brand-text">stories</span>
+        </div>
+        <router-link to="/client/profile" class="profile-button">
+          <span class="profile-icon">👤</span>
         </router-link>
       </div>
+    </header>
 
-      <div class="sidebar-footer">
-        <button @click="handleLogout" class="btn-logout">
-          <span class="icon">🚪</span>
-          <span>Выйти</span>
-        </button>
-      </div>
-    </nav>
-
+    <!-- Main Content -->
     <main class="main-content">
       <router-view />
     </main>
+
+    <!-- Bottom Navigation (Mobile First) -->
+    <nav class="bottom-nav">
+      <router-link to="/client/dashboard" class="nav-item">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Главная</span>
+      </router-link>
+
+      <router-link to="/client/consultations" class="nav-item">
+        <span class="nav-icon">💬</span>
+        <span class="nav-label">Консультации</span>
+      </router-link>
+
+      <router-link to="/client/care-scheme" class="nav-item nav-item-center">
+        <span class="nav-icon-large">🧴</span>
+        <span class="nav-label">Уход</span>
+      </router-link>
+
+      <router-link to="/client/procedures" class="nav-item">
+        <span class="nav-icon">💆</span>
+        <span class="nav-label">Процедуры</span>
+      </router-link>
+
+      <router-link to="/client/timeline" class="nav-item">
+        <span class="nav-icon">📸</span>
+        <span class="nav-label">Таймлайн</span>
+      </router-link>
+    </nav>
   </div>
 </template>
 
@@ -98,139 +89,244 @@ function handleLogout() {
 </script>
 
 <style scoped>
-.layout {
-  display: flex;
+/* Modern Mobile-First Layout */
+.modern-layout {
   min-height: 100vh;
   background: #faf9f7;
-}
-
-.sidebar {
-  width: 280px;
-  background: #fff;
-  border-right: 1px solid #e8e4db;
   display: flex;
   flex-direction: column;
-  position: fixed;
-  height: 100vh;
-  overflow-y: auto;
 }
 
-.sidebar-header {
-  padding: 32px 24px;
-  border-bottom: 1px solid #e8e4db;
+/* Top Header */
+.top-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(232, 228, 219, 0.5);
 }
 
-.sidebar-header h2 {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 24px;
-  color: #1a1a1c;
-  margin: 0 0 8px 0;
-}
-
-.sidebar-header p {
-  font-size: 14px;
-  color: #666;
-  margin: 0;
-}
-
-.nav-links {
-  flex: 1;
-  padding: 16px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.nav-link {
+.header-content {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 16px 20px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: 10px;
-  color: #666;
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 500;
-  transition: all 0.2s;
+  justify-content: space-between;
 }
 
-.nav-link:hover {
-  background: #faf9f7;
-  color: #1a1a1c;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.nav-link.router-link-active {
-  background: #8b7355;
+.brand-square {
+  background: #6b4e3d;
   color: #fff;
-}
-
-.nav-link .icon {
-  font-size: 18px;
-  width: 24px;
-  text-align: center;
-}
-
-.sidebar-footer {
-  padding: 16px 12px;
-  border-top: 1px solid #e8e4db;
-}
-
-.btn-logout {
-  width: 100%;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border: none;
-  background: transparent;
-  color: #666;
-  font-size: 15px;
-  font-weight: 500;
-  font-family: 'Inter', sans-serif;
-  border-radius: 10px;
-  cursor: pointer;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Cormorant Garamond', serif;
+  letter-spacing: 1px;
+}
+
+.brand-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  color: #6b4e3d;
+  letter-spacing: 0.5px;
+}
+
+.profile-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f5e6d3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
   transition: all 0.2s;
 }
 
-.btn-logout:hover {
-  background: #fee;
-  color: #c33;
+.profile-button:hover {
+  background: #e8d5c4;
+  transform: scale(1.05);
 }
 
-.btn-logout .icon {
-  font-size: 18px;
-  width: 24px;
-  text-align: center;
+.profile-icon {
+  font-size: 20px;
 }
 
+/* Main Content */
 .main-content {
-  margin-left: 280px;
   flex: 1;
   padding: 32px;
-  max-width: 1200px;
+  padding-bottom: 100px;
+  max-width: 100%;
+  width: 100%;
 }
 
-@media (max-width: 768px) {
-  .sidebar {
-    width: 100%;
-    position: relative;
-    height: auto;
-    border-right: none;
-    border-bottom: 1px solid #e8e4db;
+/* Bottom Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(232, 228, 219, 0.5);
+  padding: 12px 8px 20px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.06);
+  z-index: 100;
+  max-width: 500px;
+  margin: 0 auto;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 32px 32px 0 0;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 16px;
+  transition: all 0.3s;
+  min-width: 60px;
+}
+
+.nav-item:hover {
+  background: rgba(232, 213, 196, 0.3);
+}
+
+.nav-item.router-link-active {
+  background: transparent;
+}
+
+.nav-item.router-link-active .nav-icon,
+.nav-item.router-link-active .nav-icon-large {
+  transform: scale(1.15);
+}
+
+.nav-item.router-link-active .nav-label {
+  color: #6b4e3d;
+  font-weight: 700;
+}
+
+.nav-icon {
+  font-size: 24px;
+  transition: transform 0.3s;
+}
+
+.nav-label {
+  font-size: 10px;
+  color: #999;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.3s;
+  letter-spacing: 0.3px;
+}
+
+/* Center Item (Featured) */
+.nav-item-center {
+  position: relative;
+  margin: -20px 0 0;
+}
+
+.nav-icon-large {
+  font-size: 32px;
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #8b7355 0%, #a89079 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(107, 78, 61, 0.25);
+  transition: transform 0.3s;
+}
+
+.nav-item-center .nav-label {
+  margin-top: 8px;
+}
+
+/* Desktop View */
+@media (min-width: 769px) {
+  .modern-layout {
+    max-width: 500px;
+    margin: 0 auto;
+    box-shadow: 0 0 48px rgba(0, 0, 0, 0.08);
+  }
+
+  .top-header {
+    max-width: 500px;
   }
 
   .main-content {
-    margin-left: 0;
-    padding: 20px 16px;
+    max-width: 500px;
   }
 
-  .nav-links {
-    flex-direction: row;
-    overflow-x: auto;
+  .bottom-nav {
+    max-width: 500px;
+  }
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .bottom-nav {
+    width: 100%;
+    max-width: 100%;
+    left: 0;
+    transform: none;
+    border-radius: 24px 24px 0 0;
+    padding: 10px 4px 16px;
   }
 
-  .nav-link span:not(.icon) {
-    display: none;
+  .nav-item {
+    min-width: 56px;
+    padding: 6px 8px;
+  }
+
+  .nav-icon {
+    font-size: 22px;
+  }
+
+  .nav-label {
+    font-size: 9px;
+  }
+
+  .nav-icon-large {
+    width: 56px;
+    height: 56px;
+    font-size: 28px;
+  }
+
+  .nav-item-center {
+    margin-top: -16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .nav-label {
+    font-size: 8px;
+  }
+
+  .nav-item {
+    min-width: 50px;
+    padding: 4px 6px;
   }
 }
 </style>

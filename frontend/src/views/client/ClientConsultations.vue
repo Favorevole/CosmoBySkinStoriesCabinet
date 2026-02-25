@@ -1,57 +1,66 @@
 <template>
-  <div class="page">
-    <h1>Мои консультации</h1>
-
-    <div v-if="loading" class="loading">Загрузка...</div>
-    <div v-else-if="consultations.length === 0" class="empty">
-      <p>У вас пока нет консультаций</p>
-      <a href="/" class="btn btn-primary">Заказать консультацию</a>
+  <div class="modern-page">
+    <div class="page-header">
+      <h1>Консультации</h1>
+      <p class="page-subtitle">История ваших обращений</p>
     </div>
-    <div v-else class="consultations-list">
+
+    <div v-if="loading" class="loading">
+      <div class="loading-spinner">⏳</div>
+      <p>Загружаем консультации...</p>
+    </div>
+
+    <div v-else-if="consultations.length === 0" class="empty-state">
+      <div class="empty-illustration">
+        <div class="empty-circle">
+          <span class="empty-icon">💬</span>
+        </div>
+      </div>
+      <h3>Начните свою историю</h3>
+      <p>Получите персональные рекомендации<br>от косметолога</p>
+      <a href="/" class="cta-button">
+        <span class="cta-icon">✨</span>
+        <span>Новая консультация</span>
+      </a>
+    </div>
+
+    <div v-else class="consultations-grid">
       <div
         v-for="consultation in consultations"
         :key="consultation.id"
         class="consultation-card"
       >
-        <div class="card-header">
-          <div class="card-date">
-            📅 {{ formatDate(consultation.createdAt) }}
-          </div>
-          <span :class="'status-badge status-' + consultation.status">
+        <div class="card-top">
+          <div class="card-date">{{ formatDate(consultation.createdAt) }}</div>
+          <div class="card-status">
             {{ getStatusText(consultation.status) }}
-          </span>
-        </div>
-
-        <div class="card-body">
-          <div class="card-info">
-            <div class="info-item">
-              <strong>Тип кожи:</strong> {{ getSkinTypeText(consultation.skinType) }}
-            </div>
-            <div class="info-item">
-              <strong>Цель:</strong> {{ consultation.consultationGoal || 'Полный уход' }}
-            </div>
-            <div v-if="consultation.doctor" class="info-item">
-              <strong>Врач:</strong> {{ consultation.doctor.fullName }}
-            </div>
-          </div>
-
-          <div v-if="consultation.photos && consultation.photos.length" class="card-photos">
-            <small>📷 Фото: {{ consultation.photos.length }}</small>
-          </div>
-
-          <div v-if="consultation.recommendation" class="card-recommendation">
-            ✅ Рекомендация получена
           </div>
         </div>
 
-        <div class="card-footer">
-          <router-link
-            :to="`/client/consultations/${consultation.id}`"
-            class="btn-link"
-          >
-            Подробнее →
-          </router-link>
+        <div class="card-details">
+          <div class="detail-row">
+            <span class="detail-icon">🧪</span>
+            <span class="detail-text">{{ getSkinTypeText(consultation.skinType) }}</span>
+          </div>
+
+          <div v-if="consultation.doctor" class="detail-row">
+            <span class="detail-icon">👨‍⚕️</span>
+            <span class="detail-text">{{ consultation.doctor.fullName }}</span>
+          </div>
+
+          <div v-if="consultation.photos && consultation.photos.length" class="detail-row">
+            <span class="detail-icon">📷</span>
+            <span class="detail-text">{{ consultation.photos.length }} фото</span>
+          </div>
         </div>
+
+        <router-link
+          :to="`/client/consultations/${consultation.id}`"
+          class="card-action"
+        >
+          Подробнее
+          <span class="arrow">→</span>
+        </router-link>
       </div>
     </div>
   </div>
@@ -92,14 +101,14 @@ function formatDate(dateString) {
 
 function getStatusText(status) {
   const statusMap = {
-    'PENDING_PAYMENT': 'Ожидает оплаты',
-    'NEW': 'Новая',
-    'ASSIGNED': 'Назначена врачу',
-    'RESPONSE_GIVEN': 'Ответ готов',
-    'APPROVED': 'Одобрено',
-    'SENT_TO_CLIENT': 'Отправлено',
-    'DECLINED': 'Отклонено',
-    'CANCELLED': 'Отменено'
+    'PENDING_PAYMENT': '💳 Ожидает оплаты',
+    'NEW': '🆕 Заявка получена',
+    'ASSIGNED': '👨‍⚕️ Врач изучает',
+    'RESPONSE_GIVEN': '✅ Рекомендации готовы',
+    'APPROVED': '✅ Одобрено',
+    'SENT_TO_CLIENT': '📨 Отправлено',
+    'DECLINED': '❌ Отклонено',
+    'CANCELLED': '❌ Отменено'
   };
   return statusMap[status] || status;
 }
@@ -116,162 +125,230 @@ function getSkinTypeText(skinType) {
 </script>
 
 <style scoped>
-.page {
-  max-width: 1000px;
+/* Modern Page Layout */
+.modern-page {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-h1 {
+.page-header {
+  margin-bottom: 32px;
+}
+
+.page-header h1 {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 32px;
-  color: #1a1a1c;
+  font-size: 36px;
+  color: #3a2a1f;
+  margin: 0 0 8px 0;
+  font-weight: 500;
+}
+
+.page-subtitle {
+  font-size: 15px;
+  color: #a89079;
+  margin: 0;
+}
+
+/* Loading State */
+.loading {
+  text-align: center;
+  padding: 80px 20px;
+  color: #a89079;
+}
+
+.loading-spinner {
+  font-size: 56px;
+  margin-bottom: 20px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.loading p {
+  font-size: 16px;
+  margin: 0;
+  color: #8b7355;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.empty-illustration {
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.empty-circle {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, #f5e6d3 0%, #e8d5c4 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-icon {
+  font-size: 56px;
+}
+
+.empty-state h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  color: #3a2a1f;
+  margin: 0 0 12px 0;
+  font-weight: 500;
+}
+
+.empty-state p {
+  font-size: 15px;
+  color: #999;
+  line-height: 1.6;
   margin: 0 0 32px 0;
 }
 
-.loading,
-.empty {
-  text-align: center;
-  padding: 48px;
-  color: #999;
-}
-
-.empty p {
-  margin-bottom: 20px;
-  font-size: 16px;
-}
-
-.btn {
-  display: inline-block;
-  padding: 12px 24px;
-  font-size: 15px;
-  font-weight: 600;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-  font-family: 'Inter', sans-serif;
-}
-
-.btn-primary {
-  background: #8b7355;
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 32px;
+  background: linear-gradient(135deg, #8b7355 0%, #a89079 100%);
   color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 100px;
+  text-decoration: none;
+  transition: all 0.3s;
+  box-shadow: 0 4px 16px rgba(107, 78, 61, 0.25);
 }
 
-.btn-primary:hover {
-  background: #7a6348;
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(107, 78, 61, 0.3);
 }
 
-.consultations-list {
+.cta-icon {
+  font-size: 20px;
+}
+
+/* Consultations Grid */
+.consultations-grid {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  margin-bottom: 24px;
 }
 
 .consultation-card {
   background: #fff;
-  border: 1px solid #e8e4db;
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s;
 }
 
-.card-header {
+.consultation-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.card-top {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
+  align-items: flex-start;
+  margin-bottom: 20px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #e8e4db;
+  border-bottom: 1px solid #f5e6d3;
 }
 
 .card-date {
-  font-size: 14px;
-  color: #666;
+  font-size: 13px;
+  color: #a89079;
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
 
-.status-badge {
-  padding: 6px 12px;
-  border-radius: 6px;
+.card-status {
   font-size: 12px;
+  padding: 6px 12px;
+  background: rgba(232, 213, 196, 0.5);
+  border-radius: 100px;
+  color: #6b4e3d;
   font-weight: 600;
 }
 
-.status-SENT_TO_CLIENT,
-.status-APPROVED {
-  background: #dcfce7;
-  color: #16a34a;
-}
-
-.status-NEW,
-.status-ASSIGNED,
-.status-RESPONSE_GIVEN {
-  background: #fef3c7;
-  color: #d97706;
-}
-
-.status-PENDING_PAYMENT {
-  background: #e0e7ff;
-  color: #4f46e5;
-}
-
-.status-DECLINED,
-.status-CANCELLED {
-  background: #fee;
-  color: #c33;
-}
-
-.card-body {
+.card-details {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  margin-bottom: 20px;
 }
 
-.card-info {
+.detail-row {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.info-item {
+  align-items: center;
+  gap: 10px;
   font-size: 14px;
-  color: #666;
 }
 
-.info-item strong {
-  color: #1a1a1c;
-  font-weight: 600;
+.detail-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
 }
 
-.card-photos,
-.card-recommendation {
-  font-size: 13px;
-  color: #666;
+.detail-text {
+  color: #3a2a1f;
+  font-weight: 500;
 }
 
-.card-recommendation {
-  color: #16a34a;
-  font-weight: 600;
-}
-
-.card-footer {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #e8e4db;
-}
-
-.btn-link {
+.card-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   color: #8b7355;
   font-weight: 600;
+  font-size: 14px;
   text-decoration: none;
+  padding: 10px 0;
+  transition: all 0.2s;
 }
 
-.btn-link:hover {
-  text-decoration: underline;
+.card-action:hover {
+  color: #6b4e3d;
 }
 
-@media (max-width: 640px) {
-  .card-header {
+.card-action:hover .arrow {
+  transform: translateX(4px);
+}
+
+.arrow {
+  transition: transform 0.2s;
+  display: inline-block;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .page-header h1 {
+    font-size: 32px;
+  }
+
+  .consultation-card {
+    padding: 20px;
+  }
+
+  .card-top {
     flex-direction: column;
-    align-items: flex-start;
     gap: 8px;
+    align-items: flex-start;
   }
 }
 </style>
