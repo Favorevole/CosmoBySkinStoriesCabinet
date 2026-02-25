@@ -308,6 +308,14 @@ export async function handleYooKassaWebhook(body) {
     return;
   }
 
+  // Route subscription payments separately
+  if (paymentData.metadata?.subscriptionId) {
+    console.log(`[PAYMENT] Webhook: subscription payment, id=${yookassaPaymentId}, status=${status}`);
+    const { handleSubscriptionPaymentWebhook } = await import('./subscriptionPayment.js');
+    await handleSubscriptionPaymentWebhook(body);
+    return;
+  }
+
   const applicationId = parseInt(paymentData.metadata?.applicationId);
 
   console.log(`[PAYMENT] Webhook: event=${event}, paymentId=${yookassaPaymentId}, status=${status}, appId=${applicationId}`);

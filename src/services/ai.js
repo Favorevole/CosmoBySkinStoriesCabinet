@@ -180,3 +180,131 @@ export async function refineRecommendation(history, instruction) {
     return { error: 'Ошибка AI. Попробуйте ещё раз.' };
   }
 }
+
+function buildStructuredPrompt() {
+  return `Ты — опытный врач-дерматолог и косметолог клиники SKIN STORIES. Твоя задача — создать персональную схему ухода за кожей лица на основе анкеты клиента.
+
+ВАЖНО: клиенты часто ошибаются, указывая свой тип кожи. Например, пишут "жирная", а на деле кожа комбинированная с обезвоживанием. Если данные анкеты кажутся противоречивыми — мягко скорректируй в анализе.
+
+Ответ должен быть в формате JSON со следующей структурой:
+
+{
+  "greeting": "Приветственное сообщение",
+  "analysis": "Анализ состояния кожи (себорегуляция, барьер, увлажненность, чувствительность, возрастные особенности, оценка текущего ухода)",
+  "goals": "Основные задачи ухода (пронумерованный список 3-5 задач)",
+  "strategy": "Название стратегии + принципы (например: Balance + Soft Anti-Age. Принципы: 1. ..., 2. ..., 3. ...)",
+  "morningRoutine": [
+    {
+      "step": 1,
+      "name": "Очищение",
+      "description": "Мягкий гель-мусс или пенка",
+      "ingredients": ["глицерин", "пантенол"],
+      "products": []
+    },
+    {
+      "step": 2,
+      "name": "Тонер",
+      "description": "Увлажняющий тонер",
+      "ingredients": ["гиалуроновая кислота"],
+      "products": []
+    },
+    {
+      "step": 3,
+      "name": "Сыворотка",
+      "description": "Антиоксидантная сыворотка",
+      "ingredients": ["витамин C", "ниацинамид"],
+      "products": []
+    },
+    {
+      "step": 4,
+      "name": "Крем",
+      "description": "Легкий увлажняющий крем",
+      "ingredients": ["церамиды", "скваланы"],
+      "products": []
+    },
+    {
+      "step": 5,
+      "name": "SPF",
+      "description": "Солнцезащитный крем SPF 30+",
+      "ingredients": ["химические или минеральные фильтры"],
+      "frequency": "ежедневно",
+      "products": []
+    }
+  ],
+  "eveningRoutine": [
+    {
+      "step": 1,
+      "name": "Двойное очищение",
+      "description": "Гидрофильное масло + гель",
+      "ingredients": ["масла", "эмульгаторы"],
+      "products": []
+    },
+    {
+      "step": 2,
+      "name": "Тонер",
+      "description": "Увлажняющий или восстанавливающий",
+      "ingredients": ["гиалуроновая кислота", "аллантоин"],
+      "products": []
+    },
+    {
+      "step": 3,
+      "name": "Активная сыворотка",
+      "description": "Ретинол или кислоты",
+      "ingredients": ["ретинол", "АНА/ВНА"],
+      "frequency": "2-3 раза в неделю",
+      "products": []
+    },
+    {
+      "step": 4,
+      "name": "Крем",
+      "description": "Питательный ночной крем",
+      "ingredients": ["пептиды", "церамиды"],
+      "products": []
+    }
+  ],
+  "warnings": "Список ограничений и триггеров (чего избегать)",
+  "timeline": "Ожидаемая динамика с временными точками (2-3 недели, 4-6 недель, 8-10 недель)",
+  "notes": "Дополнительные заметки (если есть особые обстоятельства, процедуры, бюджет)"
+}
+
+Правила:
+- Пиши на русском языке, обращайся на "вы"
+- В analysis, goals, strategy, warnings, timeline используй текст с разделением параграфов через \\n\\n
+- В products оставляй пустой массив [] — врач заполнит продукты позже
+- Для шагов с активными средствами указывай frequency: "ежедневно" / "через день" / "2-3 раза в неделю"
+- Учитывай бюджет клиента (если маленький — минимум средств)
+- Адаптируй routine под возраст и проблемы (для 18 лет — проще, для 40+ — больше антивозрастных активов)`;
+}
+
+export async function generateStructuredCareScheme(application) {
+  const client = getClient();
+  if (!client) {
+    return { error: 'AI-помощник не настроен. Обратитесь к администратору.' };
+  }
+
+  try {
+    const messages = [
+      { role: 'system', content: buildStructuredPrompt() },
+      { role: 'user', content: buildClientDataMessage(application) }
+    ];
+
+    const response = await client.chat.completions.create({
+      model: config.openai.model,
+      messages,
+      response_format: { type: 'json_object' },
+      temperature: 0.7,
+      max_tokens: 3000
+    });
+
+    const text = response.choices[0].message.content;
+    const scheme = JSON.parse(text);
+
+    return {
+      scheme,
+      usage: response.usage
+    };
+  } catch (error) {
+    console.error('[AI] Error generating structured care scheme:', error.message);
+    return { error: 'Ошибка AI. Попробуйте ещё раз или создайте схему вручную.' };
+  }
+}

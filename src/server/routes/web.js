@@ -6,6 +6,7 @@ import { addPhotoToApplication } from '../../db/photos.js';
 import { notifyAdminsNewApplication } from '../../services/notifications.js';
 import { getSkinProblems, getAdditionalProducts } from '../../db/settings.js';
 import { createPayment, processPayment, createGiftPayment, checkGiftCertificateStatus } from '../../services/payment.js';
+import { getProductById, trackClick } from '../../db/doctorProducts.js';
 
 const router = express.Router();
 
@@ -379,6 +380,42 @@ router.get('/gift/:id/check', async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error('[WEB] Error checking gift status:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * GET /api/web/product/:id/redirect
+ * Public endpoint — track click and redirect to affiliate link
+ */
+router.get('/product/:id/redirect', async (req, res) => {
+  try {
+    const productId = parseInt(req.params.id);
+    if (isNaN(productId)) {
+      return res.status(400).json({ error: 'Invalid product ID' });
+    }
+
+    // Get product
+    const product = await getProductById(productId);
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    // Determine redirect URL (prefer affiliate link, fallback to shopUrl or url)
+    const redirectUrl = product.affiliateLink || product.shopUrl || product.url;
+    if (!redirectUrl) {
+      return res.status(400).json({ error: 'No link available for this product' });
+    }
+
+    // Track click (async, don't wait)
+    trackClick(productId).catch(err => {
+      console.error('[WEB] Error tracking click:', err);
+    });
+
+    // Redirect to product link
+    res.redirect(redirectUrl);
+  } catch (error) {
+    console.error('[WEB] Error redirecting to product:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

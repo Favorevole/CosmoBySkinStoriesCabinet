@@ -11,7 +11,7 @@ import { getPhotoById, getPhotoData } from '../../db/photos.js';
 import { createRecommendation, getRecommendationByApplicationId } from '../../db/recommendations.js';
 import { createTemplate, getTemplates, updateTemplate, deleteTemplate } from '../../db/careTemplates.js';
 import { createProgram, getPrograms, updateProgram, deleteProgram } from '../../db/carePrograms.js';
-import { createProduct, getProducts, updateProduct, deleteProduct } from '../../db/doctorProducts.js';
+import { createProduct, getProducts, updateProduct, deleteProduct, trackClick, getProductById } from '../../db/doctorProducts.js';
 import { generateRecommendation, refineRecommendation } from '../../services/ai.js';
 import {
   getDoctorNotifications,
@@ -726,7 +726,7 @@ router.get('/products', async (req, res) => {
 
 router.post('/products', async (req, res) => {
   try {
-    const { name, brand, category, url, notes } = req.body;
+    const { name, brand, category, url, notes, shopUrl, affiliateLink, shopName, commission, isAffiliate } = req.body;
     if (!name || !name.trim()) {
       return res.status(400).json({ error: 'name обязателен' });
     }
@@ -745,7 +745,34 @@ router.post('/products', async (req, res) => {
     if (notes && notes.length > 5000) {
       return res.status(400).json({ error: 'Заметки не более 5000 символов' });
     }
-    const product = await createProduct(req.doctor.id, { name: name.trim(), brand, category, url, notes });
+    // Validate affiliate fields
+    if (shopUrl && shopUrl.length > 2048) {
+      return res.status(400).json({ error: 'Ссылка на магазин не более 2048 символов' });
+    }
+    if (affiliateLink && affiliateLink.length > 2048) {
+      return res.status(400).json({ error: 'Партнерская ссылка не более 2048 символов' });
+    }
+    if (shopName && shopName.length > 200) {
+      return res.status(400).json({ error: 'Название магазина не более 200 символов' });
+    }
+    if (commission !== undefined && commission !== null) {
+      const commissionNum = parseFloat(commission);
+      if (isNaN(commissionNum) || commissionNum < 0 || commissionNum > 100) {
+        return res.status(400).json({ error: 'Комиссия должна быть от 0 до 100%' });
+      }
+    }
+    const product = await createProduct(req.doctor.id, {
+      name: name.trim(),
+      brand,
+      category,
+      url,
+      notes,
+      shopUrl,
+      affiliateLink,
+      shopName,
+      commission,
+      isAffiliate
+    });
     res.json({ success: true, product });
   } catch (error) {
     console.error('[DOCTOR_CABINET] Product create error:', error);
@@ -756,7 +783,7 @@ router.post('/products', async (req, res) => {
 router.patch('/products/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const { name, brand, category, url, notes } = req.body;
+    const { name, brand, category, url, notes, shopUrl, affiliateLink, shopName, commission, isAffiliate } = req.body;
     if (name !== undefined && (!name.trim() || name.length > 200)) {
       return res.status(400).json({ error: 'Название: от 1 до 200 символов' });
     }
@@ -772,12 +799,33 @@ router.patch('/products/:id', async (req, res) => {
     if (notes !== undefined && notes && notes.length > 5000) {
       return res.status(400).json({ error: 'Заметки не более 5000 символов' });
     }
+    // Validate affiliate fields
+    if (shopUrl !== undefined && shopUrl && shopUrl.length > 2048) {
+      return res.status(400).json({ error: 'Ссылка на магазин не более 2048 символов' });
+    }
+    if (affiliateLink !== undefined && affiliateLink && affiliateLink.length > 2048) {
+      return res.status(400).json({ error: 'Партнерская ссылка не более 2048 символов' });
+    }
+    if (shopName !== undefined && shopName && shopName.length > 200) {
+      return res.status(400).json({ error: 'Название магазина не более 200 символов' });
+    }
+    if (commission !== undefined && commission !== null) {
+      const commissionNum = parseFloat(commission);
+      if (isNaN(commissionNum) || commissionNum < 0 || commissionNum > 100) {
+        return res.status(400).json({ error: 'Комиссия должна быть от 0 до 100%' });
+      }
+    }
     const cleanData = {};
     if (name !== undefined) cleanData.name = name.trim();
     if (brand !== undefined) cleanData.brand = brand?.trim() || null;
     if (category !== undefined) cleanData.category = category?.trim() || null;
     if (url !== undefined) cleanData.url = url?.trim() || null;
     if (notes !== undefined) cleanData.notes = notes?.trim() || null;
+    if (shopUrl !== undefined) cleanData.shopUrl = shopUrl?.trim() || null;
+    if (affiliateLink !== undefined) cleanData.affiliateLink = affiliateLink?.trim() || null;
+    if (shopName !== undefined) cleanData.shopName = shopName?.trim() || null;
+    if (commission !== undefined) cleanData.commission = commission;
+    if (isAffiliate !== undefined) cleanData.isAffiliate = isAffiliate;
     const product = await updateProduct(id, req.doctor.id, cleanData);
     res.json({ success: true, product });
   } catch (error) {

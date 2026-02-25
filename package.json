@@ -12,6 +12,7 @@
     "db:push": "prisma db push --accept-data-loss",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
+    "db:seed-subscriptions": "node scripts/seed-subscriptions.js",
     "frontend:dev": "cd frontend && npm run dev",
     "frontend:build": "cd frontend && npm run build",
     "admin:add": "node scripts/add-admin.js",

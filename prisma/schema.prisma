@@ -62,6 +62,20 @@ enum UserRole {
   ADMIN
 }
 
+enum SubscriptionType {
+  CLIENT_MONTHLY
+  CLIENT_YEARLY
+  DOCTOR_MONTHLY
+  DOCTOR_YEARLY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  PENDING
+}
+
 // ==================== MODELS ====================
 
 model Client {
@@ -69,15 +83,21 @@ model Client {
   telegramId       BigInt?       @unique @map("telegram_id")
   telegramUsername String?       @map("telegram_username")
   fullName         String?       @map("full_name")
-  email            String?
+  email            String?       @unique
+  passwordHash     String?       @map("password_hash")
+  emailVerified    Boolean       @default(false) @map("email_verified")
   phone            String?
   createdAt        DateTime      @default(now()) @map("created_at")
   updatedAt        DateTime      @updatedAt @map("updated_at")
 
   applications     Application[]
   reviews          Review[]
+  procedures       Procedure[]
+  careSchemes      CareScheme[]
+  subscriptions    Subscription[]
 
   @@index([telegramId])
+  @@index([email])
   @@map("clients")
 }
 
@@ -103,6 +123,8 @@ model Doctor {
   products         DoctorProduct[]
   notifications    Notification[]
   algorithms       CareAlgorithm[]
+  careSchemes      CareScheme[]
+  subscriptions    Subscription[]
 
   @@index([telegramId])
   @@index([status])
@@ -169,6 +191,7 @@ model Application {
   payment           Payment?
   notifications     Notification[]
   messages          Message[]
+  careSchemes       CareScheme[]
 
   @@index([clientId])
   @@index([doctorId])
@@ -187,11 +210,22 @@ model Photo {
   s3Key          String?     @map("s3_key")
   sortOrder      Int         @default(0) @map("sort_order")
   telegramFileId String?     @map("telegram_file_id")
+
+  // Timeline and categorization
+  procedureId    Int?        @map("procedure_id")
+  zone           String?     // forehead, cheeks, chin, nose, etc.
+  tags           String[]    // acne, redness, texture, dryness, etc.
+  description    String?     @db.Text
+
   createdAt      DateTime    @default(now()) @map("created_at")
 
   application    Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  procedure      Procedure?  @relation(fields: [procedureId], references: [id], onDelete: SetNull)
 
   @@index([applicationId])
+  @@index([procedureId])
+  @@index([zone])
+  @@index([createdAt])
   @@map("photos")
 }
 
@@ -390,6 +424,18 @@ model DoctorProduct {
   category  String?
   url       String?
   notes     String?  @db.Text
+
+  // Affiliate/Partner links
+  shopUrl       String?  @map("shop_url")         // Direct link to product in store
+  affiliateLink String?  @map("affiliate_link")   // Affiliate/referral link
+  shopName      String?  @map("shop_name")        // Store name (e.g., "Ozon", "Wildberries")
+  commission    Float?                             // Commission percentage (0-100)
+  isAffiliate   Boolean  @default(false) @map("is_affiliate")
+
+  // Analytics
+  clicks        Int      @default(0)              // Number of clicks on link
+  conversions   Int      @default(0)              // Number of purchases/conversions
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -397,6 +443,7 @@ model DoctorProduct {
 
   @@index([doctorId])
   @@index([category])
+  @@index([isAffiliate])
   @@map("doctor_products")
 }
 
@@ -436,6 +483,21 @@ enum MessageSender {
   CLIENT
 }
 
+// ==================== PROCEDURES ====================
+
+enum ProcedureType {
+  HOME_CARE
+  SALON
+  MEDICAL
+}
+
+enum ProcedureStatus {
+  SCHEDULED
+  COMPLETED
+  SKIPPED
+  CANCELLED
+}
+
 model Message {
   id            Int           @id @default(autoincrement())
   applicationId Int           @map("application_id")
@@ -450,6 +512,33 @@ model Message {
   @@index([applicationId, createdAt])
   @@index([applicationId, isRead])
   @@map("messages")
+}
+
+model Procedure {
+  id          Int             @id @default(autoincrement())
+  clientId    Int             @map("client_id")
+  client      Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  type        ProcedureType
+  name        String
+  description String?         @db.Text
+
+  scheduledAt DateTime        @map("scheduled_at")
+  completedAt DateTime?       @map("completed_at")
+  status      ProcedureStatus @default(SCHEDULED)
+
+  notes       String?         @db.Text
+  photoIds    String[]        @map("photo_ids") // Array of photo IDs
+
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+
+  photos      Photo[]
+
+  @@index([clientId])
+  @@index([scheduledAt])
+  @@index([status])
+  @@map("procedures")
 }
 
 // ==================== CARE ALGORITHMS ====================
@@ -476,4 +565,100 @@ model CareAlgorithm {
 
   @@index([doctorId, isActive])
   @@map("care_algorithms")
+}
+
+// ==================== CARE SCHEMES ====================
+
+model CareScheme {
+  id              Int      @id @default(autoincrement())
+  clientId        Int      @map("client_id")
+  client          Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  doctorId        Int?     @map("doctor_id")
+  doctor          Doctor?  @relation(fields: [doctorId], references: [id], onDelete: SetNull)
+
+  applicationId   Int?     @map("application_id")
+  application     Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+
+  version         Int      @default(1)
+  isActive        Boolean  @default(true) @map("is_active")
+
+  // Structured care data
+  morningRoutine  Json     @map("morning_routine")   // {steps: [{step, product, instructions}]}
+  eveningRoutine  Json     @map("evening_routine")
+  weeklyProcedures Json?   @map("weekly_procedures")
+  professionalCare Json?   @map("professional_care")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([clientId])
+  @@index([doctorId])
+  @@index([applicationId])
+  @@index([isActive])
+  @@map("care_schemes")
+}
+
+// ==================== SUBSCRIPTIONS ====================
+
+model SubscriptionPlan {
+  id                Int                @id @default(autoincrement())
+  name              String
+  description       String?            @db.Text
+  type              SubscriptionType
+  price             Int                // в копейках
+  currency          String             @default("RUB")
+
+  // Features
+  consultationsPerMonth Int?           @map("consultations_per_month") // null = unlimited
+  features          Json               // array of feature strings
+
+  isActive          Boolean            @default(true) @map("is_active")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+
+  subscriptions     Subscription[]
+
+  @@index([type, isActive])
+  @@map("subscription_plans")
+}
+
+model Subscription {
+  id                Int                @id @default(autoincrement())
+
+  // Relations - either client or doctor
+  clientId          Int?               @map("client_id")
+  client            Client?            @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  doctorId          Int?               @map("doctor_id")
+  doctor            Doctor?            @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  planId            Int                @map("plan_id")
+  plan              SubscriptionPlan   @relation(fields: [planId], references: [id])
+
+  status            SubscriptionStatus @default(PENDING)
+
+  // Dates
+  startDate         DateTime           @map("start_date")
+  endDate           DateTime           @map("end_date")
+  cancelledAt       DateTime?          @map("cancelled_at")
+
+  // Payment
+  amount            Int                // в копейках
+  currency          String             @default("RUB")
+  paymentId         String?            @map("payment_id") // external payment ID
+
+  // Auto-renewal
+  autoRenew         Boolean            @default(true) @map("auto_renew")
+
+  // Usage tracking
+  consultationsUsed Int                @default(0) @map("consultations_used")
+
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+
+  @@index([clientId, status])
+  @@index([doctorId, status])
+  @@index([status, endDate])
+  @@map("subscriptions")
 }

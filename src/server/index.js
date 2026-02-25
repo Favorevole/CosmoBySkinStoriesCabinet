@@ -17,6 +17,8 @@ import paymentsRoutes from './routes/payments.js';
 import analyticsRoutes from './routes/analytics.js';
 import doctorAuthRoutes from './routes/doctorAuth.js';
 import doctorCabinetRoutes from './routes/doctorCabinet.js';
+import clientCabinetRoutes from './routes/clientCabinet.js';
+import subscriptionsRoutes from './routes/subscriptions.js';
 
 const app = express();
 
@@ -232,6 +234,8 @@ app.use('/api/payments', apiLimiter, paymentsRoutes);
 app.use('/api/analytics', analyticsLimiter, analyticsRoutes);
 app.use('/api/doctor-auth', authLimiter, doctorAuthRoutes);
 app.use('/api/doctor-cabinet', apiLimiter, doctorCabinetRoutes);
+app.use('/api/client', apiLimiter, clientCabinetRoutes);
+app.use('/api/subscriptions', apiLimiter, subscriptionsRoutes);
 
 // Client bot webhook
 app.post('/client-webhook',

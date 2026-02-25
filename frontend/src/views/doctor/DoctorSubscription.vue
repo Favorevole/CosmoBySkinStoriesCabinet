@@ -1,0 +1,533 @@
+<template>
+  <div class="page">
+    <h1>Подписка на платформу</h1>
+    <p class="subtitle">Управление доступом к платформе SKIN STORIES</p>
+
+    <div v-if="loading" class="loading">Загрузка...</div>
+
+    <div v-else>
+      <!-- Current Subscription -->
+      <div v-if="currentSubscription" class="section current-subscription">
+        <div class="section-header">
+          <h2>Текущая подписка</h2>
+          <span class="status-badge active">Активна</span>
+        </div>
+
+        <div class="subscription-card active">
+          <div class="card-header">
+            <h3>{{ currentSubscription.plan.name }}</h3>
+            <div class="price">
+              {{ formatPrice(currentSubscription.plan.price) }}
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="info-row">
+              <span class="label">Период:</span>
+              <span>{{ formatDate(currentSubscription.startDate) }} - {{ formatDate(currentSubscription.endDate) }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Дней до окончания:</span>
+              <span>{{ getDaysLeft(currentSubscription.endDate) }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Автопродление:</span>
+              <span>{{ currentSubscription.autoRenew ? 'Включено' : 'Выключено' }}</span>
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <button
+              v-if="currentSubscription.autoRenew"
+              @click="cancelSubscription(currentSubscription.id)"
+              class="btn btn-secondary"
+            >
+              Отменить автопродление
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Available Plans -->
+      <div class="section">
+        <h2>{{ currentSubscription ? 'Другие тарифы' : 'Выберите тариф' }}</h2>
+
+        <div v-if="availablePlans.length === 0" class="empty">
+          <p>Нет доступных тарифов</p>
+        </div>
+
+        <div v-else class="plans-grid">
+          <div
+            v-for="plan in availablePlans"
+            :key="plan.id"
+            class="plan-card"
+            :class="{ recommended: plan.type === 'DOCTOR_YEARLY' }"
+          >
+            <div v-if="plan.type === 'DOCTOR_YEARLY'" class="recommended-badge">
+              Выгоднее
+            </div>
+
+            <h3>{{ plan.name }}</h3>
+            <div class="plan-price">
+              {{ formatPrice(plan.price) }}
+              <span class="period">/ {{ getPeriodText(plan.type) }}</span>
+            </div>
+
+            <div v-if="plan.description" class="plan-description">
+              {{ plan.description }}
+            </div>
+
+            <ul class="features-list">
+              <li v-for="(feature, idx) in plan.features" :key="idx">
+                ✓ {{ feature }}
+              </li>
+            </ul>
+
+            <button
+              @click="subscribe(plan.id)"
+              :disabled="!!currentSubscription || subscribing"
+              class="btn btn-primary"
+            >
+              {{ currentSubscription ? 'У вас уже есть подписка' : 'Оформить подписку' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subscription History -->
+      <div v-if="history.length > 0" class="section">
+        <h2>История подписок</h2>
+
+        <div class="history-list">
+          <div
+            v-for="sub in history"
+            :key="sub.id"
+            class="history-item"
+          >
+            <div class="history-header">
+              <strong>{{ sub.plan.name }}</strong>
+              <span :class="'status-badge status-' + sub.status.toLowerCase()">
+                {{ getStatusText(sub.status) }}
+              </span>
+            </div>
+            <div class="history-info">
+              <span>{{ formatDate(sub.startDate) }} - {{ formatDate(sub.endDate) }}</span>
+              <span>{{ formatPrice(sub.amount) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted, computed } from 'vue';
+import axios from 'axios';
+
+const loading = ref(true);
+const currentSubscription = ref(null);
+const plans = ref([]);
+const history = ref([]);
+const subscribing = ref(false);
+
+const availablePlans = computed(() => {
+  return plans.value.filter(p => p.type.startsWith('DOCTOR_'));
+});
+
+onMounted(async () => {
+  await loadData();
+});
+
+async function loadData() {
+  loading.value = true;
+  try {
+    const token = localStorage.getItem('doctorToken');
+    const headers = { Authorization: `Bearer ${token}` };
+
+    // Load current subscription
+    const currentRes = await axios.get('/api/subscriptions/doctor/current', { headers });
+    currentSubscription.value = currentRes.data.subscription;
+
+    // Load available plans
+    const plansRes = await axios.get('/api/subscriptions/plans', { headers });
+    plans.value = plansRes.data.plans;
+
+    // Load history
+    const historyRes = await axios.get('/api/subscriptions/doctor/history', { headers });
+    history.value = historyRes.data.subscriptions;
+  } catch (error) {
+    console.error('Subscription data load error:', error);
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function subscribe(planId) {
+  if (subscribing.value) return;
+
+  subscribing.value = true;
+  try {
+    const token = localStorage.getItem('doctorToken');
+    const response = await axios.post(
+      '/api/subscriptions/doctor/subscribe',
+      { planId },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    // Redirect to payment page if paymentUrl is provided
+    if (response.data.paymentUrl) {
+      window.location.href = response.data.paymentUrl;
+    } else {
+      alert(response.data.message || 'Подписка создана');
+      await loadData();
+    }
+  } catch (error) {
+    alert(error.response?.data?.error || 'Ошибка оформления подписки');
+    subscribing.value = false;
+  }
+}
+
+async function cancelSubscription(subscriptionId) {
+  if (!confirm('Вы уверены, что хотите отменить автопродление подписки?')) return;
+
+  try {
+    const token = localStorage.getItem('doctorToken');
+    await axios.post(
+      `/api/subscriptions/doctor/cancel/${subscriptionId}`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    alert('Автопродление отменено. Подписка будет действовать до окончания оплаченного периода.');
+    await loadData();
+  } catch (error) {
+    alert(error.response?.data?.error || 'Ошибка отмены подписки');
+  }
+}
+
+function formatPrice(priceInKopecks) {
+  return `${(priceInKopecks / 100).toFixed(0)} ₽`;
+}
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('ru-RU', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+
+function getPeriodText(type) {
+  if (type.includes('MONTHLY')) return 'месяц';
+  if (type.includes('YEARLY')) return 'год';
+  return '';
+}
+
+function getDaysLeft(endDate) {
+  const now = new Date();
+  const end = new Date(endDate);
+  const diff = end - now;
+  const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+  return days > 0 ? `${days} дн.` : 'Истекла';
+}
+
+function getStatusText(status) {
+  const statusMap = {
+    'ACTIVE': 'Активна',
+    'EXPIRED': 'Истекла',
+    'CANCELLED': 'Отменена',
+    'PENDING': 'Ожидает оплаты'
+  };
+  return statusMap[status] || status;
+}
+</script>
+
+<style scoped>
+.page {
+  max-width: 1200px;
+}
+
+h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px;
+  color: #1a1a1c;
+  margin: 0 0 8px 0;
+}
+
+h2 {
+  font-size: 20px;
+  color: #1a1a1c;
+  margin: 0 0 20px 0;
+}
+
+h3 {
+  font-size: 18px;
+  color: #1a1a1c;
+  margin: 0 0 12px 0;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: #666;
+  margin: 0 0 32px 0;
+}
+
+.loading,
+.empty {
+  text-align: center;
+  padding: 48px;
+  color: #999;
+}
+
+.section {
+  background: #fff;
+  border: 1px solid #e8e4db;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-badge.active,
+.status-badge.status-active {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.status-badge.status-expired {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.status-badge.status-cancelled {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.status-badge.status-pending {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.current-subscription {
+  background: linear-gradient(135deg, #f8f6f3 0%, #fff 100%);
+}
+
+.subscription-card {
+  background: #fff;
+  border: 2px solid #e8e4db;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.subscription-card.active {
+  border-color: #8b7355;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e8e4db;
+}
+
+.price {
+  font-size: 24px;
+  font-weight: 700;
+  color: #8b7355;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.info-row .label {
+  color: #666;
+}
+
+.card-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn {
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: #8b7355;
+  color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #7a6348;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #dc2626;
+  border: 1px solid #dc2626;
+}
+
+.btn-secondary:hover {
+  background: #dc2626;
+  color: #fff;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.plan-card {
+  position: relative;
+  background: #fff;
+  border: 2px solid #e8e4db;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s;
+}
+
+.plan-card:hover {
+  border-color: #8b7355;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.plan-card.recommended {
+  border-color: #8b7355;
+  border-width: 3px;
+}
+
+.recommended-badge {
+  position: absolute;
+  top: -12px;
+  right: 20px;
+  background: #8b7355;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.plan-price {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1c;
+  margin-bottom: 12px;
+}
+
+.plan-price .period {
+  font-size: 14px;
+  font-weight: 400;
+  color: #666;
+}
+
+.plan-description {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.features-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+  flex: 1;
+}
+
+.features-list li {
+  padding: 8px 0;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-item {
+  background: #faf9f7;
+  border: 1px solid #e8e4db;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.history-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .plans-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .info-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+</style>

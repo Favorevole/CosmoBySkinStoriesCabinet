@@ -8,7 +8,13 @@ export async function createProduct(doctorId, data) {
       brand: data.brand || null,
       category: data.category || null,
       url: data.url || null,
-      notes: data.notes || null
+      notes: data.notes || null,
+      // Affiliate fields
+      shopUrl: data.shopUrl || null,
+      affiliateLink: data.affiliateLink || null,
+      shopName: data.shopName || null,
+      commission: data.commission ? parseFloat(data.commission) : null,
+      isAffiliate: data.isAffiliate || false
     }
   });
 }
@@ -37,7 +43,13 @@ export async function updateProduct(id, doctorId, data) {
       brand: data.brand,
       category: data.category,
       url: data.url,
-      notes: data.notes
+      notes: data.notes,
+      // Affiliate fields
+      shopUrl: data.shopUrl,
+      affiliateLink: data.affiliateLink,
+      shopName: data.shopName,
+      commission: data.commission ? parseFloat(data.commission) : null,
+      isAffiliate: data.isAffiliate
     }
   });
 }
@@ -50,6 +62,37 @@ export async function deleteProduct(id, doctorId) {
     throw new Error('Product not found');
   }
   return prisma.doctorProduct.delete({
+    where: { id }
+  });
+}
+
+// Track click on affiliate link
+export async function trackClick(id) {
+  return prisma.doctorProduct.update({
+    where: { id },
+    data: {
+      clicks: {
+        increment: 1
+      }
+    }
+  });
+}
+
+// Track conversion (purchase)
+export async function trackConversion(id) {
+  return prisma.doctorProduct.update({
+    where: { id },
+    data: {
+      conversions: {
+        increment: 1
+      }
+    }
+  });
+}
+
+// Get product by ID (for tracking)
+export async function getProductById(id) {
+  return prisma.doctorProduct.findUnique({
     where: { id }
   });
 }
