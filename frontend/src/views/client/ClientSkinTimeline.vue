@@ -1,9 +1,14 @@
 <template>
-  <div class="page">
-    <h1>Таймлайн кожи</h1>
-    <p class="subtitle">История фотографий и прогресс ухода за кожей</p>
+  <div class="modern-page">
+    <div class="page-header">
+      <h1>📸 Таймлайн кожи</h1>
+      <p class="subtitle">История фотографий и прогресс ухода</p>
+    </div>
 
-    <div v-if="loading" class="loading">Загрузка...</div>
+    <div v-if="loading" class="loading">
+      <div class="loading-spinner">⏳</div>
+      <p>Загружаем фотографии...</p>
+    </div>
 
     <div v-else>
       <!-- Filters -->
@@ -16,9 +21,14 @@
         </select>
       </div>
 
-      <div v-if="!photos || photos.length === 0" class="empty">
-        <p>Фотографий пока нет</p>
-        <p class="hint">Фото автоматически сохраняются из консультаций</p>
+      <div v-if="!photos || photos.length === 0" class="empty-state">
+        <div class="empty-illustration">
+          <div class="empty-circle">
+            <span class="empty-icon">📸</span>
+          </div>
+        </div>
+        <h3>Фотографий пока нет</h3>
+        <p>Фото автоматически сохраняются<br>из ваших консультаций</p>
       </div>
 
       <!-- Timeline -->
@@ -149,37 +159,91 @@ function closePhoto() {
 </script>
 
 <style scoped>
-.page {
-  max-width: 1200px;
+.modern-page {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-h1 {
+.page-header {
+  margin-bottom: 32px;
+}
+
+.page-header h1 {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 32px;
-  color: #1a1a1c;
+  font-size: 36px;
+  color: #3a2a1f;
   margin: 0 0 8px 0;
+  font-weight: 500;
 }
 
 .subtitle {
   font-size: 15px;
-  color: #666;
-  margin: 0 0 32px 0;
+  color: #a89079;
+  margin: 0;
 }
 
-.loading,
-.empty {
+.loading {
   text-align: center;
-  padding: 48px;
+  padding: 80px 20px;
+  color: #a89079;
+}
+
+.loading-spinner {
+  font-size: 56px;
+  margin-bottom: 20px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.loading p {
+  font-size: 16px;
+  margin: 0;
+  color: #8b7355;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.empty-illustration {
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.empty-circle {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, #f5e6d3 0%, #e8d5c4 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-icon {
+  font-size: 56px;
+}
+
+.empty-state h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  color: #3a2a1f;
+  margin: 0 0 12px 0;
+  font-weight: 500;
+}
+
+.empty-state p {
+  font-size: 15px;
   color: #999;
-}
-
-.empty p {
-  margin: 8px 0;
-}
-
-.empty .hint {
-  font-size: 14px;
-  color: #bbb;
+  line-height: 1.6;
+  margin: 0;
 }
 
 .filters {
@@ -204,42 +268,44 @@ h1 {
 
 .timeline-group {
   background: #fff;
-  border: 1px solid #e8e4db;
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 .timeline-date {
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #e8e4db;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f5e6d3;
 }
 
 .timeline-date strong {
-  font-size: 18px;
-  color: #1a1a1c;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  color: #3a2a1f;
+  font-weight: 500;
 }
 
 .photos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
 }
 
 .photo-card {
   position: relative;
   aspect-ratio: 1;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
-  border: 2px solid #e8e4db;
-  transition: all 0.2s;
+  border: 3px solid #f5e6d3;
+  transition: all 0.3s;
 }
 
 .photo-card:hover {
   border-color: #8b7355;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 .photo-img {

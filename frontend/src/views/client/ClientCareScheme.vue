@@ -1,19 +1,32 @@
 <template>
-  <div class="page">
-    <h1>Схема ухода за кожей</h1>
-    <p class="subtitle">Персональная программа ухода от врача</p>
+  <div class="modern-page">
+    <div class="page-header">
+      <h1>🧴 Схема ухода</h1>
+      <p class="subtitle">Персональная программа ухода от врача</p>
+    </div>
 
-    <div v-if="loading" class="loading">Загрузка...</div>
+    <div v-if="loading" class="loading">
+      <div class="loading-spinner">⏳</div>
+      <p>Загружаем схему...</p>
+    </div>
 
-    <div v-else-if="!scheme" class="empty">
-      <p>У вас пока нет схемы ухода</p>
-      <p class="hint">Схема создается врачом после консультации</p>
+    <div v-else-if="!scheme" class="empty-state">
+      <div class="empty-illustration">
+        <div class="empty-circle">
+          <span class="empty-icon">🧴</span>
+        </div>
+      </div>
+      <h3>Схема ухода пока не создана</h3>
+      <p>Врач создаст персональную схему<br>после консультации</p>
     </div>
 
     <div v-else>
-      <div class="scheme-header">
-        <div class="scheme-date">
-          Создана: {{ formatDate(scheme.createdAt) }}
+      <div class="scheme-card">
+        <div class="scheme-header">
+          <span class="scheme-badge">✨ Активная схема</span>
+          <div class="scheme-date">
+            Создана: {{ formatDate(scheme.createdAt) }}
+          </div>
         </div>
       </div>
 
@@ -61,50 +74,123 @@ function formatDate(dateString) {
 </script>
 
 <style scoped>
-.page {
-  max-width: 1200px;
+.modern-page {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-h1 {
+.page-header {
+  margin-bottom: 32px;
+}
+
+.page-header h1 {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 32px;
-  color: #1a1a1c;
+  font-size: 36px;
+  color: #3a2a1f;
   margin: 0 0 8px 0;
+  font-weight: 500;
 }
 
 .subtitle {
   font-size: 15px;
-  color: #666;
-  margin: 0 0 32px 0;
+  color: #a89079;
+  margin: 0;
 }
 
-.loading,
-.empty {
+.loading {
   text-align: center;
-  padding: 48px;
+  padding: 80px 20px;
+  color: #a89079;
+}
+
+.loading-spinner {
+  font-size: 56px;
+  margin-bottom: 20px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.loading p {
+  font-size: 16px;
+  margin: 0;
+  color: #8b7355;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.empty-illustration {
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.empty-circle {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, #f5e6d3 0%, #e8d5c4 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-icon {
+  font-size: 56px;
+}
+
+.empty-state h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  color: #3a2a1f;
+  margin: 0 0 12px 0;
+  font-weight: 500;
+}
+
+.empty-state p {
+  font-size: 15px;
   color: #999;
+  line-height: 1.6;
+  margin: 0;
 }
 
-.empty p {
-  margin: 8px 0;
-}
-
-.empty .hint {
-  font-size: 14px;
-  color: #bbb;
+.scheme-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 .scheme-header {
-  margin-bottom: 24px;
-  padding: 16px;
-  background: #f8f6f3;
-  border-radius: 10px;
-  border: 1px solid #e8e4db;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scheme-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #f5e6d3 0%, #e8d5c4 100%);
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b4e3d;
+  width: fit-content;
 }
 
 .scheme-date {
-  font-size: 14px;
-  color: #666;
+  font-size: 13px;
+  color: #a89079;
   font-weight: 500;
 }
 </style>

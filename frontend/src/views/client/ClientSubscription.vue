@@ -1,9 +1,14 @@
 <template>
-  <div class="page">
-    <h1>Подписка</h1>
-    <p class="subtitle">Управление подпиской на консультации</p>
+  <div class="modern-page">
+    <div class="page-header">
+      <h1>⭐ Подписка</h1>
+      <p class="subtitle">Управление подпиской на консультации</p>
+    </div>
 
-    <div v-if="loading" class="loading">Загрузка...</div>
+    <div v-if="loading" class="loading">
+      <div class="loading-spinner">⏳</div>
+      <p>Загружаем подписки...</p>
+    </div>
 
     <div v-else>
       <!-- Current Subscription -->
@@ -251,36 +256,68 @@ function getStatusText(status) {
 </script>
 
 <style scoped>
-.page {
-  max-width: 1200px;
+.modern-page {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-h1 {
+.page-header {
+  margin-bottom: 32px;
+}
+
+.page-header h1 {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 32px;
-  color: #1a1a1c;
+  font-size: 36px;
+  color: #3a2a1f;
   margin: 0 0 8px 0;
+  font-weight: 500;
 }
 
 h2 {
-  font-size: 20px;
-  color: #1a1a1c;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  color: #3a2a1f;
   margin: 0 0 20px 0;
+  font-weight: 500;
 }
 
 h3 {
   font-size: 18px;
-  color: #1a1a1c;
+  color: #3a2a1f;
   margin: 0 0 12px 0;
+  font-weight: 600;
 }
 
 .subtitle {
   font-size: 15px;
-  color: #666;
-  margin: 0 0 32px 0;
+  color: #a89079;
+  margin: 0;
 }
 
-.loading,
+.loading {
+  text-align: center;
+  padding: 80px 20px;
+  color: #a89079;
+}
+
+.loading-spinner {
+  font-size: 56px;
+  margin-bottom: 20px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.loading p {
+  font-size: 16px;
+  margin: 0;
+  color: #8b7355;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
 .empty {
   text-align: center;
   padding: 48px;
@@ -289,10 +326,10 @@ h3 {
 
 .section {
   background: #fff;
-  border: 1px solid #e8e4db;
-  border-radius: 12px;
-  padding: 24px;
+  border-radius: 20px;
+  padding: 28px;
   margin-bottom: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 .section-header {
@@ -384,23 +421,25 @@ h3 {
 }
 
 .btn {
-  padding: 12px 24px;
-  font-size: 15px;
+  padding: 16px 24px;
+  font-size: 16px;
   font-weight: 600;
-  border-radius: 10px;
+  border-radius: 100px;
   border: none;
   cursor: pointer;
   font-family: 'Inter', sans-serif;
-  transition: all 0.2s;
+  transition: all 0.3s;
 }
 
 .btn-primary {
-  background: #8b7355;
+  background: linear-gradient(135deg, #8b7355 0%, #a89079 100%);
   color: #fff;
+  box-shadow: 0 4px 16px rgba(107, 78, 61, 0.25);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #7a6348;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(107, 78, 61, 0.3);
 }
 
 .btn-secondary {
@@ -428,23 +467,25 @@ h3 {
 .plan-card {
   position: relative;
   background: #fff;
-  border: 2px solid #e8e4db;
-  border-radius: 12px;
-  padding: 24px;
+  border: 2px solid #e8d5c4;
+  border-radius: 20px;
+  padding: 28px;
   display: flex;
   flex-direction: column;
-  transition: all 0.2s;
+  transition: all 0.3s;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 .plan-card:hover {
   border-color: #8b7355;
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .plan-card.recommended {
   border-color: #8b7355;
   border-width: 3px;
+  box-shadow: 0 4px 20px rgba(139, 115, 85, 0.2);
 }
 
 .recommended-badge {

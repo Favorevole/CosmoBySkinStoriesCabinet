@@ -1,14 +1,28 @@
 <template>
-  <div class="page">
+  <div class="modern-page">
     <div class="page-header">
-      <h1>Мои процедуры</h1>
-      <button @click="openCreate" class="btn btn-primary">+ Добавить</button>
+      <div class="header-content">
+        <h1>💆 Процедуры</h1>
+        <p class="subtitle">Трекер процедур и ухода</p>
+      </div>
+      <button @click="openCreate" class="btn-add">+ Добавить</button>
     </div>
 
-    <div v-if="loading" class="loading">Загрузка...</div>
-    <div v-else-if="procedures.length === 0" class="empty">
-      <p>У вас пока нет процедур</p>
-      <p class="hint">Добавьте процедуры, чтобы отслеживать свой уход за кожей</p>
+    <div v-if="loading" class="loading">
+      <div class="loading-spinner">⏳</div>
+      <p>Загружаем процедуры...</p>
+    </div>
+    <div v-else-if="procedures.length === 0" class="empty-state">
+      <div class="empty-illustration">
+        <div class="empty-circle">
+          <span class="empty-icon">💆</span>
+        </div>
+      </div>
+      <h3>Начните отслеживать процедуры</h3>
+      <p>Добавляйте процедуры чтобы<br>контролировать свой уход за кожей</p>
+      <button @click="openCreate" class="cta-button">
+        <span>✨ Добавить процедуру</span>
+      </button>
     </div>
     <div v-else class="procedures-list">
       <div
@@ -234,63 +248,141 @@ function getStatusText(status) {
 </script>
 
 <style scoped>
-.page {
-  max-width: 1000px;
+.modern-page {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 32px;
+  gap: 16px;
 }
 
-h1 {
+.header-content h1 {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 32px;
-  color: #1a1a1c;
+  font-size: 36px;
+  color: #3a2a1f;
+  margin: 0 0 8px 0;
+  font-weight: 500;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: #a89079;
   margin: 0;
 }
 
 h3 {
   font-size: 18px;
-  color: #1a1a1c;
+  color: #3a2a1f;
   margin: 0 0 8px 0;
+  font-weight: 600;
 }
 
-.loading,
-.empty {
+.loading {
   text-align: center;
-  padding: 48px;
+  padding: 80px 20px;
+  color: #a89079;
+}
+
+.loading-spinner {
+  font-size: 56px;
+  margin-bottom: 20px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.loading p {
+  font-size: 16px;
+  margin: 0;
+  color: #8b7355;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.empty-illustration {
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.empty-circle {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, #f5e6d3 0%, #e8d5c4 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-icon {
+  font-size: 56px;
+}
+
+.empty-state h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  color: #3a2a1f;
+  margin: 0 0 12px 0;
+  font-weight: 500;
+}
+
+.empty-state p {
+  font-size: 15px;
   color: #999;
+  line-height: 1.6;
+  margin: 0 0 32px 0;
 }
 
-.empty p {
-  margin: 8px 0;
-}
-
-.empty .hint {
-  font-size: 14px;
-  color: #bbb;
-}
-
-.btn {
-  padding: 12px 24px;
+.btn-add {
+  padding: 12px 20px;
   font-size: 15px;
   font-weight: 600;
-  border-radius: 10px;
+  border-radius: 100px;
   border: none;
   cursor: pointer;
   font-family: 'Inter', sans-serif;
-}
-
-.btn-primary {
-  background: #8b7355;
+  background: linear-gradient(135deg, #8b7355 0%, #a89079 100%);
   color: #fff;
+  box-shadow: 0 4px 16px rgba(107, 78, 61, 0.25);
+  transition: all 0.3s;
+  white-space: nowrap;
 }
 
-.btn-primary:hover:not(:disabled) {
-  background: #7a6348;
+.btn-add:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(107, 78, 61, 0.3);
+}
+
+.cta-button {
+  padding: 16px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #8b7355 0%, #a89079 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(107, 78, 61, 0.25);
+  transition: all 0.3s;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(107, 78, 61, 0.3);
 }
 
 .btn-secondary {
@@ -312,10 +404,16 @@ h3 {
 
 .procedure-card {
   background: #fff;
-  border: 1px solid #e8e4db;
-  border-radius: 12px;
-  padding: 20px;
-  border-left-width: 4px;
+  border-radius: 20px;
+  padding: 24px;
+  border-left: 4px solid #e8d5c4;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s;
+}
+
+.procedure-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .procedure-card.status-COMPLETED {
@@ -323,7 +421,7 @@ h3 {
 }
 
 .procedure-card.status-SCHEDULED {
-  border-left-color: #4f46e5;
+  border-left-color: #8b7355;
 }
 
 .procedure-card.status-SKIPPED,
