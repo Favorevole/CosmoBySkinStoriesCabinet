@@ -92,10 +92,45 @@ const analyticsLimiter = rateLimit({
   message: { error: 'Too many requests' }
 });
 
-// Logging middleware
+// Enhanced logging middleware
 app.use((req, res, next) => {
   const timestamp = new Date().toISOString();
-  console.log(`[${timestamp}] ${req.method} ${req.path}`);
+  const isApiRequest = req.path.startsWith('/api/');
+
+  if (isApiRequest) {
+    console.log(`\n>>> [${timestamp}] ${req.method} ${req.path}`);
+    console.log('IP:', req.ip);
+    console.log('Origin:', req.headers.origin || 'N/A');
+    console.log('User-Agent:', req.headers['user-agent']?.substring(0, 50) || 'N/A');
+
+    if (req.method === 'POST' || req.method === 'PATCH' || req.method === 'PUT') {
+      // Don't log passwords
+      const bodyCopy = { ...req.body };
+      if (bodyCopy.password) bodyCopy.password = '***';
+      if (bodyCopy.passwordHash) bodyCopy.passwordHash = '***';
+      console.log('Body:', JSON.stringify(bodyCopy, null, 2));
+    }
+  } else {
+    console.log(`[${timestamp}] ${req.method} ${req.path}`);
+  }
+
+  // Log response
+  const originalSend = res.send;
+  res.send = function(data) {
+    if (isApiRequest) {
+      console.log(`<<< [${timestamp}] Response:`, res.statusCode);
+      if (res.statusCode >= 400) {
+        try {
+          const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+          console.log('Error Response:', JSON.stringify(parsed, null, 2));
+        } catch (e) {
+          console.log('Error Response:', data);
+        }
+      }
+    }
+    return originalSend.call(this, data);
+  };
+
   next();
 });
 

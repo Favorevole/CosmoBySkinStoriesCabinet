@@ -37,25 +37,46 @@ const authLimiter = rateLimit({
  * Register new client
  */
 router.post('/auth/register', authLimiter, async (req, res) => {
+  const requestId = `REG-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+
+  console.log(`\n========== [${requestId}] CLIENT REGISTRATION START ==========`);
+  console.log('Timestamp:', new Date().toISOString());
+  console.log('IP:', req.ip);
+  console.log('User-Agent:', req.headers['user-agent']);
+  console.log('Request Body:', {
+    email: req.body.email ? `${req.body.email.substring(0, 3)}***@${req.body.email.split('@')[1] || '?'}` : 'missing',
+    fullName: req.body.fullName || 'missing',
+    passwordLength: req.body.password?.length || 0
+  });
+
   try {
     const { email, password, fullName } = req.body;
 
     // Validation
+    console.log(`[${requestId}] Validating input...`);
+
     if (!email || !email.trim()) {
+      console.log(`[${requestId}] ❌ VALIDATION FAILED: Email missing`);
       return res.status(400).json({ error: 'Email обязателен' });
     }
     if (!password || password.length < 6) {
+      console.log(`[${requestId}] ❌ VALIDATION FAILED: Password too short (${password?.length || 0} chars)`);
       return res.status(400).json({ error: 'Пароль должен быть не менее 6 символов' });
     }
     if (!fullName || !fullName.trim()) {
+      console.log(`[${requestId}] ❌ VALIDATION FAILED: FullName missing`);
       return res.status(400).json({ error: 'Имя обязательно' });
     }
 
     // Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
+      console.log(`[${requestId}] ❌ VALIDATION FAILED: Invalid email format`);
       return res.status(400).json({ error: 'Неверный формат email' });
     }
+
+    console.log(`[${requestId}] ✅ Validation passed`);
+    console.log(`[${requestId}] Creating client in database...`);
 
     const client = await registerClient({
       email: email.trim().toLowerCase(),
@@ -63,12 +84,25 @@ router.post('/auth/register', authLimiter, async (req, res) => {
       fullName: fullName.trim()
     });
 
+    console.log(`[${requestId}] ✅ Client created successfully:`, {
+      id: client.id,
+      email: client.email,
+      fullName: client.fullName
+    });
+    console.log(`========== [${requestId}] REGISTRATION SUCCESS ==========\n`);
+
     res.json({ success: true, client });
   } catch (error) {
+    console.log(`[${requestId}] ❌ ERROR CAUGHT:`, error.message);
+    console.error(`[${requestId}] Error stack:`, error.stack);
+
     if (error.message === 'EMAIL_EXISTS') {
+      console.log(`[${requestId}] Email already registered`);
+      console.log(`========== [${requestId}] REGISTRATION FAILED (Duplicate Email) ==========\n`);
       return res.status(400).json({ error: 'Этот email уже зарегистрирован' });
     }
-    console.error('[CLIENT_AUTH] Register error:', error);
+    console.error(`[${requestId}] ❌ UNEXPECTED ERROR:`, error);
+    console.log(`========== [${requestId}] REGISTRATION FAILED (Server Error) ==========\n`);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -78,24 +112,54 @@ router.post('/auth/register', authLimiter, async (req, res) => {
  * Login client
  */
 router.post('/auth/login', authLimiter, async (req, res) => {
+  const requestId = `LOGIN-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+
+  console.log(`\n========== [${requestId}] CLIENT LOGIN START ==========`);
+  console.log('Timestamp:', new Date().toISOString());
+  console.log('IP:', req.ip);
+  console.log('Request Body:', {
+    email: req.body.email ? `${req.body.email.substring(0, 3)}***@${req.body.email.split('@')[1] || '?'}` : 'missing',
+    hasPassword: !!req.body.password
+  });
+
   try {
     const { email, password } = req.body;
 
+    console.log(`[${requestId}] Validating input...`);
+
     if (!email || !password) {
+      console.log(`[${requestId}] ❌ VALIDATION FAILED: Missing credentials`);
       return res.status(400).json({ error: 'Email и пароль обязательны' });
     }
+
+    console.log(`[${requestId}] ✅ Validation passed`);
+    console.log(`[${requestId}] Authenticating client...`);
 
     const result = await loginClient({
       email: email.trim().toLowerCase(),
       password
     });
 
+    console.log(`[${requestId}] ✅ Login successful:`, {
+      clientId: result.client?.id,
+      email: result.client?.email,
+      tokenGenerated: !!result.token
+    });
+    console.log(`========== [${requestId}] LOGIN SUCCESS ==========\n`);
+
     res.json({ success: true, ...result });
   } catch (error) {
+    console.log(`[${requestId}] ❌ ERROR CAUGHT:`, error.message);
+
     if (error.message === 'INVALID_CREDENTIALS') {
+      console.log(`[${requestId}] Invalid credentials provided`);
+      console.log(`========== [${requestId}] LOGIN FAILED (Invalid Credentials) ==========\n`);
       return res.status(401).json({ error: 'Неверный email или пароль' });
     }
-    console.error('[CLIENT_AUTH] Login error:', error);
+
+    console.error(`[${requestId}] ❌ UNEXPECTED ERROR:`, error);
+    console.error(`[${requestId}] Error stack:`, error.stack);
+    console.log(`========== [${requestId}] LOGIN FAILED (Server Error) ==========\n`);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
