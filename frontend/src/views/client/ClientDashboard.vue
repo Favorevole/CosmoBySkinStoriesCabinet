@@ -36,7 +36,13 @@
         <!-- Main CTA Button -->
         <div class="main-cta">
           <a href="/" class="cta-button">
-            <span class="cta-icon">✨</span>
+            <span class="cta-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="16"/>
+                <line x1="8" y1="12" x2="16" y2="12"/>
+              </svg>
+            </span>
             <span class="cta-text">Новая консультация</span>
           </a>
         </div>
@@ -70,22 +76,40 @@
       <!-- Quick Actions Grid -->
       <div class="quick-actions">
         <router-link to="/client/consultations" class="action-tile">
-          <div class="tile-icon">💬</div>
+          <div class="tile-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
           <div class="tile-label">Консультации</div>
         </router-link>
 
         <router-link to="/client/care-scheme" class="action-tile">
-          <div class="tile-icon">🧴</div>
+          <div class="tile-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+            </svg>
+          </div>
           <div class="tile-label">Схема ухода</div>
         </router-link>
 
         <router-link to="/client/procedures" class="action-tile">
-          <div class="tile-icon">💆</div>
+          <div class="tile-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/>
+            </svg>
+          </div>
           <div class="tile-label">Процедуры</div>
         </router-link>
 
         <router-link to="/client/timeline" class="action-tile">
-          <div class="tile-icon">📸</div>
+          <div class="tile-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+          </div>
           <div class="tile-label">Таймлайн</div>
         </router-link>
       </div>
@@ -352,7 +376,13 @@ function getStatusText(status) {
 }
 
 .cta-icon {
-  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cta-icon svg {
+  display: block;
 }
 
 /* Latest Consultation Card */
@@ -443,8 +473,15 @@ function getStatusText(status) {
 }
 
 .tile-icon {
-  font-size: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 12px;
+  color: #8b7355;
+}
+
+.tile-icon svg {
+  display: block;
 }
 
 .tile-label {
