@@ -114,8 +114,18 @@ async function handleRegister() {
       router.push('/client/login');
     }, 2000);
   } catch (err) {
-    error.value = err.response?.data?.error || 'Ошибка регистрации';
     console.error('Register error:', err);
+    console.error('Error response:', err.response);
+
+    if (err.response?.data?.error) {
+      error.value = err.response.data.error;
+    } else if (err.response?.status === 500) {
+      error.value = 'Ошибка сервера. Попробуйте позже';
+    } else if (err.code === 'ERR_NETWORK') {
+      error.value = 'Нет соединения с сервером';
+    } else {
+      error.value = `Ошибка регистрации: ${err.message || 'Неизвестная ошибка'}`;
+    }
   } finally {
     loading.value = false;
   }
