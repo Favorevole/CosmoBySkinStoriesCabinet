@@ -96,7 +96,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import { getClientMe, getClientDashboard } from '@/api/clientCabinet';
 
 const router = useRouter();
 const loading = ref(true);
@@ -118,16 +118,10 @@ onMounted(loadDashboard);
 async function loadDashboard() {
   loading.value = true;
   try {
-    const token = localStorage.getItem('clientToken');
-
     // Load client info and dashboard in parallel
     const [clientResponse, dashboardResponse] = await Promise.all([
-      axios.get('/api/client/auth/me', {
-        headers: { Authorization: `Bearer ${token}` }
-      }),
-      axios.get('/api/client/dashboard', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      getClientMe(),
+      getClientDashboard()
     ]);
 
     client.value = clientResponse.data.client;

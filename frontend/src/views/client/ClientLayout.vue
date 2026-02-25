@@ -51,7 +51,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import { getClientMe } from '@/api/clientCabinet';
 
 const router = useRouter();
 const client = ref(null);
@@ -68,12 +68,7 @@ async function loadClientInfo() {
       return;
     }
 
-    const response = await axios.get('/api/client/auth/me', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
+    const response = await getClientMe();
     client.value = response.data.client;
   } catch (error) {
     console.error('Failed to load client info:', error);

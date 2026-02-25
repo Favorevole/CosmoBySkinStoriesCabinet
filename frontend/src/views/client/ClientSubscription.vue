@@ -46,7 +46,7 @@
           <div class="card-actions">
             <button
               v-if="currentSubscription.autoRenew"
-              @click="cancelSubscription(currentSubscription.id)"
+              @click="cancelSubscription()"
               class="btn btn-secondary"
             >
               Отменить подписку
@@ -136,7 +136,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import axios from 'axios';
+import { getClientSubscription, createClientSubscription, cancelClientSubscription } from '@/api/clientCabinet';
 
 const loading = ref(true);
 const currentSubscription = ref(null);
@@ -155,20 +155,10 @@ onMounted(async () => {
 async function loadData() {
   loading.value = true;
   try {
-    const token = localStorage.getItem('clientToken');
-    const headers = { Authorization: `Bearer ${token}` };
-
-    // Load current subscription
-    const currentRes = await axios.get('/api/subscriptions/client/current', { headers });
-    currentSubscription.value = currentRes.data.subscription;
-
-    // Load available plans
-    const plansRes = await axios.get('/api/subscriptions/plans', { headers });
-    plans.value = plansRes.data.plans;
-
-    // Load history
-    const historyRes = await axios.get('/api/subscriptions/client/history', { headers });
-    history.value = historyRes.data.subscriptions;
+    const response = await getClientSubscription();
+    currentSubscription.value = response.data.subscription;
+    plans.value = response.data.plans || [];
+    history.value = response.data.history || [];
   } catch (error) {
     console.error('Subscription data load error:', error);
   } finally {
@@ -181,12 +171,7 @@ async function subscribe(planId) {
 
   subscribing.value = true;
   try {
-    const token = localStorage.getItem('clientToken');
-    const response = await axios.post(
-      '/api/subscriptions/client/subscribe',
-      { planId },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    const response = await createClientSubscription(planId);
 
     // Redirect to payment page if paymentUrl is provided
     if (response.data.paymentUrl) {
@@ -201,17 +186,11 @@ async function subscribe(planId) {
   }
 }
 
-async function cancelSubscription(subscriptionId) {
+async function cancelSubscription() {
   if (!confirm('Вы уверены, что хотите отменить подписку?')) return;
 
   try {
-    const token = localStorage.getItem('clientToken');
-    await axios.post(
-      `/api/subscriptions/client/cancel/${subscriptionId}`,
-      {},
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-
+    await cancelClientSubscription();
     alert('Подписка отменена');
     await loadData();
   } catch (error) {

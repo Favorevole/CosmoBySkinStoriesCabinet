@@ -37,7 +37,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import { getClientCareScheme } from '@/api/clientCabinet';
 import CareSchemeView from '../../components/CareSchemeView.vue';
 
 const loading = ref(true);
@@ -48,10 +48,7 @@ onMounted(loadScheme);
 async function loadScheme() {
   loading.value = true;
   try {
-    const token = localStorage.getItem('clientToken');
-    const response = await axios.get('/api/client/care-scheme', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    const response = await getClientCareScheme();
     scheme.value = response.data.scheme;
   } catch (error) {
     console.error('Care scheme load error:', error);

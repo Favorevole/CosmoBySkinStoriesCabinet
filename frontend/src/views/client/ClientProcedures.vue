@@ -113,7 +113,13 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import { 
+  getClientProcedures, 
+  createClientProcedure, 
+  updateClientProcedure, 
+  deleteClientProcedure, 
+  completeClientProcedure 
+} from '@/api/clientCabinet';
 
 const loading = ref(true);
 const procedures = ref([]);
@@ -133,10 +139,7 @@ onMounted(loadProcedures);
 async function loadProcedures() {
   loading.value = true;
   try {
-    const token = localStorage.getItem('clientToken');
-    const response = await axios.get('/api/client/procedures', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    const response = await getClientProcedures();
     procedures.value = response.data.procedures;
   } catch (error) {
     console.error('Procedures load error:', error);
@@ -172,15 +175,10 @@ function openEdit(procedure) {
 async function save() {
   saving.value = true;
   try {
-    const token = localStorage.getItem('clientToken');
     if (editing.value) {
-      await axios.patch(`/api/client/procedures/${editing.value}`, form.value, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await updateClientProcedure(editing.value, form.value);
     } else {
-      await axios.post('/api/client/procedures', form.value, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await createClientProcedure(form.value);
     }
     showModal.value = false;
     await loadProcedures();
@@ -193,10 +191,7 @@ async function save() {
 
 async function completeProcedure(id) {
   try {
-    const token = localStorage.getItem('clientToken');
-    await axios.post(`/api/client/procedures/${id}/complete`, {}, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    await completeClientProcedure(id);
     await loadProcedures();
   } catch (error) {
     alert(error.response?.data?.error || 'Ошибка');
@@ -206,10 +201,7 @@ async function completeProcedure(id) {
 async function deleteProcedure(id) {
   if (!confirm('Удалить процедуру?')) return;
   try {
-    const token = localStorage.getItem('clientToken');
-    await axios.delete(`/api/client/procedures/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    await deleteClientProcedure(id);
     await loadProcedures();
   } catch (error) {
     alert(error.response?.data?.error || 'Ошибка удаления');

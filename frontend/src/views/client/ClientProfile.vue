@@ -53,7 +53,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import { getClientMe, updateClientProfile } from '@/api/clientCabinet';
 
 const loading = ref(true);
 const saving = ref(false);
@@ -66,10 +66,7 @@ onMounted(loadProfile);
 async function loadProfile() {
   loading.value = true;
   try {
-    const token = localStorage.getItem('clientToken');
-    const response = await axios.get('/api/client/auth/me', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    const response = await getClientMe();
     client.value = response.data.client;
     form.value = {
       fullName: client.value.fullName || '',
@@ -85,10 +82,7 @@ async function loadProfile() {
 async function saveProfile() {
   saving.value = true;
   try {
-    const token = localStorage.getItem('clientToken');
-    await axios.patch('/api/client/profile', form.value, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    await updateClientProfile(form.value);
     successMsg.value = '✅ Профиль успешно обновлен';
     setTimeout(() => { successMsg.value = null; }, 3000);
     await loadProfile();

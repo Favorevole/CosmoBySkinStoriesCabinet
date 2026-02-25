@@ -68,7 +68,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import { getClientConsultations } from '@/api/clientCabinet';
 
 const loading = ref(true);
 const consultations = ref([]);
@@ -78,10 +78,7 @@ onMounted(loadConsultations);
 async function loadConsultations() {
   loading.value = true;
   try {
-    const token = localStorage.getItem('clientToken');
-    const response = await axios.get('/api/client/consultations', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    const response = await getClientConsultations();
     consultations.value = response.data.consultations;
   } catch (error) {
     console.error('Consultations load error:', error);

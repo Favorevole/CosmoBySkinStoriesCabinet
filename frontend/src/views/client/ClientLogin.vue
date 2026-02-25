@@ -52,7 +52,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import { clientLogin } from '@/api/clientCabinet';
 
 const router = useRouter();
 const email = ref('');
@@ -65,10 +65,7 @@ async function handleLogin() {
   error.value = null;
 
   try {
-    const response = await axios.post('/api/client/auth/login', {
-      email: email.value,
-      password: password.value
-    });
+    const response = await clientLogin(email.value, password.value);
 
     // Save token
     localStorage.setItem('clientToken', response.data.token);

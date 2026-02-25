@@ -77,7 +77,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import { clientRegister } from '@/api/clientCabinet';
 
 const router = useRouter();
 const fullName = ref('');
@@ -101,11 +101,7 @@ async function handleRegister() {
   }
 
   try {
-    const response = await axios.post('/api/client/auth/register', {
-      fullName: fullName.value,
-      email: email.value,
-      password: password.value
-    });
+    const response = await clientRegister(fullName.value, email.value, password.value);
 
     success.value = 'Регистрация успешна! Перенаправление на вход...';
 

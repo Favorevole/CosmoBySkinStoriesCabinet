@@ -96,7 +96,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import { getClientSkinTimeline } from '@/api/clientCabinet';
 
 const loading = ref(true);
 const photos = ref([]);
@@ -110,15 +110,7 @@ onMounted(loadTimeline);
 async function loadTimeline() {
   loading.value = true;
   try {
-    const token = localStorage.getItem('clientToken');
-    const params = {};
-    if (filterZone.value) params.zone = filterZone.value;
-
-    const response = await axios.get('/api/client/photos/timeline', {
-      headers: { Authorization: `Bearer ${token}` },
-      params
-    });
-
+    const response = await getClientSkinTimeline();
     photos.value = response.data.photos;
     grouped.value = response.data.grouped;
     zones.value = response.data.zones;
