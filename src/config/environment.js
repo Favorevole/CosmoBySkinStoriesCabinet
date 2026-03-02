@@ -60,6 +60,12 @@ const config = {
     secretAccessKey: process.env.S3_SECRET_ACCESS_KEY
   },
 
+  encryption: {
+    // 256-bit (32 bytes) encryption key for medical photos
+    // Generate with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+    key: process.env.ENCRYPTION_KEY || null
+  },
+
   smtp: {
     host: process.env.SMTP_HOST || 'smtp.mail.ru',
     port: parseInt(process.env.SMTP_PORT || '465', 10),
@@ -99,9 +105,21 @@ const config = {
 // Validation
 const requiredVars = ['DATABASE_URL', 'CLIENT_BOT_TOKEN', 'DOCTOR_BOT_TOKEN'];
 if (config.isProduction) {
-  requiredVars.push('JWT_SECRET', 'S3_ACCESS_KEY_ID', 'S3_SECRET_ACCESS_KEY', 'S3_BUCKET', 'YOOKASSA_SHOP_ID', 'YOOKASSA_API_KEY');
+  requiredVars.push('JWT_SECRET', 'S3_ACCESS_KEY_ID', 'S3_SECRET_ACCESS_KEY', 'S3_BUCKET', 'YOOKASSA_SHOP_ID', 'YOOKASSA_API_KEY', 'ENCRYPTION_KEY');
 }
 const missing = requiredVars.filter(v => !process.env[v]);
+
+// Validate ENCRYPTION_KEY format if provided
+if (process.env.ENCRYPTION_KEY) {
+  const keyBuffer = Buffer.from(process.env.ENCRYPTION_KEY, 'hex');
+  if (keyBuffer.length !== 32) {
+    console.error('❌ ENCRYPTION_KEY must be exactly 32 bytes (64 hex characters)');
+    console.error('   Generate with: node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'hex\'))"');
+    if (config.isProduction) {
+      process.exit(1);
+    }
+  }
+}
 
 if (missing.length > 0) {
   console.error(`Missing required environment variables: ${missing.join(', ')}`);
@@ -125,6 +143,11 @@ if (config.database.url) {
 console.log(`🌐 Server Port: ${config.server.port}`);
 if (config.s3.accessKeyId) {
   console.log(`📦 S3: ${config.s3.bucket} @ ${config.s3.endpoint}`);
+}
+if (config.encryption.key) {
+  console.log(`🔒 Photo Encryption: ENABLED (AES-256-GCM)`);
+} else {
+  console.warn(`⚠️  Photo Encryption: DISABLED - photos stored unencrypted!`);
 }
 if (WEBHOOK_URL) {
   console.log(`🔗 Webhook URL: ${WEBHOOK_URL}`);
